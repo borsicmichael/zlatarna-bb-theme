@@ -1,8 +1,54 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "footer",
   "name": "Noga",
   "sections": {
-    "footer": { "type": "footer", "settings": { "menu_2": "footer" } }
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "text": "Ročno in mojstrsko narejen nakit iz zlata in dragih kamnov. Slovensko poreklo.",
+        "phone": "+386 70 644 056",
+        "email": "",
+        "menu_1": "",
+        "menu_2": "footer",
+        "menu_3": "",
+        "menu_mobile": "",
+        "copyright": "",
+        "bottom_right": "Brezplačna dostava nad 100 €",
+        "show_logo": true,
+        "logo_height": 52,
+        "logo_height_mobile": 44,
+        "bg_color": "#88D0FC",
+        "text_color": "",
+        "hover_color": "",
+        "title_color": "",
+        "phone_color": "",
+        "bottom_color": "",
+        "line_color": "",
+        "bg_overlay": 60,
+        "font": "theme",
+        "link_size": 14,
+        "text_size": 15,
+        "text_size_mobile": 14,
+        "pt": 140,
+        "pt_product": 120,
+        "pt_mobile": 64,
+        "inner_pt": 80,
+        "inner_pb": 40,
+        "inner_pt_mobile": 40,
+        "inner_pb_mobile": 40
+      }
+    }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }
