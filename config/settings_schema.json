@@ -1,0 +1,34 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Zlatarna BB",
+    "theme_version": "1.0.0",
+    "theme_author": "Zlatarna BB",
+    "theme_documentation_url": "https://zlatarna-bb.si",
+    "theme_support_url": "https://zlatarna-bb.si"
+  },
+  {
+    "name": "Barve",
+    "settings": [
+      { "type": "color", "id": "color_primary", "label": "Glavna (temno modra)", "default": "#13293D" },
+      { "type": "color", "id": "color_accent", "label": "Svetlo modra", "default": "#89CFF0" },
+      { "type": "color", "id": "color_accent_dark", "label": "Poudarek (modra za besedilo)", "default": "#006494" },
+      { "type": "color", "id": "color_background", "label": "Ozadje strani", "default": "#F7F9FA" }
+    ]
+  },
+  {
+    "name": "Postavitev",
+    "settings": [
+      { "type": "range", "id": "page_width", "label": "Največja širina vsebine", "min": 1000, "max": 1600, "step": 20, "unit": "px", "default": 1312 },
+      { "type": "range", "id": "radius", "label": "Zaobljenost kartic", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 16 },
+      { "type": "image_picker", "id": "favicon", "label": "Ikona zavihka (favicon)" }
+    ]
+  },
+  {
+    "name": "Logotip",
+    "settings": [
+      { "type": "image_picker", "id": "logo", "label": "Logotip (neobvezno)", "info": "Če ni naložen, se prikaže vgrajeni logotip BB ZLATARNA." },
+      { "type": "range", "id": "logo_height", "label": "Višina logotipa", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 48 }
+    ]
+  }
+]
