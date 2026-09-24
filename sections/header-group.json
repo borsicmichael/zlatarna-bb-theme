@@ -1,9 +1,39 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "type": "header",
   "name": "Glava",
   "sections": {
-    "announcement": { "type": "announcement-bar", "settings": {} },
-    "header": { "type": "header", "settings": { "menu": "main-menu", "right_link_label": "Po naročilu" } }
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Cene zlata lahko nihajo – končno ceno potrdimo ob naročilu.",
+        "text_right": "Brezplačna dostava nad 100 €",
+        "phone": "+386 70 644 056",
+        "text_color": "#000000",
+        "phone_color": "#000000",
+        "show_icon": true,
+        "icon_color": "#89cff0"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "right_link_label": "Po naročilu",
+        "right_link_url": ""
+      }
+    }
   },
-  "order": ["announcement", "header"]
+  "order": [
+    "announcement",
+    "header"
+  ]
 }
