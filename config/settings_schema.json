@@ -19,7 +19,7 @@
   {
     "name": "Postavitev",
     "settings": [
-      { "type": "range", "id": "page_width", "label": "Največja širina vsebine", "min": 1000, "max": 1600, "step": 20, "unit": "px", "default": 1312 },
+      { "type": "range", "id": "page_width", "label": "Največja širina vsebine", "min": 1200, "max": 1400, "step": 2, "unit": "px", "default": 1312 },
       { "type": "range", "id": "radius", "label": "Zaobljenost kartic", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 16 },
       { "type": "image_picker", "id": "favicon", "label": "Ikona zavihka (favicon)" }
     ]
