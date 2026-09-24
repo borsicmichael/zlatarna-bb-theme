@@ -107,7 +107,7 @@
             "label": "Prstani",
             "collection": "prstani",
             "limit": 8,
-            "placeholder_names": "Zaročni prstani\nPoročni prstani"
+            "placeholder_names": ""
           }
         },
         "t3": {
