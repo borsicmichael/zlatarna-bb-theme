@@ -10,25 +10,325 @@
   {
     "name": "Barve",
     "settings": [
-      { "type": "color", "id": "color_primary", "label": "Glavna (temno modra)", "default": "#13293D" },
-      { "type": "color", "id": "color_accent", "label": "Svetlo modra", "default": "#89CFF0" },
-      { "type": "color", "id": "color_accent_dark", "label": "Poudarek (modra za besedilo)", "default": "#006494" },
-      { "type": "color", "id": "color_background", "label": "Ozadje strani", "default": "#F7F9FA" }
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Glavna (temno modra)",
+        "default": "#13293D"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Svetlo modra",
+        "default": "#89CFF0"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_dark",
+        "label": "Poudarek (modra za besedilo)",
+        "default": "#006494"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Ozadje strani",
+        "default": "#F7F9FA"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Barva besedila",
+        "default": "#13293D"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Barva sekundarnega besedila",
+        "default": "#3F4E5B"
+      },
+      {
+        "type": "color",
+        "id": "color_lines",
+        "label": "Barva črt in robov",
+        "default": "#D5DEE5"
+      },
+      {
+        "type": "color",
+        "id": "color_tint",
+        "label": "Svetlo modro ozadje (polja, e-knjiga)",
+        "default": "#E4F2FA"
+      }
     ]
   },
   {
     "name": "Postavitev",
     "settings": [
-      { "type": "range", "id": "page_width", "label": "Največja širina vsebine", "min": 1200, "max": 1400, "step": 2, "unit": "px", "default": 1312 },
-      { "type": "range", "id": "radius", "label": "Zaobljenost kartic", "min": 0, "max": 32, "step": 2, "unit": "px", "default": 16 },
-      { "type": "image_picker", "id": "favicon", "label": "Ikona zavihka (favicon)" }
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Največja širina vsebine",
+        "min": 1200,
+        "max": 1400,
+        "step": 2,
+        "unit": "px",
+        "default": 1312
+      },
+      {
+        "type": "range",
+        "id": "radius",
+        "label": "Zaobljenost kartic",
+        "min": 0,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "default": 16
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Ikona zavihka (favicon)"
+      }
+    ]
+  },
+  {
+    "name": "Tipografija",
+    "settings": [
+      {
+        "type": "select",
+        "id": "font_heading",
+        "label": "Pisava naslovov",
+        "options": [
+          {
+            "value": "playfair",
+            "label": "Playfair Display"
+          },
+          {
+            "value": "manrope",
+            "label": "Manrope"
+          },
+          {
+            "value": "montserrat",
+            "label": "Montserrat"
+          },
+          {
+            "value": "georgia",
+            "label": "Georgia"
+          },
+          {
+            "value": "system",
+            "label": "Sistemska pisava"
+          },
+          {
+            "value": "custom1",
+            "label": "Pisava po meri 1"
+          },
+          {
+            "value": "custom2",
+            "label": "Pisava po meri 2"
+          }
+        ],
+        "default": "playfair"
+      },
+      {
+        "type": "select",
+        "id": "font_heading_weight",
+        "label": "Debelina naslovov",
+        "options": [
+          {
+            "value": "300",
+            "label": "300"
+          },
+          {
+            "value": "400",
+            "label": "400"
+          },
+          {
+            "value": "500",
+            "label": "500"
+          },
+          {
+            "value": "600",
+            "label": "600"
+          },
+          {
+            "value": "700",
+            "label": "700"
+          }
+        ],
+        "default": "400"
+      },
+      {
+        "type": "select",
+        "id": "font_body",
+        "label": "Pisava besedila",
+        "options": [
+          {
+            "value": "playfair",
+            "label": "Playfair Display"
+          },
+          {
+            "value": "manrope",
+            "label": "Manrope"
+          },
+          {
+            "value": "montserrat",
+            "label": "Montserrat"
+          },
+          {
+            "value": "georgia",
+            "label": "Georgia"
+          },
+          {
+            "value": "system",
+            "label": "Sistemska pisava"
+          },
+          {
+            "value": "custom1",
+            "label": "Pisava po meri 1"
+          },
+          {
+            "value": "custom2",
+            "label": "Pisava po meri 2"
+          }
+        ],
+        "default": "playfair"
+      },
+      {
+        "type": "select",
+        "id": "font_ui",
+        "label": "Pisava vmesnika (zavihki, oznake, cene)",
+        "options": [
+          {
+            "value": "playfair",
+            "label": "Playfair Display"
+          },
+          {
+            "value": "manrope",
+            "label": "Manrope"
+          },
+          {
+            "value": "montserrat",
+            "label": "Montserrat"
+          },
+          {
+            "value": "georgia",
+            "label": "Georgia"
+          },
+          {
+            "value": "system",
+            "label": "Sistemska pisava"
+          },
+          {
+            "value": "custom1",
+            "label": "Pisava po meri 1"
+          },
+          {
+            "value": "custom2",
+            "label": "Pisava po meri 2"
+          }
+        ],
+        "default": "manrope"
+      },
+      {
+        "type": "header",
+        "content": "Pisave po meri (Google Fonts)"
+      },
+      {
+        "type": "paragraph",
+        "content": "Vpišite točno ime pisave z fonts.google.com (npr. Cormorant Garamond) in jo nato izberite zgoraj ali v posamezni sekciji."
+      },
+      {
+        "type": "text",
+        "id": "custom_font_1",
+        "label": "Pisava po meri 1"
+      },
+      {
+        "type": "text",
+        "id": "custom_font_2",
+        "label": "Pisava po meri 2"
+      }
+    ]
+  },
+  {
+    "name": "Gumbi in polja",
+    "settings": [
+      {
+        "type": "select",
+        "id": "button_shape",
+        "label": "Oblika gumbov",
+        "options": [
+          {
+            "value": "pill",
+            "label": "Zaobljeni (kapsula)"
+          },
+          {
+            "value": "rounded",
+            "label": "Rahlo zaobljeni"
+          },
+          {
+            "value": "square",
+            "label": "Oglati"
+          }
+        ],
+        "default": "pill"
+      },
+      {
+        "type": "select",
+        "id": "input_shape",
+        "label": "Oblika vnosnih polj",
+        "options": [
+          {
+            "value": "pill",
+            "label": "Zaobljena (kapsula)"
+          },
+          {
+            "value": "rounded",
+            "label": "Rahlo zaobljena"
+          },
+          {
+            "value": "square",
+            "label": "Oglata"
+          }
+        ],
+        "default": "pill"
+      },
+      {
+        "type": "select",
+        "id": "button_case",
+        "label": "Besedilo gumbov",
+        "options": [
+          {
+            "value": "upper",
+            "label": "VELIKE ČRKE"
+          },
+          {
+            "value": "none",
+            "label": "Kot je vpisano"
+          }
+        ],
+        "default": "upper"
+      }
     ]
   },
   {
     "name": "Logotip",
     "settings": [
-      { "type": "image_picker", "id": "logo", "label": "Logotip (neobvezno)", "info": "Če ni naložen, se prikaže vgrajeni logotip BB ZLATARNA." },
-      { "type": "range", "id": "logo_height", "label": "Višina logotipa", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 48 }
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logotip (neobvezno)",
+        "info": "Če ni naložen, se prikaže vgrajeni logotip BB ZLATARNA."
+      },
+      {
+        "type": "range",
+        "id": "logo_height",
+        "label": "Višina logotipa",
+        "min": 24,
+        "max": 80,
+        "step": 2,
+        "unit": "px",
+        "default": 48
+      }
     ]
   }
 ]
