@@ -70,6 +70,10 @@
       background-size: cover; background-position: center;
     {%- endif -%}
     {%- if s.s_text != blank %} color: {{ s.s_text }}; --c-text: {{ s.s_text }}; --c-muted: {{ s.s_text }}; --c-subtle: {{ s.s_text }};{% endif -%}
+    {%- if s.s_bg != blank and s.s_text == blank -%}
+      {%- assign bgb = s.s_bg | color_brightness -%}
+      {%- if bgb < 125 %} color: #F7F9FA; --c-text: #F7F9FA; --c-primary: #F7F9FA; --c-muted: rgba(247,249,250,.78); --c-subtle: rgba(247,249,250,.62); --c-line: rgba(247,249,250,.24);{% endif -%}
+    {%- endif -%}
     {%- if s.s_accent != blank %} --c-accent-dark: {{ s.s_accent }};{% endif -%}
     {%- if bf != '' %} font-family: {{ bf }};{% endif -%}
   }
