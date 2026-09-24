@@ -280,7 +280,6 @@
           "settings": {
             "title": "Zaročni prstani",
             "link_label": "Oglej si izbor",
-            "url": "",
             "collection": "zarocni-prstani"
           }
         },
@@ -289,7 +288,6 @@
           "settings": {
             "title": "Poročni prstani",
             "link_label": "Oglej si izbor",
-            "url": "",
             "collection": "porocni-prstani"
           }
         }
