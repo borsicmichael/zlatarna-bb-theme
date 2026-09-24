@@ -1,11 +1,12 @@
-{%- comment -%} rev 7 {%- endcomment -%}
+{%- comment -%} rev 8 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
   assign sel = '#shopify-section-' | append: section.id
 -%}
 {% render 'section-style', id: section.id, s: s, h: '.feature__title', b: '.feature__text' %}
 {%- style -%}
-  {{ sel }} .features { grid-template-columns: repeat({{ s.columns }}, minmax(0,1fr)); column-gap: {{ s.gap }}px; }
+  {{ sel }} .features { grid-template-columns: repeat({{ s.columns }}, minmax(0,1fr)); column-gap: {{ s.gap }}px; max-width: {{ s.max_width }}px; margin-left: auto; margin-right: auto; }
+  {{ sel }} .feature { padding: 0 8px; gap: 10px; }
   {{ sel }} .feature__img { width: {{ s.icon_size }}px; height: {{ s.icon_size }}px; {% if s.icon_round %}border-radius: 50%; object-fit: cover;{% endif %} }
   {{ sel }} .feature__text { max-width: {{ s.text_width }}px; }
   {%- if s.card_bg != blank %}
@@ -64,6 +65,7 @@
     {"type": "header", "content": "Postavitev"},
     {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 2, "max": 6, "step": 1, "default": 4},
     {"type": "select", "id": "columns_mobile", "label": "Stolpci (mobilno)", "options": [{"value": "1", "label": "1"}, {"value": "2", "label": "2"}], "default": "2"},
+    {"type": "range", "id": "max_width", "label": "Največja širina sekcije", "min": 600, "max": 1400, "step": 20, "default": 1000, "unit": "px", "info": "Manjša vrednost stisne prednosti bližje skupaj."},
     {"type": "range", "id": "gap", "label": "Razmik med stolpci", "min": 0, "max": 64, "step": 2, "default": 24, "unit": "px"},
     {"type": "range", "id": "text_width", "label": "Največja širina besedila", "min": 160, "max": 400, "step": 10, "default": 260, "unit": "px"},
     {"type": "color", "id": "card_bg", "label": "Ozadje posamezne prednosti", "info": "Neobvezno – prikaže vsako prednost kot kartico."},
