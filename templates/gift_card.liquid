@@ -1,0 +1,28 @@
+{% layout none %}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Darilni bon – {{ shop.name }}</title>
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    <style>:root{--c-primary:#13293D;--c-accent:#89CFF0;--c-accent-dark:#006494;--c-bg:#F7F9FA;--c-text:#13293D;--c-muted:#3F4E5B;--f-serif:Georgia,serif;--f-sans:system-ui,sans-serif;--page-width:1312px;--radius:16px}</style>
+    {{ content_for_header }}
+  </head>
+  <body>
+    <div class="page-width">
+      <div class="empty">
+        <p class="eyebrow">{{ shop.name }}</p>
+        <h1 class="h-display">Darilni bon</h1>
+        <p class="product__price">{{ gift_card.balance | money }}</p>
+        {%- if gift_card.expired or gift_card.enabled == false -%}
+          <p class="note">Ta bon ni več veljaven.</p>
+        {%- else -%}
+          <p class="field__input" style="display:flex;align-items:center;justify-content:center;max-width:360px;font-weight:600;letter-spacing:.1em">{{ gift_card.code | format_code }}</p>
+          {%- if gift_card.expires_on -%}<p class="note">Velja do {{ gift_card.expires_on | date: '%d. %m. %Y' }}</p>{%- endif -%}
+        {%- endif -%}
+        <a class="btn btn--light" href="{{ shop.url }}">Na spletno trgovino</a>
+      </div>
+    </div>
+  </body>
+</html>

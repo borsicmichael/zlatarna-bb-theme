@@ -1,0 +1,39 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "settings": {},
+      "blocks": {
+        "trust-1": {
+          "type": "trust",
+          "settings": {
+            "default_icon": "dostava",
+            "text": "Brezplačna dostava nad 100 € · sledljiva pošiljka"
+          }
+        },
+        "trust-2": {
+          "type": "trust",
+          "settings": {
+            "default_icon": "personaliziran",
+            "text": "Možnost personalizacije in gravure"
+          }
+        },
+        "trust-3": {
+          "type": "trust",
+          "settings": {
+            "default_icon": "rocna",
+            "text": "Ročna izdelava, slovensko poreklo"
+          }
+        }
+      },
+      "block_order": [
+        "trust-1",
+        "trust-2",
+        "trust-3"
+      ]
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

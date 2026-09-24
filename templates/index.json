@@ -1,0 +1,307 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-video",
+      "blocks": {
+        "link-1": {
+          "type": "link",
+          "settings": {
+            "label": "Oglej si nakit",
+            "url": "shopify://collections/all"
+          }
+        },
+        "link-2": {
+          "type": "link",
+          "settings": {
+            "label": "Verižice po naročilu"
+          }
+        }
+      },
+      "block_order": [
+        "link-1",
+        "link-2"
+      ],
+      "settings": {
+        "heading": "Sestavi svoj sijaj",
+        "subheading": "Ročno in mojstrsko narejen nakit – iz zlata in dragih kamnov.",
+        "overlay": 50,
+        "height": 617,
+        "height_mobile": 540,
+        "mobile_focus": 24
+      }
+    },
+    "features": {
+      "type": "features",
+      "blocks": {
+        "f1": {
+          "type": "feature",
+          "settings": {
+            "default_icon": "personaliziran",
+            "title": "Personaliziran nakit",
+            "text": "Gravura in nakit po meri – oblikujemo ga skupaj z vami."
+          }
+        },
+        "f2": {
+          "type": "feature",
+          "settings": {
+            "default_icon": "dostava",
+            "title": "Brezplačna dostava",
+            "text": "Pri nakupu nad 100 € vam nakit pošljemo brezplačno."
+          }
+        },
+        "f3": {
+          "type": "feature",
+          "settings": {
+            "default_icon": "posvet",
+            "title": "Posvet z mojstrom",
+            "text": "Pokličite nas ali se oglasite – svetuje vam zlatarski mojster."
+          }
+        },
+        "f4": {
+          "type": "feature",
+          "settings": {
+            "default_icon": "rocna",
+            "title": "Ročna izdelava",
+            "text": "Vsak kos ročno izdelamo v naši delavnici. Slovensko poreklo."
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3",
+        "f4"
+      ]
+    },
+    "collections": {
+      "type": "tabbed-carousel",
+      "blocks": {
+        "t1": {
+          "type": "tab",
+          "settings": {
+            "label": "Vse",
+            "limit": 8,
+            "placeholder_names": "Prstani\nUhani\nVerižice\nZapestnice\nObeski\nLinija Prestige"
+          }
+        },
+        "t2": {
+          "type": "tab",
+          "settings": {
+            "label": "Prstani",
+            "limit": 8,
+            "placeholder_names": "Zaročni prstani\nPoročni prstani"
+          }
+        },
+        "t3": {
+          "type": "tab",
+          "settings": {
+            "label": "Uhani",
+            "limit": 8
+          }
+        },
+        "t4": {
+          "type": "tab",
+          "settings": {
+            "label": "Verižice",
+            "limit": 8,
+            "placeholder_names": "Kraljeva verižica\nKraljeva verižica 6,5 mm\nKraljevi vez\nKraljevi par verižic"
+          }
+        },
+        "t5": {
+          "type": "tab",
+          "settings": {
+            "label": "Zapestnice",
+            "limit": 8
+          }
+        },
+        "t6": {
+          "type": "tab",
+          "settings": {
+            "label": "Obeski",
+            "limit": 8
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3",
+        "t4",
+        "t5",
+        "t6"
+      ],
+      "settings": {
+        "heading": "Izberite svoj BB kos",
+        "link_label": "Celotna ponudba",
+        "show_price": false,
+        "pt": 120,
+        "pt_mobile": 64,
+        "link_label_mobile": "Vse"
+      }
+    },
+    "banner-1": {
+      "type": "image-banner",
+      "settings": {
+        "full_width": true,
+        "height": 640,
+        "height_mobile": 300,
+        "pt": 140,
+        "pt_mobile": 64
+      }
+    },
+    "chains": {
+      "type": "tabbed-carousel",
+      "blocks": {
+        "c1": {
+          "type": "tab",
+          "settings": {
+            "label": "Kraljeva",
+            "limit": 8,
+            "placeholder_names": "Kraljeva verižica 3–8 mm\nKraljeva verižica 6,5 mm\nKraljevi vez 5 mm\nKraljevi par verižic"
+          }
+        },
+        "c2": {
+          "type": "tab",
+          "settings": {
+            "label": "Kubanska",
+            "limit": 8,
+            "placeholder_names": "Kubanska verižica"
+          }
+        },
+        "c3": {
+          "type": "tab",
+          "settings": {
+            "label": "Figaro",
+            "limit": 8,
+            "placeholder_names": "Figaro verižica"
+          }
+        },
+        "c4": {
+          "type": "tab",
+          "settings": {
+            "label": "Ankerska",
+            "limit": 8,
+            "placeholder_names": "Ankerska verižica"
+          }
+        },
+        "c5": {
+          "type": "tab",
+          "settings": {
+            "label": "Vrvica",
+            "limit": 8,
+            "placeholder_names": "Vrvica"
+          }
+        }
+      },
+      "block_order": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "settings": {
+        "heading": "Ročno narejene verižice, <em>po naročilu</em>",
+        "text": "Vsako verižico ročno izdelamo v naši delavnici – v debelini, dolžini in zlatu po vaši želji. Končno ceno potrdimo ob naročilu.",
+        "button_label": "Naroči verižico po meri",
+        "link_label": "",
+        "show_price": true,
+        "pt": 140,
+        "pt_mobile": 64
+      }
+    },
+    "banner-2": {
+      "type": "image-banner",
+      "settings": {
+        "full_width": true,
+        "height": 640,
+        "height_mobile": 300,
+        "pt": 140,
+        "pt_mobile": 64
+      }
+    },
+    "tiles": {
+      "type": "promo-tiles",
+      "blocks": {
+        "tile-1": {
+          "type": "tile",
+          "settings": {
+            "title": "Zaročni prstani",
+            "link_label": "Oglej si izbor"
+          }
+        },
+        "tile-2": {
+          "type": "tile",
+          "settings": {
+            "title": "Poročni prstani",
+            "link_label": "Oglej si izbor"
+          }
+        }
+      },
+      "block_order": [
+        "tile-1",
+        "tile-2"
+      ],
+      "settings": {
+        "pt": 140,
+        "pt_mobile": 64
+      }
+    },
+    "process": {
+      "type": "process-steps",
+      "blocks": {
+        "s1": {
+          "type": "step",
+          "settings": {
+            "title": "Posvet z mojstrom",
+            "text": "Pokličite ali nas obiščite. Skupaj izberemo obliko, debelino, zlato in kamne."
+          }
+        },
+        "s2": {
+          "type": "step",
+          "settings": {
+            "title": "Potrditev cene",
+            "text": "Ker cene zlata nihajo, vam končno ceno potrdimo ob naročilu – brez presenečenj."
+          }
+        },
+        "s3": {
+          "type": "step",
+          "settings": {
+            "title": "Ročna izdelava",
+            "text": "Vaš kos nastane v naši delavnici in vas doseže v darilni embalaži."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "settings": {
+        "button_1_label": "Pokličite mojstra",
+        "button_1_url": "tel:+38670644056",
+        "button_2_label": "Personaliziraj darilo",
+        "pt": 160,
+        "pt_mobile": 72
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "pt": 160,
+        "pt_mobile": 64
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "features",
+    "collections",
+    "banner-1",
+    "chains",
+    "banner-2",
+    "tiles",
+    "process",
+    "newsletter"
+  ]
+}
