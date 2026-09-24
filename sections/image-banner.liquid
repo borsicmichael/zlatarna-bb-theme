@@ -27,7 +27,7 @@
 <section>
   <div {% unless s.full_width %}class="page-width"{% endunless %}>
     {%- if s.link != blank and s.button_label == blank -%}<a href="{{ s.link }}">{%- endif -%}
-    <div class="image-banner" id="Banner-{{ section.id }}">
+    <div class="image-banner{% if s.image == blank and s.fallback_collection != blank %} image-banner--collage{% endif %}" id="Banner-{{ section.id }}">
       {%- if s.image != blank -%}
         {%- if s.image_mobile != blank -%}
           <picture style="position:absolute;inset:0">
@@ -37,15 +37,28 @@
         {%- else -%}
           {{ s.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: s.image.alt }}
         {%- endif -%}
+      {%- elsif s.fallback_collection != blank and s.fallback_collection.products_count > 0 -%}
+        <div class="banner-collage">
+          {%- assign n = 0 -%}
+          {%- for p in s.fallback_collection.products -%}
+            {%- if p.featured_media and n < 4 -%}
+              {%- assign n = n | plus: 1 -%}
+              <span class="banner-collage__item">{{ p.featured_media | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400,600,900', sizes: '(max-width: 749px) 50vw, 25vw', alt: p.title }}</span>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
       {%- else -%}
         <span class="ph-icon">{% render 'icon', name: 'image', px: '100%', sw: 0.24 %}</span>
       {%- endif -%}
       {%- if s.overlay > 0 -%}<div class="banner__overlay"></div>{%- endif -%}
       {%- if s.heading != blank or s.text != blank or s.button_label != blank -%}
         <div class="banner__content">
+          {%- assign collage = false -%}{%- if s.image == blank and s.fallback_collection != blank -%}{%- assign collage = true -%}{%- endif -%}
+          {%- if collage -%}<div class="banner__card">{%- endif -%}
           {%- if s.heading != blank -%}<h2 class="banner__heading">{{ s.heading }}</h2>{%- endif -%}
           {%- if s.text != blank -%}<div class="banner__text">{{ s.text }}</div>{%- endif -%}
           {%- if s.button_label != blank -%}<a class="btn {% if s.button_style == 'light' %}btn--light{% elsif s.button_style == 'outline' %}btn--outline{% endif %}" href="{{ s.link | default: '#' }}">{{ s.button_label | escape }}</a>{%- endif -%}
+          {%- if collage -%}</div>{%- endif -%}
         </div>
       {%- endif -%}
     </div>
@@ -64,6 +77,7 @@
     {"type": "url", "id": "link", "label": "Povezava (neobvezno)"},
     {"type": "checkbox", "id": "full_width", "label": "Čez celotno širino", "default": true},
     {"type": "range", "id": "radius", "label": "Zaobljenost vogalov (ko ni čez celo širino)", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "collection", "id": "fallback_collection", "label": "Kolekcija za mozaik (brez slike)", "info": "Če slika ni izbrana, se prikaže mozaik štirih izdelkov iz te kolekcije."},
     {"type": "range", "id": "radius_mobile", "label": "Zaobljenost vogalov (mobilno)", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
     {"type": "color", "id": "placeholder_bg", "label": "Ozadje brez slike"},
     {"type": "header", "content": "Velikost"},

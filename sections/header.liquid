@@ -47,12 +47,13 @@
   {%- if s.sticky %}
   {{ sel }} { position: sticky; top: 0; z-index: 30; }
   {%- endif %}
-  @media (max-width: 749px) {
+  @media (max-width: 1199px) {
     {{ sel }} .header__inner { height: {{ s.height_mobile }}px; }
     {{ sel }} .header__logo svg { width: {{ lw_m }}px; height: {{ lh_m }}px; }
     {{ sel }} .header__logo .logo__text { font-size: {{ lf_m }}px !important; }
     {{ sel }} .header__logo img { max-height: {{ lh_m }}px; width: auto; }
     {%- if s.logo_position == 'left' %}
+    {{ sel }} .header__inner { grid-template-columns: none; }
     {{ sel }} .header__logo { order: 0; }
     {%- endif %}
   }
@@ -97,9 +98,9 @@
       {%- if shop.customer_accounts_enabled and s.show_account -%}
         <a class="icon-btn icon-btn--desktop" href="{{ routes.account_url }}" aria-label="{{ 'general.account' | t }}">{% render 'icon', name: 'account' %}</a>
       {%- endif -%}
-      <a class="icon-btn" href="{{ routes.cart_url }}" aria-label="{{ 'general.cart' | t }}">
+      <a class="icon-btn" href="{{ routes.cart_url }}" aria-label="{{ 'general.cart' | t }}" data-cart-open>
         {% render 'icon', name: 'cart' %}
-        {%- if cart.item_count > 0 -%}<span class="cart-count">{{ cart.item_count }}</span>{%- endif -%}
+        <span class="cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>{{ cart.item_count }}</span>
       </a>
     </div>
   </div>

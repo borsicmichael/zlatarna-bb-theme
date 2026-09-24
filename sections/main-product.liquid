@@ -91,7 +91,7 @@
           {%- endif -%}
         </span>
         <span class="product__price-note">
-          {%- if has_options -%}{{ section.settings.selected_prefix }} {{ product.options_with_values.first.name | downcase | escape }}: <strong data-selected>{{ current_variant.title | escape }}</strong>{% if section.settings.price_note != blank %} · {% endif %}{%- endif -%}
+          {%- if has_options -%}{% if section.settings.selected_prefix != blank %}{{ section.settings.selected_prefix }} {{ product.options_with_values.first.name | downcase | escape }}{% else %}{{ product.options_with_values.first.name | escape }}{% endif %}: <strong data-selected>{{ current_variant.title | escape }}</strong>{% if section.settings.price_note != blank %} · {% endif %}{%- endif -%}
           {{- section.settings.price_note -}}
         </span>
       </div>
@@ -118,7 +118,7 @@
           {%- if section.settings.show_length -%}
             <div class="field">
               <label class="field__label" for="Length-{{ section.id }}">{{ 'products.length' | t }}</label>
-              <input class="field__input" id="Length-{{ section.id }}" type="number" min="10" max="120" step="0.5" inputmode="decimal" name="properties[{{ 'products.length' | t }}]" placeholder="{{ 'products.length_placeholder' | t }}"{% if section.settings.length_required %} required{% endif %}>
+              <input class="field__input" id="Length-{{ section.id }}" type="number" min="10" max="120" step="0.5" inputmode="decimal" name="properties[{{ 'products.length' | t }}]" placeholder="{{ 'products.length_placeholder' | t }}">
             </div>
           {%- endif -%}
 
@@ -129,11 +129,23 @@
             </div>
           {%- endif -%}
 
-          <div class="product__buttons">
+          <div class="product__buy">
+            <div class="qty" data-qty>
+              <button type="button" class="qty__btn" data-qty-minus aria-label="{{ 'products.quantity_decrease' | t }}">{% render 'icon', name: 'minus', px: 16 %}</button>
+              <label class="visually-hidden" for="Quantity-{{ section.id }}">{{ 'products.quantity' | t }}</label>
+              <input class="qty__input" id="Quantity-{{ section.id }}" type="number" name="quantity" value="1" min="1" inputmode="numeric">
+              <button type="button" class="qty__btn" data-qty-plus aria-label="{{ 'products.quantity_increase' | t }}">{% render 'icon', name: 'plus', px: 16 %}</button>
+            </div>
             {%- assign soldout_label = 'products.sold_out' | t -%}
-            <button type="submit" name="add" class="btn btn--light btn--sans btn--block" data-label="{{ section.settings.button_label | escape }}" data-soldout="{{ soldout_label | escape }}"{% unless current_variant.available %} disabled{% endunless %}>
-              {%- if current_variant.available -%}{{ section.settings.button_label | escape }}{%- else -%}{{ soldout_label }}{%- endif -%}
+            <button type="submit" name="add" class="btn btn--sans product__add" data-label="{{ section.settings.button_label | escape }}" data-soldout="{{ soldout_label | escape }}"{% unless current_variant.available %} disabled{% endunless %}>
+              {% render 'icon', name: 'cart', px: 18 %}
+              <span data-add-label>{%- if current_variant.available -%}{{ section.settings.button_label | escape }}{%- else -%}{{ soldout_label }}{%- endif -%}</span>
             </button>
+          </div>
+          {%- if section.settings.show_buy_now -%}
+            <div class="product__checkout">{{ form | payment_button }}</div>
+          {%- endif -%}
+          <div class="product__buttons">
             {%- if section.settings.phone_label != blank -%}
               <a class="btn btn--outline btn--sans btn--block" href="tel:{{ section.settings.phone | remove: ' ' }}">{% render 'icon', name: 'phone', px: 16 %}{{ section.settings.phone_label | escape }}</a>
             {%- endif -%}
@@ -150,8 +162,14 @@
               {%- if block.settings.image != blank -%}
                 {{ block.settings.image | image_url: width: 120 | image_tag: loading: 'lazy', alt: '' }}
               {%- elsif block.settings.default_icon != 'none' -%}
-                {%- assign icon_file = 'icon-' | append: block.settings.default_icon | append: '.png' -%}
-                <img src="{{ icon_file | asset_url }}" alt="" width="52" height="52" loading="lazy">
+                {%- case block.settings.default_icon -%}
+                  {%- when 'dostava' -%}{%- assign ic = 'truck' -%}
+                  {%- when 'personaliziran' -%}{%- assign ic = 'pen' -%}
+                  {%- when 'posvet' -%}{%- assign ic = 'phone' -%}
+                  {%- when 'rocna' -%}{%- assign ic = 'hand' -%}
+                  {%- else -%}{%- assign ic = 'shield' -%}
+                {%- endcase -%}
+                <span class="trust__icon">{% render 'icon', name: ic, px: 22 %}</span>
               {%- endif -%}
               <span>{{ block.settings.text }}</span>
             </div>
@@ -184,20 +202,20 @@
   "settings": [
     {"type": "text", "id": "badge_1", "label": "Značka 1", "default": "Izdelava po naročilu"},
     {"type": "text", "id": "badge_2", "label": "Značka 2", "default": "Ročno delo"},
-    {"type": "text", "id": "selected_prefix", "label": "Predpona izbrane možnosti", "default": "Izbrana"},
+    {"type": "text", "id": "selected_prefix", "label": "Predpona izbrane možnosti", "info": "Npr. »Izbrani«. Pustite prazno za »Material: …«."},
     {"type": "text", "id": "price_note", "label": "Opomba pod ceno", "default": "končno ceno potrdimo ob naročilu"},
-    {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "default": "Oddaj povpraševanje"},
-    {"type": "checkbox", "id": "show_length", "label": "Polje »Želena dolžina (cm)«", "default": true},
-    {"type": "checkbox", "id": "length_required", "label": "Dolžina je obvezna", "default": false},
+    {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "default": "Dodaj v košarico"},
+    {"type": "checkbox", "id": "show_length", "label": "Polje »Želena dolžina (cm)«", "default": false},
+    {"type": "checkbox", "id": "show_buy_now", "label": "Gumb »Kupi zdaj« (hitri nakup)", "default": true},
     {"type": "checkbox", "id": "show_note", "label": "Polje za opombo / gravuro", "default": false},
     {"type": "text", "id": "phone_label", "label": "Gumb za klic – besedilo", "default": "Posvet z mojstrom · 070 644 056"},
     {"type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056"},
     {"type": "header", "content": "Spodnji stolpci"},
     {"type": "text", "id": "details_1_title", "label": "Stolpec 1 – naslov (vsebina = opis izdelka)", "default": "O izdelku"},
-    {"type": "text", "id": "details_2_title", "label": "Stolpec 2 – naslov", "default": "Kako poteka naročilo"},
-    {"type": "richtext", "id": "details_2_text", "label": "Stolpec 2 – besedilo", "default": "<p>Oddajte povpraševanje ali nas pokličite. Potrdimo debelino, dolžino in končno ceno, nato verižico ročno izdelamo.</p>"},
+    {"type": "text", "id": "details_2_title", "label": "Stolpec 2 – naslov", "default": "Dostava in darilo"},
+    {"type": "richtext", "id": "details_2_text", "label": "Stolpec 2 – besedilo", "default": "<p>Pošiljke so sledljive, nakit prejmete v darilni embalaži. Pri nakupu nad 100 € je dostava brezplačna.</p>"},
     {"type": "text", "id": "details_3_title", "label": "Stolpec 3 – naslov", "default": "Zakaj cena niha?"},
-    {"type": "richtext", "id": "details_3_text", "label": "Stolpec 3 – besedilo", "default": "<p>Cena je vezana na trenutno ceno zlata. Zato jo potrdimo ob naročilu – tako plačate pošteno ceno dneva.</p>"},
+    {"type": "richtext", "id": "details_3_text", "label": "Stolpec 3 – besedilo", "default": "<p>Cena je vezana na trenutno ceno zlata. Če se cena ob naročilu spremeni, vas pred izdelavo pokličemo in jo potrdimo z vami.</p>"},
     {"type": "header", "content": "Postavitev"},
     {"type": "select", "id": "layout", "label": "Postavitev", "options": [{"value": "default", "label": "Galerija levo (7/5)"}, {"value": "equal", "label": "Galerija levo (polovica/polovica)"}, {"value": "right", "label": "Galerija desno"}], "default": "default"},
     {"type": "checkbox", "id": "sticky_info", "label": "Podatki ostanejo vidni ob pomikanju", "default": true},

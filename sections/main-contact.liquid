@@ -1,44 +1,68 @@
-{%- render 'section-style', id: section.id, s: section.settings, h: '.page-content h1', b: '.page-content .rte' -%}
+{%- render 'section-style', id: section.id, s: section.settings, h: '.contact h1', b: '.contact .rte' -%}
 {%- liquid
   assign st = section.settings
   assign sel = '#shopify-section-' | append: section.id
 -%}
 {%- style -%}
-  {{ sel }} .page-content { max-width: {{ st.content_width }}px; }
-  {{ sel }} .page-content h1 { margin-bottom: {{ st.title_gap }}px; }
+  {{ sel }} .contact { max-width: {{ st.content_width }}px; }
+  {{ sel }} .contact h1 { margin-bottom: {{ st.title_gap }}px; }
   {%- unless st.show_phone %}{{ sel }} .field--phone { display: none; }{% endunless %}
 {%- endstyle -%}
 <div class="page-width">
-  <article class="page-content">
-    <h1>{{ page.title | escape }}</h1>
-    {%- if page.content != blank -%}<div class="rte" style="margin-bottom:32px">{{ page.content }}</div>{%- endif -%}
-    {%- form 'contact', id: 'ContactForm' -%}
-      {%- if form.posted_successfully? -%}
-        <p class="form-message" role="status" style="margin-bottom:16px">{{ section.settings.success }}</p>
-      {%- elsif form.errors -%}
-        <p class="form-message" role="alert" style="margin-bottom:16px">{{ form.errors | default_errors }}</p>
-      {%- endif -%}
-      <div style="display:flex;flex-direction:column;gap:16px">
+  <div class="contact">
+    <div class="contact__intro">
+      <p class="eyebrow">{{ shop.name | escape }}</p>
+      <h1 class="h-display">{{ st.heading | default: page.title | escape }}</h1>
+      {%- if page.content != blank -%}<div class="rte">{{ page.content }}</div>{%- elsif st.intro != blank -%}<div class="rte">{{ st.intro }}</div>{%- endif -%}
+      <div class="contact__cards">
+        {%- if st.phone != blank -%}
+          <a class="contact__card" href="tel:{{ st.phone | remove: ' ' }}">
+            <span class="contact__icon">{% render 'icon', name: 'phone', px: 20 %}</span>
+            <span><small>{{ 'contact.phone' | t }}</small>{{ st.phone }}</span>
+          </a>
+        {%- endif -%}
+        {%- if st.email != blank -%}
+          <a class="contact__card" href="mailto:{{ st.email }}">
+            <span class="contact__icon">{% render 'icon', name: 'account', px: 20 %}</span>
+            <span><small>{{ 'contact.email' | t }}</small>{{ st.email }}</span>
+          </a>
+        {%- endif -%}
+        {%- if st.hours != blank -%}
+          <div class="contact__card">
+            <span class="contact__icon">{% render 'icon', name: 'clock', px: 20 %}</span>
+            <span><small>{{ st.hours_label }}</small>{{ st.hours }}</span>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="contact__form">
+      {%- form 'contact', id: 'ContactForm' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="form-message form-message--ok" role="status">{{ st.success }}</p>
+        {%- elsif form.errors -%}
+          <p class="form-message" role="alert">{{ form.errors | default_errors }}</p>
+        {%- endif -%}
         <div class="field">
-          <label class="field__label" for="ContactName">{{ 'newsletter.name' | t }}</label>
+          <label class="field__label" for="ContactName">{{ 'contact.name' | t }}</label>
           <input class="field__input" id="ContactName" type="text" name="contact[name]" autocomplete="name" value="{{ form.name }}">
         </div>
         <div class="field">
-          <label class="field__label" for="ContactEmail">{{ 'newsletter.email' | t }}</label>
+          <label class="field__label" for="ContactEmail">{{ 'contact.email' | t }}</label>
           <input class="field__input" id="ContactEmail" type="email" name="contact[email]" autocomplete="email" required value="{{ form.email }}">
         </div>
         <div class="field field--phone">
-          <label class="field__label" for="ContactPhone">Telefon</label>
+          <label class="field__label" for="ContactPhone">{{ 'contact.phone' | t }}</label>
           <input class="field__input" id="ContactPhone" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone }}">
         </div>
         <div class="field">
-          <label class="field__label" for="ContactBody">Sporočilo</label>
-          <textarea class="field__input" id="ContactBody" name="contact[body]">{{ form.body }}</textarea>
+          <label class="field__label" for="ContactBody">{{ 'contact.message' | t }}</label>
+          <textarea class="field__input" id="ContactBody" name="contact[body]" required>{{ form.body }}</textarea>
         </div>
-        <button type="submit" class="btn btn--light">{{ section.settings.button_label | escape }}</button>
-      </div>
-    {%- endform -%}
-  </article>
+        <button type="submit" class="btn btn--sans btn--block">{{ st.button_label | escape }}</button>
+      {%- endform -%}
+    </div>
+  </div>
 </div>
 
 {% schema %}
@@ -46,12 +70,18 @@
   "name": "Kontaktni obrazec",
   "class": "section-main-contact",
   "settings": [
+    {"type": "text", "id": "heading", "label": "Naslov", "default": "Kontakt", "info": "Pustite prazno za naslov strani."},
+    {"type": "richtext", "id": "intro", "label": "Uvodno besedilo (če stran nima vsebine)", "default": "<p>Pokličite nas ali pišite – svetuje vam zlatarski mojster. Odgovorimo v najkrajšem možnem času.</p>"},
+    {"type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056"},
+    {"type": "text", "id": "email", "label": "E-pošta"},
+    {"type": "text", "id": "hours_label", "label": "Oznaka delovnega časa", "default": "Delovni čas"},
+    {"type": "text", "id": "hours", "label": "Delovni čas"},
     {"type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji sporočilo"},
     {"type": "text", "id": "success", "label": "Sporočilo ob uspehu", "default": "Hvala! Odgovorili vam bomo v najkrajšem možnem času."},
     {"type": "checkbox", "id": "show_phone", "label": "Prikaži polje za telefon", "default": true},
     {"type": "header", "content": "Postavitev"},
-    {"type": "range", "id": "content_width", "label": "Širina vsebine", "min": 480, "max": 1280, "step": 8, "default": 760, "unit": "px"},
-    {"type": "range", "id": "title_gap", "label": "Razmik pod naslovom", "min": 0, "max": 80, "step": 4, "default": 32, "unit": "px"},
+    {"type": "range", "id": "content_width", "label": "Širina vsebine", "min": 480, "max": 1280, "step": 8, "default": 1120, "unit": "px"},
+    {"type": "range", "id": "title_gap", "label": "Razmik pod naslovom", "min": 0, "max": 80, "step": 4, "default": 20, "unit": "px"},
     {"type": "header", "content": "Barve"},
     {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
     {"type": "color", "id": "s_text", "label": "Besedilo"},

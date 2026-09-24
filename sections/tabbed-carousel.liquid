@@ -73,10 +73,33 @@
     {%- for block in section.blocks -%}
       <div class="panels" role="tabpanel" id="Panel-{{ block.id }}" aria-labelledby="Tab-{{ block.id }}"{% unless forloop.first %} hidden{% endunless %}>
         {%- assign coll = block.settings.collection -%}
+        {%- if coll == blank or coll.products_count == 0 -%}
+          {%- if collections.all.products_count > 0 -%}{%- assign coll = collections.all -%}{%- endif -%}
+        {%- endif -%}
         {%- if coll != blank and coll.products_count > 0 -%}
-          {%- for product in coll.products limit: block.settings.limit -%}
-            {% render 'product-panel', item: product, show_price: s.show_price %}
-          {%- endfor -%}
+          {%- assign kw = block.settings.title_filter | strip | downcase -%}
+          {%- if kw != blank -%}
+            {%- assign shown = 0 -%}
+            {%- paginate coll.products by 250 -%}
+              {%- for product in coll.products -%}
+                {%- assign t = product.title | downcase -%}
+                {%- if t contains kw and shown < block.settings.limit -%}
+                  {%- assign shown = shown | plus: 1 -%}
+                  {% render 'product-panel', item: product, show_price: s.show_price %}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endpaginate -%}
+          {%- else -%}
+            {%- for product in coll.products limit: block.settings.limit -%}
+              {% render 'product-panel', item: product, show_price: s.show_price %}
+            {%- endfor -%}
+          {%- endif -%}
+          {%- if block.settings.show_more_card -%}
+            <a class="panel panel--more" href="{% if kw != blank %}{{ routes.search_url }}?q={{ kw | url_encode }}&type=product{% else %}{{ coll.url }}{% endif %}">
+              <span class="panel__more">{{ 'general.view_all' | t }}{% render 'icon', name: 'arrow-right', px: 18 %}</span>
+              <span class="panel__name">{{ block.settings.label | escape }}</span>
+            </a>
+          {%- endif -%}
         {%- else -%}
           {%- assign names = block.settings.placeholder_names | newline_to_br | split: '<br />' -%}
           {%- for i in (1..6) -%}
@@ -150,7 +173,9 @@
         {"type": "text", "id": "label", "label": "Ime zavihka", "default": "Prstani"},
         {"type": "collection", "id": "collection", "label": "Kolekcija"},
         {"type": "range", "id": "limit", "label": "Število izdelkov", "min": 2, "max": 16, "step": 1, "default": 8},
-        {"type": "textarea", "id": "placeholder_names", "label": "Imena za predogled (ena na vrstico)", "info": "Prikazana samo, dokler kolekcija ni izbrana."},
+        {"type": "text", "id": "title_filter", "label": "Samo izdelki, katerih ime vsebuje", "info": "Npr. »pancer« – prikaže samo izdelke s to besedo v imenu."},
+        {"type": "checkbox", "id": "show_more_card", "label": "Kartica »Celotna ponudba« na koncu", "default": true},
+        {"type": "textarea", "id": "placeholder_names", "label": "Imena za predogled (ena na vrstico)", "info": "Prikazana samo, če trgovina še nima izdelkov."},
         {"type": "image_picker", "id": "panel_image", "label": "Slika za predogledne kartice", "info": "Prikaže se na karticah, dokler kolekcija ni izbrana."},
         {"type": "url", "id": "panel_url", "label": "Povezava predoglednih kartic"}
       ]

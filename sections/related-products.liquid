@@ -1,0 +1,36 @@
+{%- render 'section-style', id: section.id, s: section.settings, h: '.related h2', b: '.related .pcard' -%}
+<div class="page-width related" data-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent=related">
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    <div class="sec-head">
+      <h2 class="h-display sec-head__title">{%- if section.settings.heading != blank -%}{{ section.settings.heading | escape }}{%- else -%}{{ 'products.related' | t }}{%- endif -%}</h2>
+    </div>
+    <div class="product-grid">
+      {%- for item in recommendations.products -%}
+        {% render 'product-card', product: item, section: section %}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Priporočeni izdelki",
+  "class": "section-related",
+  "settings": [
+    {"type": "text", "id": "heading", "label": "Naslov", "default": "Morda vam bo všeč tudi"},
+    {"type": "range", "id": "limit", "label": "Število izdelkov", "min": 2, "max": 8, "step": 1, "default": 4},
+    {"type": "paragraph", "content": "Izdelke samodejno izbere Shopify glede na izdelek, ki si ga stranka ogleduje."},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije"},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslov"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 120, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 64, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
+  ],
+  "presets": [{"name": "Priporočeni izdelki"}],
+  "enabled_on": {"templates": ["product"]}
+}
+{% endschema %}

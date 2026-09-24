@@ -31,16 +31,24 @@
           if b.text_color != blank
             assign bs = bs | append: 'color:' | append: b.text_color | append: ';'
           endif
+          assign img = b.image
+          if img == blank and b.collection != blank
+            assign img = b.collection.featured_image
+          endif
+          assign href = b.url
+          if href == blank and b.collection != blank
+            assign href = b.collection.url
+          endif
         -%}
-        <a class="tile{% if b.image != blank %} tile--has-image{% endif %}" href="{{ b.url | default: '#' }}" {{ block.shopify_attributes }}{% if bs != '' %} style="{{ bs }}"{% endif %}>
-          {%- if b.image != blank -%}
+        <a class="tile{% if img != blank %} tile--has-image{% endif %}" href="{{ href | default: '#' }}" {{ block.shopify_attributes }}{% if bs != '' %} style="{{ bs }}"{% endif %}>
+          {%- if img != blank -%}
             {%- if b.image_mobile != blank -%}
               <picture>
                 <source media="(max-width: 749px)" srcset="{{ b.image_mobile | image_url: width: 900 }}">
-                {{ b.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
+                {{ img | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
               </picture>
             {%- else -%}
-              {{ b.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
+              {{ img | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
             {%- endif -%}
           {%- endif -%}
           <h2 class="tile__title">{{ b.title | escape }}</h2>
@@ -100,6 +108,7 @@
       "name": "Ploščica",
       "settings": [
         {"type": "image_picker", "id": "image", "label": "Slika"},
+        {"type": "collection", "id": "collection", "label": "Kolekcija", "info": "Uporabi se za povezavo in sliko, če ju ne nastavite posebej."},
         {"type": "text", "id": "title", "label": "Naslov", "default": "Zaročni prstani"},
         {"type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Oglej si izbor"},
         {"type": "url", "id": "url", "label": "URL"},

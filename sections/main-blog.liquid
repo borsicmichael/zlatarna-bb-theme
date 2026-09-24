@@ -25,6 +25,9 @@
 <div class="page-width">
   <div class="coll-head s-align"><h1 class="h-display">{{ blog.title | escape }}</h1></div>
   {%- paginate blog.articles by 12 -%}
+    {%- if blog.articles.size == 0 -%}
+      <div class="empty"><p>{{ 'blogs.empty' | t }}</p><a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a></div>
+    {%- endif -%}
     <div class="product-grid">
       {%- for article in blog.articles -%}
         <a class="card" href="{{ article.url }}">

@@ -14,6 +14,13 @@
   assign lh_m = s.logo_height_mobile
   assign lw_m = lh_m | times: 442 | divided_by: 360
   assign lf_m = lh_m | times: 0.48 | round
+  assign light = false
+  if s.bg_color != blank and s.text_color == blank and s.bg_image == blank
+    assign fb = s.bg_color | color_brightness
+    if fb > 150
+      assign light = true
+    endif
+  endif
 -%}
 {%- style -%}
   {{ sel }} { padding-top: {{ s.pt }}px; }
@@ -49,12 +56,12 @@
     {{ sel }} .footer__brand p { font-size: {{ s.text_size_mobile }}px; }
   }
 {%- endstyle -%}
-<footer class="footer">
+<footer class="footer{% if light %} footer--light{% endif %}">
   <div class="page-width">
     <div class="footer__grid">
       <div class="footer__brand">
         {%- if s.show_logo -%}
-          <a href="{{ routes.root_url }}" class="logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">{% render 'logo', inverted: true, image: s.logo_image, height: s.logo_height %}</a>
+          <a href="{{ routes.root_url }}" class="logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">{%- if light -%}{% render 'logo', image: s.logo_image, height: s.logo_height %}{%- else -%}{% render 'logo', inverted: true, image: s.logo_image, height: s.logo_height %}{%- endif -%}</a>
         {%- endif -%}
         {%- if s.text != blank -%}<p>{{ s.text }}</p>{%- endif -%}
         {%- if s.phone != blank -%}
@@ -74,6 +81,23 @@
             <div class="footer__col">
               <p class="footer__col-title">{{ list.title | escape }}</p>
               {%- for link in list.links -%}<a href="{{ link.url }}">{{ link.title | escape }}</a>{%- endfor -%}
+            </div>
+          {%- elsif key == 'menu_1' and s.auto_columns -%}
+            <div class="footer__col">
+              <p class="footer__col-title">{{ s.auto_shop_title | default: 'Nakit' }}</p>
+              {%- for c in collections -%}
+                {%- if c.handle != 'all' and c.all_products_count > 0 -%}<a href="{{ c.url }}">{{ c.title | escape }}</a>{%- endif -%}
+              {%- endfor -%}
+              <a href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+            </div>
+          {%- elsif key == 'menu_3' and s.auto_columns -%}
+            <div class="footer__col">
+              <p class="footer__col-title">{{ 'contact.title' | t }}</p>
+              {%- if s.phone != blank -%}<a href="tel:{{ s.phone | remove: ' ' }}">{{ s.phone }}</a>{%- endif -%}
+              {%- if s.email != blank -%}<a href="mailto:{{ s.email }}">{{ s.email }}</a>{%- endif -%}
+              <a href="/pages/contact">{{ 'contact.send' | t }}</a>
+              <a href="{{ routes.search_url }}">{{ 'general.search' | t }}</a>
+              {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">{{ 'general.account' | t }}</a>{%- endif -%}
             </div>
           {%- endif -%}
         {%- endfor -%}
@@ -99,6 +123,8 @@
     { "type": "textarea", "id": "text", "label": "Opis", "default": "Ročno in mojstrsko narejen nakit iz zlata in dragih kamnov. Slovensko poreklo." },
     { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
     { "type": "text", "id": "email", "label": "E-pošta (neobvezno)" },
+    {"type": "checkbox", "id": "auto_columns", "label": "Samodejni stolpci, če meni ni izbran", "default": true, "info": "Stolpec 1 prikaže vse kolekcije, stolpec 3 kontakt."},
+    {"type": "text", "id": "auto_shop_title", "label": "Naslov samodejnega stolpca s kolekcijami", "default": "Nakit"},
     { "type": "link_list", "id": "menu_1", "label": "Meni 1 (npr. Nakit)" },
     { "type": "link_list", "id": "menu_2", "label": "Meni 2 (npr. Pomoč)", "default": "footer" },
     { "type": "link_list", "id": "menu_3", "label": "Meni 3 (npr. Pravno)" },
