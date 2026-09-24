@@ -1,4 +1,4 @@
-{%- comment -%} rev 7 {%- endcomment -%}
+{%- comment -%} rev 8 {%- endcomment -%}
 {%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.coll-head .rte' -%}
 {%- liquid
   assign st = section.settings
@@ -59,7 +59,7 @@
               {%- endif -%}
               <details class="facet" data-facet>
                 <summary class="facet__summary">
-                  <span>{{ filter.label | escape }}{% if active_count > 0 %} <b class="facet__count">{{ active_count }}</b>{% endif %}</span>
+                  <span>{% render 'label-sl', text: filter.label %}{% if active_count > 0 %} <b class="facet__count">{{ active_count }}</b>{% endif %}</span>
                   {% render 'icon', name: 'chevron-down', px: 14 %}
                 </summary>
                 <div class="facet__panel">
@@ -75,7 +75,7 @@
                         <label class="facet__check{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
                           <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
                           <span class="facet__box">{% render 'icon', name: 'check', px: 12, sw: 2.4 %}</span>
-                          <span class="facet__label">{{ value.label | escape }}</span>
+                          <span class="facet__label">{% render 'label-sl', text: value.label %}</span>
                           <span class="facet__num">{{ value.count }}</span>
                         </label>
                       {%- endfor -%}
@@ -94,7 +94,7 @@
               <span class="visually-hidden">{{ 'collections.sort' | t }}</span>
               <select name="sort_by" data-sort>
                 {%- for option in collection.sort_options -%}
-                  <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name | escape }}</option>
+                  <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>{% render 'label-sl', text: option.name, sort: option.value %}</option>
                 {%- endfor -%}
               </select>
               {% render 'icon', name: 'chevron-down', px: 14 %}
@@ -120,12 +120,12 @@
         <div class="facets__active">
           {%- for filter in collection.filters -%}
             {%- for value in filter.active_values -%}
-              <a class="chip chip--active" href="{{ value.url_to_remove }}">{{ filter.label | escape }}: {{ value.label | escape }} {% render 'icon', name: 'close', px: 12 %}</a>
+              <a class="chip chip--active" href="{{ value.url_to_remove }}">{% render 'label-sl', text: filter.label %}: {% render 'label-sl', text: value.label %} {% render 'icon', name: 'close', px: 12 %}</a>
             {%- endfor -%}
             {%- if filter.type == 'price_range' -%}
               {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
                 <a class="chip chip--active" href="{{ filter.url_to_remove }}">
-                  {{- filter.label | escape }}: {% if filter.min_value.value %}{{ filter.min_value.value | money }}{% else %}{{ 0 | money }}{% endif %} – {% if filter.max_value.value %}{{ filter.max_value.value | money }}{% else %}{{ filter.range_max | money }}{% endif %} {% render 'icon', name: 'close', px: 12 -%}
+                  {%- render 'label-sl', text: filter.label %}: {% if filter.min_value.value %}{{ filter.min_value.value | money }}{% else %}{{ 0 | money }}{% endif %} – {% if filter.max_value.value %}{{ filter.max_value.value | money }}{% else %}{{ filter.range_max | money }}{% endif %} {% render 'icon', name: 'close', px: 12 -%}
                 </a>
               {%- endif -%}
             {%- endif -%}
