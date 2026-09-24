@@ -11,7 +11,8 @@
     "next": "Naslednji",
     "view_all": "Celotna ponudba",
     "continue_shopping": "Nadaljuj z nakupovanjem",
-    "rights": "Vse pravice pridržane."
+    "rights": "Vse pravice pridržane.",
+    "more": "Več"
   },
   "accessibility": {
     "skip_to_content": "Preskoči na vsebino",
@@ -34,11 +35,31 @@
     "length_placeholder": "npr. 50",
     "note": "Opomba (gravura, želje …)",
     "made_to_order": "Izdelava po naročilu",
-    "handmade": "Ročno delo"
+    "handmade": "Ročno delo",
+    "sale": "Akcija",
+    "added": "Dodano v košarico",
+    "adding": "Dodajam …",
+    "error": "Izdelka ni bilo mogoče dodati. Poskusite znova.",
+    "related": "Morda vam bo všeč tudi",
+    "in_stock": "Na zalogi",
+    "quantity_decrease": "Zmanjšaj količino",
+    "quantity_increase": "Povečaj količino"
   },
   "collections": {
     "empty": "V tej kategoriji še ni izdelkov.",
-    "all": "Vse kategorije"
+    "all": "Kolekcije",
+    "everything": "Vse",
+    "apply": "Uporabi",
+    "product_count": {
+      "one": "{{ count }} izdelek",
+      "two": "{{ count }} izdelka",
+      "few": "{{ count }} izdelki",
+      "other": "{{ count }} izdelkov"
+    },
+    "sort": "Razvrsti",
+    "clear": "Počisti filtre",
+    "no_match": "Noben izdelek ne ustreza izbranim filtrom.",
+    "filters": "Filtri"
   },
   "cart": {
     "title": "Košarica",
@@ -51,7 +72,16 @@
     "update": "Posodobi",
     "checkout": "Na blagajno",
     "note": "Opomba k naročilu",
-    "taxes": "DDV vključen. Poštnina se izračuna na blagajni."
+    "taxes": "DDV vključen. Poštnina se izračuna na blagajni.",
+    "view": "Ogled košarice",
+    "continue": "Nadaljuj z nakupovanjem",
+    "free_shipping": "Brezplačna dostava nad 100 €",
+    "items": {
+      "one": "{{ count }} izdelek",
+      "two": "{{ count }} izdelka",
+      "few": "{{ count }} izdelki",
+      "other": "{{ count }} izdelkov"
+    }
   },
   "search": {
     "title": "Iskanje",
@@ -68,10 +98,20 @@
   },
   "blogs": {
     "read_more": "Preberi več",
-    "back": "Nazaj na blog"
+    "back": "Nazaj na blog",
+    "empty": "Prve nasvete in zgodbe objavimo kmalu."
   },
   "not_found": {
     "title": "Strani ni mogoče najti",
     "text": "Stran, ki jo iščete, ne obstaja ali je bila premaknjena."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "name": "Ime in priimek",
+    "email": "E-pošta",
+    "phone": "Telefon",
+    "message": "Sporočilo",
+    "send": "Pošlji sporočilo",
+    "success": "Hvala! Odgovorimo vam v najkrajšem možnem času."
   }
 }

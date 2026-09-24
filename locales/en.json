@@ -1,77 +1,117 @@
 {
   "general": {
-    "page": "Page {{ page }}",
-    "home": "Home",
-    "menu": "Menu",
-    "close": "Close",
-    "search": "Search",
-    "account": "Account",
-    "cart": "Cart",
-    "previous": "Previous",
-    "next": "Next",
-    "view_all": "View all",
-    "continue_shopping": "Continue shopping",
-    "rights": "All rights reserved."
+    "page": "Stran {{ page }}",
+    "home": "Domov",
+    "menu": "Meni",
+    "close": "Zapri",
+    "search": "Iskanje",
+    "account": "Moj račun",
+    "cart": "Košarica",
+    "previous": "Prejšnji",
+    "next": "Naslednji",
+    "view_all": "Celotna ponudba",
+    "continue_shopping": "Nadaljuj z nakupovanjem",
+    "rights": "Vse pravice pridržane.",
+    "more": "Več"
   },
   "accessibility": {
-    "skip_to_content": "Skip to content",
-    "home_link": "{{ shop }} – home",
-    "main_menu": "Main menu",
-    "categories": "Categories",
-    "previous_slide": "Previous product",
-    "next_slide": "Next product"
+    "skip_to_content": "Preskoči na vsebino",
+    "home_link": "{{ shop }} – domov",
+    "main_menu": "Glavni meni",
+    "categories": "Kategorije",
+    "previous_slide": "Prejšnji izdelek",
+    "next_slide": "Naslednji izdelek"
   },
   "products": {
-    "from": "from {{ price }}",
-    "sold_out": "Sold out",
-    "unavailable": "Unavailable",
-    "add_to_cart": "Add to cart",
-    "inquiry": "Send inquiry",
-    "quantity": "Quantity",
-    "selected": "Selected",
-    "price_note": "Final price is confirmed when you order – gold prices fluctuate.",
-    "length": "Desired length (cm)",
-    "length_placeholder": "e.g. 50",
-    "note": "Note (engraving, wishes …)",
-    "made_to_order": "Made to order",
-    "handmade": "Handmade"
+    "from": "od {{ price }}",
+    "sold_out": "Razprodano",
+    "unavailable": "Ni na voljo",
+    "add_to_cart": "Dodaj v košarico",
+    "inquiry": "Oddaj povpraševanje",
+    "quantity": "Količina",
+    "selected": "Izbrano",
+    "price_note": "Končno ceno potrdimo ob naročilu – cena zlata niha.",
+    "length": "Želena dolžina (cm)",
+    "length_placeholder": "npr. 50",
+    "note": "Opomba (gravura, želje …)",
+    "made_to_order": "Izdelava po naročilu",
+    "handmade": "Ročno delo",
+    "sale": "Akcija",
+    "added": "Dodano v košarico",
+    "adding": "Dodajam …",
+    "error": "Izdelka ni bilo mogoče dodati. Poskusite znova.",
+    "related": "Morda vam bo všeč tudi",
+    "in_stock": "Na zalogi",
+    "quantity_decrease": "Zmanjšaj količino",
+    "quantity_increase": "Povečaj količino"
   },
   "collections": {
-    "empty": "No products in this collection yet.",
-    "all": "All collections"
+    "empty": "V tej kategoriji še ni izdelkov.",
+    "all": "Kolekcije",
+    "everything": "Vse",
+    "apply": "Uporabi",
+    "product_count": {
+      "one": "{{ count }} izdelek",
+      "two": "{{ count }} izdelka",
+      "few": "{{ count }} izdelki",
+      "other": "{{ count }} izdelkov"
+    },
+    "sort": "Razvrsti",
+    "clear": "Počisti filtre",
+    "no_match": "Noben izdelek ne ustreza izbranim filtrom.",
+    "filters": "Filtri"
   },
   "cart": {
-    "title": "Cart",
-    "empty": "Your cart is empty.",
-    "product": "Product",
-    "quantity": "Quantity",
-    "total": "Total",
-    "subtotal": "Subtotal",
-    "remove": "Remove",
-    "update": "Update",
-    "checkout": "Checkout",
-    "note": "Order note",
-    "taxes": "Tax included. Shipping calculated at checkout."
+    "title": "Košarica",
+    "empty": "Vaša košarica je prazna.",
+    "product": "Izdelek",
+    "quantity": "Količina",
+    "total": "Skupaj",
+    "subtotal": "Vmesni seštevek",
+    "remove": "Odstrani",
+    "update": "Posodobi",
+    "checkout": "Na blagajno",
+    "note": "Opomba k naročilu",
+    "taxes": "DDV vključen. Poštnina se izračuna na blagajni.",
+    "view": "Ogled košarice",
+    "continue": "Nadaljuj z nakupovanjem",
+    "free_shipping": "Brezplačna dostava nad 100 €",
+    "items": {
+      "one": "{{ count }} izdelek",
+      "two": "{{ count }} izdelka",
+      "few": "{{ count }} izdelki",
+      "other": "{{ count }} izdelkov"
+    }
   },
   "search": {
-    "title": "Search",
-    "placeholder": "What are you looking for?",
-    "submit": "Search",
-    "results": "Results for “{{ terms }}”",
-    "no_results": "No results for “{{ terms }}”."
+    "title": "Iskanje",
+    "placeholder": "Kaj iščete?",
+    "submit": "Išči",
+    "results": "Rezultati za »{{ terms }}«",
+    "no_results": "Za »{{ terms }}« ni zadetkov."
   },
   "newsletter": {
-    "name": "Name",
-    "email": "Email",
-    "success": "Thank you! We'll email you the e-book.",
-    "consent": "I want to receive news and offers"
+    "name": "Ime",
+    "email": "E-pošta",
+    "success": "Hvala! E-knjigo vam pošljemo na e-pošto.",
+    "consent": "Želim prejemati obvestila o novostih in akcijah"
   },
   "blogs": {
-    "read_more": "Read more",
-    "back": "Back to blog"
+    "read_more": "Preberi več",
+    "back": "Nazaj na blog",
+    "empty": "Prve nasvete in zgodbe objavimo kmalu."
   },
   "not_found": {
-    "title": "Page not found",
-    "text": "The page you are looking for does not exist or has moved."
+    "title": "Strani ni mogoče najti",
+    "text": "Stran, ki jo iščete, ne obstaja ali je bila premaknjena."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "name": "Ime in priimek",
+    "email": "E-pošta",
+    "phone": "Telefon",
+    "message": "Sporočilo",
+    "send": "Pošlji sporočilo",
+    "success": "Hvala! Odgovorimo vam v najkrajšem možnem času."
   }
 }
