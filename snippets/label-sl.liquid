@@ -1,0 +1,28 @@
+{%- comment -%} Translates Shopify filter / sort labels to Slovenian. Params: text, sort (sort option value) {%- endcomment -%}
+{%- if sort != blank -%}
+  {%- case sort -%}
+    {%- when 'manual' -%}Izpostavljeno
+    {%- when 'relevance' -%}Najbolj ustrezno
+    {%- when 'best-selling' -%}Najbolj prodajano
+    {%- when 'title-ascending' -%}Abecedno, A–Ž
+    {%- when 'title-descending' -%}Abecedno, Ž–A
+    {%- when 'price-ascending' -%}Cena, od najnižje
+    {%- when 'price-descending' -%}Cena, od najvišje
+    {%- when 'created-ascending' -%}Najstarejše
+    {%- when 'created-descending' -%}Najnovejše
+    {%- else -%}{{ text | escape }}
+  {%- endcase -%}
+{%- else -%}
+  {%- case text -%}
+    {%- when 'Availability' -%}Zaloga
+    {%- when 'In stock' -%}Na zalogi
+    {%- when 'Out of stock' -%}Ni na zalogi
+    {%- when 'Price' -%}Cena
+    {%- when 'Product type' -%}Vrsta izdelka
+    {%- when 'Vendor', 'Brand' -%}Znamka
+    {%- when 'Color' -%}Barva
+    {%- when 'Size' -%}Velikost
+    {%- when 'Material' -%}Material
+    {%- else -%}{{ text | escape }}
+  {%- endcase -%}
+{%- endif -%}
