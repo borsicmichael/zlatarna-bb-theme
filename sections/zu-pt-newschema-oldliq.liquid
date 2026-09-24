@@ -1,0 +1,116 @@
+{%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+{% render 'section-style', id: section.id, s: s, h: '.tile__title', b: '.tile__text' %}
+{%- style -%}
+  {{ sel }} .tiles { grid-template-columns: repeat({{ s.columns }}, minmax(0,1fr)); gap: {{ s.gap }}px; }
+  {{ sel }} .tile { height: {{ s.tile_height | default: 716 }}px; border-radius: {{ s.radius }}px; padding: {{ s.tile_padding }}px;
+    justify-content: {% case s.content_position %}{% when 'top' %}flex-start{% when 'center' %}center{% else %}flex-end{% endcase %};
+    align-items: {% case s.align %}{% when 'center' %}center{% when 'right' %}flex-end{% else %}flex-start{% endcase %}; text-align: {{ s.align }}; }
+  {%- if s.tile_bg != blank %}{{ sel }} .tile { background: {{ s.tile_bg }}; }{% endif %}
+  {{ sel }} .tile--has-image::after { background: linear-gradient(180deg, rgba(13,29,48,0) 40%, rgba(13,29,48,{{ s.image_overlay | times: 0.01 }}) 100%); }
+  {{ sel }} .tile__link { font-size: {{ s.link_size }}px; }
+  {{ sel }} .tile__text { position: relative; z-index: 2; line-height: 1.6; max-width: 420px; }
+  @media (max-width: 749px) {
+    {{ sel }} .tiles { grid-template-columns: repeat({{ s.columns_mobile }}, minmax(0,1fr)); gap: 12px; }
+    {{ sel }} .tile { height: {{ s.tile_height_mobile | default: 368 }}px; border-radius: {{ s.radius_mobile }}px; padding: 24px; }
+    {{ sel }} .tile__link { font-size: 12px; }
+  }
+{%- endstyle -%}
+<section>
+  <div class="page-width">
+    <div class="tiles">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign bs = ''
+          if b.bg_color != blank
+            assign bs = bs | append: 'background:' | append: b.bg_color | append: ';'
+          endif
+          if b.text_color != blank
+            assign bs = bs | append: 'color:' | append: b.text_color | append: ';'
+          endif
+        -%}
+        <a class="tile{% if b.image != blank %} tile--has-image{% endif %}" href="{{ b.url | default: '#' }}" {{ block.shopify_attributes }}{% if bs != '' %} style="{{ bs }}"{% endif %}>
+          {%- if b.image != blank -%}
+            {%- if b.image_mobile != blank -%}
+              <picture>
+                <source media="(max-width: 749px)" srcset="{{ b.image_mobile | image_url: width: 900 }}">
+                {{ b.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
+              </picture>
+            {%- else -%}
+              {{ b.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: b.title }}
+            {%- endif -%}
+          {%- endif -%}
+          <h2 class="tile__title">{{ b.title | escape }}</h2>
+          {%- if b.text != blank -%}<p class="tile__text">{{ b.text }}</p>{%- endif -%}
+          {%- if b.link_label != blank -%}
+            <span class="tile__link">{{ b.link_label | escape }}{% render 'icon', name: 'arrow-right', px: 16 %}</span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "U3",
+  "class": "section-tiles",
+  "max_blocks": 4,
+  "settings": [
+    {"type": "header", "content": "Postavitev"},
+    {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 1, "max": 4, "step": 1, "default": 2},
+    {"type": "range", "id": "columns_mobile", "label": "Stolpci (mobilno)", "min": 1, "max": 2, "step": 1, "default": 1},
+    {"type": "range", "id": "gap", "label": "Razmik med ploščicami", "min": 0, "max": 48, "step": 2, "default": 24, "unit": "px"},
+    {"type": "number", "id": "tile_height", "label": "Višina ploščice v px (namizje)", "default": 716},
+    {"type": "number", "id": "tile_height_mobile", "label": "Višina ploščice v px (mobilno)", "default": 368},
+    {"type": "range", "id": "tile_padding", "label": "Notranji razmik", "min": 16, "max": 96, "step": 4, "default": 48, "unit": "px"},
+    {"type": "range", "id": "radius", "label": "Zaobljenost vogalov (namizje)", "min": 0, "max": 40, "step": 2, "default": 0, "unit": "px"},
+    {"type": "range", "id": "radius_mobile", "label": "Zaobljenost vogalov (mobilno)", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "select", "id": "content_position", "label": "Položaj besedila", "options": [{"value": "top", "label": "Zgoraj"}, {"value": "center", "label": "Sredina"}, {"value": "bottom", "label": "Spodaj"}], "default": "bottom"},
+    {"type": "select", "id": "align", "label": "Poravnava besedila", "options": [{"value": "left", "label": "Levo"}, {"value": "center", "label": "Sredina"}, {"value": "right", "label": "Desno"}], "default": "left"},
+    {"type": "header", "content": "Ploščice"},
+    {"type": "color", "id": "tile_bg", "label": "Ozadje ploščic brez slike", "info": "Posamezna ploščica ima lahko svojo barvo."},
+    {"type": "range", "id": "image_overlay", "label": "Temnenje fotografije spodaj", "min": 0, "max": 90, "step": 5, "default": 50, "unit": "%"},
+    {"type": "range", "id": "link_size", "label": "Velikost povezave", "min": 10, "max": 18, "step": 1, "default": 13, "unit": "px"},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova ploščice (namizje)", "min": 20, "max": 90, "step": 1, "default": 47, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova ploščice (mobilno)", "min": 16, "max": 60, "step": 1, "default": 32, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 11, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 11, "max": 22, "step": 1, "default": 14, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 140, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 64, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Ploščica",
+      "settings": [
+        {"type": "image_picker", "id": "image", "label": "Slika"},
+        {"type": "collection", "id": "collection", "label": "Kolekcija", "info": "Uporabi se za povezavo in sliko, če ju ne nastavite posebej."},
+        {"type": "text", "id": "title", "label": "Naslov", "default": "Zaročni prstani"},
+        {"type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Oglej si izbor"},
+        {"type": "url", "id": "url", "label": "URL"},
+        {"type": "image_picker", "id": "image_mobile", "label": "Slika za mobilno (neobvezno)"},
+        {"type": "textarea", "id": "text", "label": "Kratko besedilo (neobvezno)"},
+        {"type": "color", "id": "bg_color", "label": "Ozadje ploščice"},
+        {"type": "color", "id": "text_color", "label": "Barva besedila"}
+      ]
+    }
+  ],
+  "presets": [{"name": "U3p", "blocks": [{"type": "tile", "settings": {"title": "Zaročni prstani"}}, {"type": "tile", "settings": {"title": "Poročni prstani"}}]}]
+}
+{% endschema %}
