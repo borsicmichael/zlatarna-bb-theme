@@ -1,3 +1,4 @@
+{%- comment -%} rev 3 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
   assign menu = linklists[s.menu]
@@ -70,7 +71,51 @@
         {%- if s.auto_collections and link.links.size == 0 -%}
           {%- if link.url == routes.collections_url or link.url == routes.all_products_collection_url -%}{%- assign auto_dd = true -%}{%- endif -%}
         {%- endif -%}
-        {%- if auto_dd -%}
+        {%- if auto_dd and s.mega_menu -%}
+          <div class="nav-item has-dropdown nav-item--mega">
+            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %} aria-haspopup="true">{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 12 %}</a>
+            <div class="nav-dropdown nav-mega">
+              <div class="page-width nav-mega__inner">
+                <div class="nav-mega__links">
+                  <p class="nav-mega__title">{%- if s.mega_title != blank -%}{{ s.mega_title | escape }}{%- else -%}{{ link.title | escape }}{%- endif -%}</p>
+                  <ul class="nav-mega__list">
+                    {%- for c in collections -%}
+                      {%- if c.handle != 'all' and c.all_products_count > 0 -%}
+                        <li><a href="{{ c.url }}"{% if collection.handle == c.handle %} aria-current="page"{% endif %}>{{ c.title | escape }}</a></li>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </ul>
+                  <a class="nav-mega__all" href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }} {% render 'icon', name: 'arrow-right', px: 14 %}</a>
+                </div>
+                <div class="nav-mega__tiles">
+                  {%- assign tcount = 0 -%}
+                  {%- for i in (1..4) -%}
+                    {%- assign key = 'mega_c' | append: i -%}
+                    {%- assign tc = s[key] -%}
+                    {%- if tc != blank -%}
+                      {%- assign tcount = tcount | plus: 1 -%}
+                      <a class="nav-mega__tile" href="{{ tc.url }}">
+                        <span class="nav-mega__img">{%- if tc.featured_image -%}{{ tc.featured_image | image_url: width: 520 | image_tag: loading: 'lazy', widths: '260, 390, 520', sizes: '260px', alt: tc.title }}{%- endif -%}</span>
+                        <span class="nav-mega__label">{{ tc.title | escape }}</span>
+                      </a>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if tcount == 0 -%}
+                    {%- for tc in collections -%}
+                      {%- if tcount < 4 and tc.handle != 'all' and tc.featured_image and tc.all_products_count > 0 -%}
+                        {%- assign tcount = tcount | plus: 1 -%}
+                        <a class="nav-mega__tile" href="{{ tc.url }}">
+                          <span class="nav-mega__img">{{ tc.featured_image | image_url: width: 520 | image_tag: loading: 'lazy', widths: '260, 390, 520', sizes: '260px', alt: tc.title }}</span>
+                          <span class="nav-mega__label">{{ tc.title | escape }}</span>
+                        </a>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- elsif auto_dd -%}
           <div class="nav-item has-dropdown">
             <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %} aria-haspopup="true">{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 12 %}</a>
             <div class="nav-dropdown">
@@ -194,7 +239,14 @@
     {"type": "color", "id": "dropdown_bg", "label": "Ozadje spustnega menija"},
     {"type": "color", "id": "dropdown_text", "label": "Besedilo spustnega menija"},
     {"type": "text", "id": "mobile_all_label", "label": "Oznaka za »vse« na mobilnem", "default": "Vse"},
-    {"type": "checkbox", "id": "auto_collections", "label": "Samodejni spustni meni s kolekcijami", "default": true, "info": "Povezava na »Vse kolekcije« ali »Vsi izdelki« brez podpovezav prikaže spustni meni z vsemi kolekcijami."}
+    {"type": "checkbox", "id": "auto_collections", "label": "Samodejni spustni meni s kolekcijami", "default": true, "info": "Povezava na »Vse kolekcije« ali »Vsi izdelki« brez podpovezav prikaže spustni meni z vsemi kolekcijami."},
+    {"type": "header", "content": "Mega meni"},
+    {"type": "checkbox", "id": "mega_menu", "label": "Prikaži kolekcije kot mega meni", "default": true},
+    {"type": "text", "id": "mega_title", "label": "Naslov seznama"},
+    {"type": "collection", "id": "mega_c1", "label": "Izpostavljena kolekcija 1"},
+    {"type": "collection", "id": "mega_c2", "label": "Izpostavljena kolekcija 2"},
+    {"type": "collection", "id": "mega_c3", "label": "Izpostavljena kolekcija 3"},
+    {"type": "collection", "id": "mega_c4", "label": "Izpostavljena kolekcija 4", "info": "Če ne izberete nobene, se samodejno prikažejo prve štiri kolekcije s sliko."}
   ]
 }
 {% endschema %}
