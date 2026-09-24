@@ -23,12 +23,13 @@
     {%- render 'theme-vars' -%}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'store.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
 
     {{ content_for_header }}
   </head>
 
-  <body class="template-{{ template.name }}">
+  <body class="template-{{ template.name }}" data-money-format="{{ shop.money_format | escape }}" data-cart-url="{{ routes.cart_url }}" data-shop-root="{{ routes.root_url }}">
     <a class="skip-link" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
     {% sections 'header-group' %}
 
@@ -37,5 +38,33 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    <div class="drawer" id="CartDrawer" hidden aria-hidden="true" data-cart-drawer>
+      <div class="drawer__overlay" data-cart-close></div>
+      <aside class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle" tabindex="-1">
+        <div class="drawer__head">
+          <h2 id="CartDrawerTitle" class="drawer__title">{{ 'cart.title' | t }}</h2>
+          <button type="button" class="icon-btn" data-cart-close aria-label="{{ 'general.close' | t }}">{% render 'icon', name: 'close', px: 20 %}</button>
+        </div>
+        <div class="drawer__notice" data-cart-notice hidden>{% render 'icon', name: 'check', px: 16, sw: 2 %}<span>{{ 'products.added' | t }}</span></div>
+        <div class="drawer__body" data-cart-items></div>
+        <div class="drawer__foot" data-cart-foot>
+          <div class="cart-total"><span>{{ 'cart.subtotal' | t }}</span><span data-cart-subtotal></span></div>
+          <p class="note">{{ 'cart.taxes' | t }}</p>
+          <a class="btn btn--sans btn--block" href="/checkout">{{ 'cart.checkout' | t }}</a>
+          <a class="btn btn--outline btn--sans btn--block" href="{{ routes.cart_url }}">{{ 'cart.view' | t }}</a>
+        </div>
+      </aside>
+    </div>
+    <script type="application/json" id="CartStrings">{
+      "empty": {{ 'cart.empty' | t | json }},
+      "remove": {{ 'cart.remove' | t | json }},
+      "continue": {{ 'cart.continue' | t | json }},
+      "error": {{ 'products.error' | t | json }},
+      "adding": {{ 'products.adding' | t | json }},
+      "dec": {{ 'products.quantity_decrease' | t | json }},
+      "inc": {{ 'products.quantity_increase' | t | json }},
+      "allUrl": {{ routes.all_products_collection_url | json }}
+    }</script>
   </body>
 </html>
