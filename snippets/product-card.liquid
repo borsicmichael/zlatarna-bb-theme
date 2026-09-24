@@ -1,4 +1,4 @@
-{%- comment -%} Grid card. Param: product {%- endcomment -%}
+{%- comment -%} Grid card. Params: product, hide_price {%- endcomment -%}
 <a class="card" href="{{ product.url }}">
   <div class="card__media">
     {%- if product.featured_media -%}
@@ -9,6 +9,7 @@
   </div>
   <div>
     <h3 class="card__title">{{ product.title | escape }}</h3>
+    {%- unless hide_price -%}
     <p class="card__price">
       {%- if product.available == false -%}
         {{ 'products.sold_out' | t }}
@@ -18,5 +19,6 @@
         {{ product.price | money }}
       {%- endif -%}
     </p>
+    {%- endunless -%}
   </div>
 </a>

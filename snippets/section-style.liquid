@@ -1,0 +1,120 @@
+{%- comment -%}
+  Shared per-section styling generated from the standard settings every section exposes.
+  Params:
+    id  – section.id
+    s   – section.settings
+    h   – CSS selector (inside the section) for headings whose size is controlled, e.g. '.h-display'
+    b   – CSS selector for body text whose size is controlled (optional)
+  Reads (all optional): s_bg, s_text, s_heading, s_accent, s_btn_bg, s_btn_fg, s_btn2_bg, s_btn2_fg,
+  s_heading_font, s_heading_weight, s_heading_size, s_heading_size_m, s_heading_case, s_body_font,
+  s_body_size, s_body_size_m, s_align, s_bg_image, s_bg_overlay, pt, pb, pt_mobile, pb_mobile
+{%- endcomment -%}
+{%- liquid
+  assign sel = '#shopify-section-' | append: id
+  assign hf = ''
+  case s.s_heading_font
+    when 'heading'
+      assign hf = 'var(--f-heading)'
+    when 'body'
+      assign hf = 'var(--f-serif)'
+    when 'ui'
+      assign hf = 'var(--f-sans)'
+    when 'logo'
+      assign hf = 'var(--f-logo)'
+    when 'custom1'
+      assign hf = 'var(--f-custom-1)'
+    when 'custom2'
+      assign hf = 'var(--f-custom-2)'
+    when 'georgia'
+      assign hf = 'Georgia, serif'
+    when 'system'
+      assign hf = 'system-ui, -apple-system, sans-serif'
+  endcase
+  assign bf = ''
+  case s.s_body_font
+    when 'heading'
+      assign bf = 'var(--f-heading)'
+    when 'body'
+      assign bf = 'var(--f-serif)'
+    when 'ui'
+      assign bf = 'var(--f-sans)'
+    when 'logo'
+      assign bf = 'var(--f-logo)'
+    when 'custom1'
+      assign bf = 'var(--f-custom-1)'
+    when 'custom2'
+      assign bf = 'var(--f-custom-2)'
+    when 'georgia'
+      assign bf = 'Georgia, serif'
+    when 'system'
+      assign bf = 'system-ui, -apple-system, sans-serif'
+  endcase
+  assign hsel = h | default: 'h1, h2, h3'
+  assign hw = ''
+  if s.s_heading_weight != blank and s.s_heading_weight != 'theme'
+    assign hw = s.s_heading_weight
+  endif
+  assign hc = ''
+  if s.s_heading_case == 'upper' or s.s_heading_case == 'none'
+    assign hc = s.s_heading_case
+  endif
+-%}
+{%- style -%}
+  {{ sel }} {
+    {%- if s.pt != nil %} padding-top: {{ s.pt }}px;{% endif -%}
+    {%- if s.pb != nil %} padding-bottom: {{ s.pb }}px;{% endif -%}
+    {%- if s.s_bg != blank %} background-color: {{ s.s_bg }};{% endif -%}
+    {%- if s.s_bg_image != blank -%}
+      {%- assign ov = s.s_bg_overlay | default: 0 | times: 0.01 %}
+      background-image: linear-gradient(rgba(13,29,48,{{ ov }}), rgba(13,29,48,{{ ov }})), url('{{ s.s_bg_image | image_url: width: 2400 }}');
+      background-size: cover; background-position: center;
+    {%- endif -%}
+    {%- if s.s_text != blank %} color: {{ s.s_text }}; --c-text: {{ s.s_text }}; --c-muted: {{ s.s_text }}; --c-subtle: {{ s.s_text }};{% endif -%}
+    {%- if s.s_accent != blank %} --c-accent-dark: {{ s.s_accent }};{% endif -%}
+    {%- if bf != '' %} font-family: {{ bf }};{% endif -%}
+  }
+  {%- if s.s_align != blank and s.s_align != 'default' %}
+  {{ sel }} .s-align { text-align: {{ s.s_align }}; align-items: {% case s.s_align %}{% when 'left' %}flex-start{% when 'right' %}flex-end{% else %}center{% endcase %}; }
+  {%- endif %}
+  {%- if hf != '' or s.s_heading != blank or hw != '' or hc != '' %}
+  {{ sel }} :is({{ hsel }}) {
+    {%- if hf != '' %} font-family: {{ hf }};{% endif -%}
+    {%- if s.s_heading != blank %} color: {{ s.s_heading }};{% endif -%}
+    {%- if hw != '' %} font-weight: {{ hw }};{% endif -%}
+    {%- if hc == 'upper' %} text-transform: uppercase; letter-spacing: .04em;{% elsif hc == 'none' %} text-transform: none;{% endif -%}
+  }
+  {%- endif %}
+  {%- if h != blank and s.s_heading_size != nil %}
+  {{ sel }} :is({{ h }}) { font-size: {{ s.s_heading_size }}px; }
+  {%- endif %}
+  {%- if b != blank and s.s_body_size != nil %}
+  {{ sel }} :is({{ b }}) { font-size: {{ s.s_body_size }}px; }
+  {%- endif %}
+  {%- if s.s_btn_bg != blank or s.s_btn_fg != blank %}
+  {{ sel }} .btn:not(.btn--light):not(.btn--outline) {
+    {%- if s.s_btn_bg != blank %} background: {{ s.s_btn_bg }}; border-color: {{ s.s_btn_bg }};{% endif -%}
+    {%- if s.s_btn_fg != blank %} color: {{ s.s_btn_fg }};{% endif -%}
+  }
+  {{ sel }} .btn--outline {
+    {%- if s.s_btn_bg != blank %} border-color: {{ s.s_btn_bg }}; color: {{ s.s_btn_bg }};{% endif -%}
+  }
+  {%- endif %}
+  {%- if s.s_btn2_bg != blank or s.s_btn2_fg != blank %}
+  {{ sel }} .btn--light {
+    {%- if s.s_btn2_bg != blank %} background: {{ s.s_btn2_bg }}; border-color: {{ s.s_btn2_bg }};{% endif -%}
+    {%- if s.s_btn2_fg != blank %} color: {{ s.s_btn2_fg }};{% endif -%}
+  }
+  {%- endif %}
+  @media (max-width: 749px) {
+    {{ sel }} {
+      {%- if s.pt_mobile != nil %} padding-top: {{ s.pt_mobile }}px;{% endif -%}
+      {%- if s.pb_mobile != nil %} padding-bottom: {{ s.pb_mobile }}px;{% endif -%}
+    }
+    {%- if h != blank and s.s_heading_size_m != nil %}
+    {{ sel }} :is({{ h }}) { font-size: {{ s.s_heading_size_m }}px; }
+    {%- endif %}
+    {%- if b != blank and s.s_body_size_m != nil %}
+    {{ sel }} :is({{ b }}) { font-size: {{ s.s_body_size_m }}px; }
+    {%- endif %}
+  }
+{%- endstyle -%}

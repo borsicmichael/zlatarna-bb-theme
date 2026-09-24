@@ -1,4 +1,4 @@
-{%- comment -%} Tall image panel used in tabbed carousels. Params: item (product, optional), title (placeholder name), show_price {%- endcomment -%}
+{%- comment -%} Tall image panel used in tabbed carousels. Params: item (product, optional), title (placeholder name), show_price, image (placeholder image), url (placeholder link) {%- endcomment -%}
 {%- if item != blank -%}
   <a class="panel{% if item.featured_media %} panel--image{% endif %}" href="{{ item.url }}">
     {%- if item.featured_media -%}
@@ -17,9 +17,13 @@
     </span>
   </a>
 {%- else -%}
-  <div class="panel">
-    <span class="panel__label">Fotografija</span>
+  {%- if url != blank -%}<a class="panel{% if image != blank %} panel--image{% endif %}" href="{{ url }}">{%- else -%}<div class="panel{% if image != blank %} panel--image{% endif %}">{%- endif -%}
+    {%- if image != blank -%}
+      {{ image | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300,450,600,700', sizes: '(max-width: 749px) 230px, 290px', alt: title }}
+    {%- else -%}
+      <span class="panel__label">Fotografija</span>
+    {%- endif -%}
     <span class="panel__arrow">{% render 'icon', name: 'arrow-up-right', px: 16, sw: 1.8 %}</span>
     <span class="panel__name">{{ title | default: '[Ime izdelka]' | escape }}</span>
-  </div>
+  {%- if url != blank -%}</a>{%- else -%}</div>{%- endif -%}
 {%- endif -%}
