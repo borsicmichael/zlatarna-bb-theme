@@ -1,4 +1,62 @@
-{%- assign menu = linklists[section.settings.menu] -%}
+{%- liquid
+  assign s = section.settings
+  assign menu = linklists[s.menu]
+  assign sel = '#shopify-section-' | append: section.id
+  case s.nav_font
+    when 'heading'
+      assign ff = 'var(--f-heading)'
+    when 'ui'
+      assign ff = 'var(--f-sans)'
+    when 'logo'
+      assign ff = 'var(--f-logo)'
+    else
+      assign ff = ''
+  endcase
+  assign lh_m = s.logo_height_mobile
+  assign lw_m = lh_m | times: 442 | divided_by: 360
+  assign lf_m = lh_m | times: 0.48 | round
+-%}
+{%- style -%}
+  {{ sel }} .header {
+    {%- if s.bg_color != blank %} background: {{ s.bg_color }};{% endif %}
+    {%- if s.border_color != blank %} border-bottom-color: {{ s.border_color }};{% endif %}
+    {%- unless s.show_border %} border-bottom: 0;{% endunless %}
+    {%- if s.text_color != blank %} color: {{ s.text_color }};{% endif %}
+  }
+  {%- if s.text_color != blank %}{{ sel }} .header a, {{ sel }} .header .icon-btn { color: {{ s.text_color }}; }{% endif %}
+  {%- if s.hover_color != blank %}{{ sel }} .header a:hover { color: {{ s.hover_color }}; }{% endif %}
+  {%- if s.active_color != blank %}{{ sel }} .header__nav a[aria-current="page"] { color: {{ s.active_color }}; }{% endif %}
+  {{ sel }} .header__inner { height: {{ s.height }}px; }
+  {{ sel }} :is(.header__nav, .header__right-link, .mobile-nav) {
+    {%- if ff != '' %} font-family: {{ ff }};{% endif %}
+  }
+  {{ sel }} :is(.header__nav, .header__right-link) {
+    font-size: {{ s.nav_size }}px; letter-spacing: {{ s.nav_spacing | times: 0.01 }}em;
+    text-transform: {% if s.nav_uppercase %}uppercase{% else %}none{% endif %};
+  }
+  {{ sel }} .header__nav { gap: {{ s.nav_gap }}px; }
+  {{ sel }} .nav-dropdown {
+    {%- if s.dropdown_bg != blank %} background: {{ s.dropdown_bg }};{% endif %}
+    {%- if s.dropdown_text != blank %} color: {{ s.dropdown_text }};{% endif %}
+  }
+  {%- if s.dropdown_text != blank %}{{ sel }} .nav-dropdown a { color: {{ s.dropdown_text }}; }{% endif %}
+  {%- if s.logo_position == 'left' %}
+  {{ sel }} .header__inner { grid-template-columns: auto 1fr auto; gap: 40px; }
+  {{ sel }} .header__logo { order: -1; justify-self: start; }
+  {%- endif %}
+  {%- if s.sticky %}
+  {{ sel }} { position: sticky; top: 0; z-index: 30; }
+  {%- endif %}
+  @media (max-width: 749px) {
+    {{ sel }} .header__inner { height: {{ s.height_mobile }}px; }
+    {{ sel }} .header__logo svg { width: {{ lw_m }}px; height: {{ lh_m }}px; }
+    {{ sel }} .header__logo .logo__text { font-size: {{ lf_m }}px !important; }
+    {{ sel }} .header__logo img { max-height: {{ lh_m }}px; width: auto; }
+    {%- if s.logo_position == 'left' %}
+    {{ sel }} .header__logo { order: 0; }
+    {%- endif %}
+  }
+{%- endstyle -%}
 <header class="header">
   <div class="page-width header__inner">
     <button type="button" class="icon-btn header__menu-toggle" data-menu-toggle aria-controls="MobileNav-{{ section.id }}" aria-expanded="false" aria-label="{{ 'general.menu' | t }}">
@@ -7,20 +65,36 @@
 
     <nav class="header__nav" aria-label="{{ 'accessibility.main_menu' | t }}">
       {%- for link in menu.links -%}
-        <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {%- if link.links.size > 0 -%}
+          <div class="nav-item has-dropdown">
+            <a href="{{ link.url }}"{% if link.child_active or link.active %} aria-current="page"{% endif %} aria-haspopup="true">{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 12 %}</a>
+            <div class="nav-dropdown">
+              {%- for child in link.links -%}
+                <a href="{{ child.url }}"{% if child.active %} aria-current="page"{% endif %}>{{ child.title | escape }}</a>
+                {%- for grandchild in child.links -%}
+                  <a class="nav-dropdown__sub" href="{{ grandchild.url }}"{% if grandchild.active %} aria-current="page"{% endif %}>{{ grandchild.title | escape }}</a>
+                {%- endfor -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- else -%}
+          <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+        {%- endif -%}
       {%- endfor -%}
     </nav>
 
     <a href="{{ routes.root_url }}" class="logo header__logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">
-      {%- render 'logo' -%}
+      {%- render 'logo', image: s.logo_image, height: s.logo_height -%}
     </a>
 
     <div class="header__right">
-      {%- if section.settings.right_link_label != blank -%}
-        <a class="header__right-link" href="{{ section.settings.right_link_url | default: '#' }}">{{ section.settings.right_link_label | escape }}</a>
+      {%- if s.right_link_label != blank -%}
+        <a class="header__right-link" href="{{ s.right_link_url | default: '#' }}">{{ s.right_link_label | escape }}</a>
       {%- endif -%}
-      <a class="icon-btn icon-btn--desktop" href="{{ routes.search_url }}" aria-label="{{ 'general.search' | t }}">{% render 'icon', name: 'search' %}</a>
-      {%- if shop.customer_accounts_enabled -%}
+      {%- if s.show_search -%}
+        <a class="icon-btn icon-btn--desktop" href="{{ routes.search_url }}" aria-label="{{ 'general.search' | t }}">{% render 'icon', name: 'search' %}</a>
+      {%- endif -%}
+      {%- if shop.customer_accounts_enabled and s.show_account -%}
         <a class="icon-btn icon-btn--desktop" href="{{ routes.account_url }}" aria-label="{{ 'general.account' | t }}">{% render 'icon', name: 'account' %}</a>
       {%- endif -%}
       <a class="icon-btn" href="{{ routes.cart_url }}" aria-label="{{ 'general.cart' | t }}">
@@ -32,13 +106,25 @@
 
   <nav class="mobile-nav" id="MobileNav-{{ section.id }}" hidden aria-label="{{ 'accessibility.main_menu' | t }}">
     {%- for link in menu.links -%}
-      <a href="{{ link.url }}">{{ link.title | escape }}</a>
+      {%- if link.links.size > 0 -%}
+        <details class="mobile-nav__group">
+          <summary>{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 14 %}</summary>
+          <div class="mobile-nav__sub">
+            <a href="{{ link.url }}">{{ s.mobile_all_label | default: 'Vse' }}: {{ link.title | escape }}</a>
+            {%- for child in link.links -%}
+              <a href="{{ child.url }}">{{ child.title | escape }}</a>
+            {%- endfor -%}
+          </div>
+        </details>
+      {%- else -%}
+        <a href="{{ link.url }}">{{ link.title | escape }}</a>
+      {%- endif -%}
     {%- endfor -%}
-    {%- if section.settings.right_link_label != blank -%}
-      <a href="{{ section.settings.right_link_url | default: '#' }}">{{ section.settings.right_link_label | escape }}</a>
+    {%- if s.right_link_label != blank -%}
+      <a href="{{ s.right_link_url | default: '#' }}">{{ s.right_link_label | escape }}</a>
     {%- endif -%}
-    <a href="{{ routes.search_url }}">{{ 'general.search' | t }}</a>
-    {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">{{ 'general.account' | t }}</a>{%- endif -%}
+    {%- if s.show_search -%}<a href="{{ routes.search_url }}">{{ 'general.search' | t }}</a>{%- endif -%}
+    {%- if shop.customer_accounts_enabled and s.show_account -%}<a href="{{ routes.account_url }}">{{ 'general.account' | t }}</a>{%- endif -%}
   </nav>
 </header>
 
@@ -47,9 +133,38 @@
   "name": "Glava",
   "class": "section-header",
   "settings": [
-    { "type": "link_list", "id": "menu", "label": "Meni", "default": "main-menu" },
-    { "type": "text", "id": "right_link_label", "label": "Povezava desno", "default": "Po naročilu" },
-    { "type": "url", "id": "right_link_url", "label": "URL povezave desno" }
+    {"type": "link_list", "id": "menu", "label": "Meni", "default": "main-menu"},
+    {"type": "text", "id": "right_link_label", "label": "Povezava desno", "default": "Po naročilu"},
+    {"type": "url", "id": "right_link_url", "label": "URL povezave desno"},
+    {"type": "checkbox", "id": "show_search", "label": "Prikaži iskanje", "default": true},
+    {"type": "checkbox", "id": "show_account", "label": "Prikaži račun", "default": true},
+    {"type": "select", "id": "logo_position", "label": "Položaj logotipa (namizje)", "default": "center", "options": [{"value": "center", "label": "Sredina"}, {"value": "left", "label": "Levo"}]},
+    {"type": "checkbox", "id": "sticky", "label": "Glava ostane na vrhu ob pomikanju", "default": false},
+    {"type": "header", "content": "Logotip"},
+    {"type": "image_picker", "id": "logo_image", "label": "Logotip v glavi", "info": "Neobvezno. Prepiše logotip iz Nastavitev teme; brez njega se prikaže vgrajeni logotip BB ZLATARNA."},
+    {"type": "range", "id": "logo_height", "label": "Višina logotipa (namizje)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 48},
+    {"type": "range", "id": "logo_height_mobile", "label": "Višina logotipa (mobilno)", "min": 20, "max": 60, "step": 2, "unit": "px", "default": 36},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "bg_color", "label": "Ozadje", "info": "Pustite prazno za barvo ozadja strani."},
+    {"type": "color", "id": "text_color", "label": "Povezave in ikone"},
+    {"type": "color", "id": "hover_color", "label": "Povezave ob prehodu z miško"},
+    {"type": "color", "id": "active_color", "label": "Aktivna povezava"},
+    {"type": "checkbox", "id": "show_border", "label": "Črta pod glavo", "default": true},
+    {"type": "color", "id": "border_color", "label": "Barva črte"},
+    {"type": "header", "content": "Tipografija menija"},
+    {"type": "select", "id": "nav_font", "label": "Pisava", "default": "theme", "options": [{"value": "theme", "label": "Privzeto (pisava besedila)"}, {"value": "heading", "label": "Pisava naslovov"}, {"value": "ui", "label": "Pisava vmesnika"}, {"value": "logo", "label": "Montserrat"}]},
+    {"type": "range", "id": "nav_size", "label": "Velikost pisave", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13},
+    {"type": "range", "id": "nav_spacing", "label": "Razmik med črkami", "min": 0, "max": 30, "step": 1, "unit": "%", "default": 12},
+    {"type": "checkbox", "id": "nav_uppercase", "label": "Velike črke", "default": true},
+    {"type": "range", "id": "nav_gap", "label": "Razmik med povezavami", "min": 8, "max": 60, "step": 2, "unit": "px", "default": 28},
+    {"type": "header", "content": "Velikost"},
+    {"type": "range", "id": "height", "label": "Višina glave (namizje)", "min": 56, "max": 140, "step": 2, "unit": "px", "default": 96},
+    {"type": "range", "id": "height_mobile", "label": "Višina glave (mobilno)", "min": 48, "max": 96, "step": 2, "unit": "px", "default": 64},
+    {"type": "header", "content": "Spustni meni"},
+    {"type": "paragraph", "content": "Podpovezave v meniju (Vsebina → Meniji) se na namizju prikažejo v spustnem meniju, na mobilnem pa v razširljivem seznamu."},
+    {"type": "color", "id": "dropdown_bg", "label": "Ozadje spustnega menija"},
+    {"type": "color", "id": "dropdown_text", "label": "Besedilo spustnega menija"},
+    {"type": "text", "id": "mobile_all_label", "label": "Oznaka za »vse« na mobilnem", "default": "Vse"}
   ]
 }
 {% endschema %}

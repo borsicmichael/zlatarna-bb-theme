@@ -1,18 +1,74 @@
+{%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+  case s.font
+    when 'heading'
+      assign ff = 'var(--f-heading)'
+    when 'ui'
+      assign ff = 'var(--f-sans)'
+    when 'logo'
+      assign ff = 'var(--f-logo)'
+    else
+      assign ff = ''
+  endcase
+  assign lh_m = s.logo_height_mobile
+  assign lw_m = lh_m | times: 442 | divided_by: 360
+  assign lf_m = lh_m | times: 0.48 | round
+-%}
+{%- style -%}
+  {{ sel }} { padding-top: {{ s.pt }}px; }
+  .template-product {{ sel }} { padding-top: {{ s.pt_product }}px; }
+  {{ sel }} .footer {
+    margin-top: 0; padding-top: {{ s.inner_pt }}px; padding-bottom: {{ s.inner_pb }}px;
+    {%- if s.bg_color != blank %} background: {{ s.bg_color }};{% endif %}
+    {%- if s.text_color != blank %} color: {{ s.text_color }};{% endif %}
+    {%- if ff != '' %} font-family: {{ ff }};{% endif %}
+    {%- if s.bg_image != blank -%}
+      {%- assign ov = s.bg_overlay | times: 0.01 %}
+      background-image: linear-gradient(rgba(13,29,48,{{ ov }}), rgba(13,29,48,{{ ov }})), url('{{ s.bg_image | image_url: width: 2400 }}'); background-size: cover; background-position: center;
+    {%- endif %}
+  }
+  {%- if s.text_color != blank %}{{ sel }} .footer a { color: {{ s.text_color }}; }{% endif %}
+  {%- if s.hover_color != blank %}{{ sel }} .footer a:hover { color: {{ s.hover_color }}; }{% endif %}
+  {%- if s.title_color != blank %}{{ sel }} .footer__col-title { color: {{ s.title_color }}; }{% endif %}
+  {%- if s.phone_color != blank %}{{ sel }} .footer__phone { color: {{ s.phone_color }} !important; }{% endif %}
+  {{ sel }} .footer__bottom {
+    {%- if s.bottom_color != blank %} color: {{ s.bottom_color }};{% endif %}
+    {%- if s.line_color != blank %} border-top-color: {{ s.line_color }};{% endif %}
+  }
+  {{ sel }} .footer__col { font-size: {{ s.link_size }}px; }
+  {{ sel }} .footer__brand p { font-size: {{ s.text_size }}px; }
+  @media (max-width: 749px) {
+    {{ sel }} { padding-top: {{ s.pt_mobile }}px; }
+    .template-product {{ sel }} { padding-top: {{ s.pt_mobile }}px; }
+    {{ sel }} .footer { padding-top: {{ s.inner_pt_mobile }}px; padding-bottom: {{ s.inner_pb_mobile }}px; }
+    {{ sel }} .footer__brand .logo svg { width: {{ lw_m }}px; height: {{ lh_m }}px; }
+    {{ sel }} .footer__brand .logo__text { font-size: {{ lf_m }}px !important; }
+    {{ sel }} .footer__brand .logo img { height: {{ lh_m }}px; }
+    {{ sel }} .footer__links { font-size: {{ s.link_size }}px; }
+    {{ sel }} .footer__brand p { font-size: {{ s.text_size_mobile }}px; }
+  }
+{%- endstyle -%}
 <footer class="footer">
   <div class="page-width">
     <div class="footer__grid">
       <div class="footer__brand">
-        <a href="{{ routes.root_url }}" class="logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">{% render 'logo', inverted: true, height: 52 %}</a>
-        {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
-        {%- if section.settings.phone != blank -%}
-          <a class="footer__phone" href="tel:{{ section.settings.phone | remove: ' ' }}">{{ section.settings.phone }}</a>
+        {%- if s.show_logo -%}
+          <a href="{{ routes.root_url }}" class="logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">{% render 'logo', inverted: true, image: s.logo_image, height: s.logo_height %}</a>
+        {%- endif -%}
+        {%- if s.text != blank -%}<p>{{ s.text }}</p>{%- endif -%}
+        {%- if s.phone != blank -%}
+          <a class="footer__phone" href="tel:{{ s.phone | remove: ' ' }}">{{ s.phone }}</a>
+        {%- endif -%}
+        {%- if s.email != blank -%}
+          <a href="mailto:{{ s.email }}">{{ s.email }}</a>
         {%- endif -%}
       </div>
-      {%- assign mobile_list = linklists[section.settings.menu_mobile] -%}
+      {%- assign mobile_list = linklists[s.menu_mobile] -%}
       <div class="footer__links{% if mobile_list.links.size > 0 %} footer__links--has-mobile{% endif %}">
         {%- assign menus = 'menu_1,menu_2,menu_3' | split: ',' -%}
         {%- for key in menus -%}
-          {%- assign handle = section.settings[key] -%}
+          {%- assign handle = s[key] -%}
           {%- assign list = linklists[handle] -%}
           {%- if list.links.size > 0 -%}
             <div class="footer__col">
@@ -29,8 +85,8 @@
       {%- endif -%}
     </div>
     <div class="footer__bottom">
-      <span>&copy; {{ shop.name }}. {{ 'general.rights' | t }}</span>
-      {%- if section.settings.bottom_right != blank -%}<span>{{ section.settings.bottom_right }}</span>{%- endif -%}
+      <span>{{ s.copyright | default: shop.name | prepend: '&copy; ' }}. {{ 'general.rights' | t }}</span>
+      {%- if s.bottom_right != blank -%}<span>{{ s.bottom_right }}</span>{%- endif -%}
     </div>
   </div>
 </footer>
@@ -42,11 +98,46 @@
   "settings": [
     { "type": "textarea", "id": "text", "label": "Opis", "default": "Ročno in mojstrsko narejen nakit iz zlata in dragih kamnov. Slovensko poreklo." },
     { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
+    { "type": "text", "id": "email", "label": "E-pošta (neobvezno)" },
     { "type": "link_list", "id": "menu_1", "label": "Meni 1 (npr. Nakit)" },
     { "type": "link_list", "id": "menu_2", "label": "Meni 2 (npr. Pomoč)", "default": "footer" },
     { "type": "link_list", "id": "menu_3", "label": "Meni 3 (npr. Pravno)" },
     { "type": "link_list", "id": "menu_mobile", "label": "Meni za mobilno (neobvezno)", "info": "Na mobilnem se prikaže namesto zgornjih treh menijev (2 stolpca, brez naslovov)." },
-    { "type": "text", "id": "bottom_right", "label": "Besedilo spodaj desno", "default": "Brezplačna dostava nad 100 €" }
+    { "type": "text", "id": "copyright", "label": "Ime v avtorskih pravicah", "info": "Pustite prazno za ime trgovine." },
+    { "type": "text", "id": "bottom_right", "label": "Besedilo spodaj desno", "default": "Brezplačna dostava nad 100 €" },
+    { "type": "header", "content": "Logotip" },
+    { "type": "checkbox", "id": "show_logo", "label": "Prikaži logotip", "default": true },
+    { "type": "image_picker", "id": "logo_image", "label": "Logotip za temno ozadje", "info": "Neobvezno. Brez slike se prikaže svetla različica vgrajenega logotipa." },
+    { "type": "range", "id": "logo_height", "label": "Višina logotipa (namizje)", "min": 24, "max": 80, "step": 2, "unit": "px", "default": 52 },
+    { "type": "range", "id": "logo_height_mobile", "label": "Višina logotipa (mobilno)", "min": 20, "max": 64, "step": 2, "unit": "px", "default": 44 },
+    { "type": "header", "content": "Barve" },
+    { "type": "color", "id": "bg_color", "label": "Ozadje", "info": "Pustite prazno za glavno temno modro." },
+    { "type": "color", "id": "text_color", "label": "Besedilo in povezave" },
+    { "type": "color", "id": "hover_color", "label": "Povezave ob prehodu z miško" },
+    { "type": "color", "id": "title_color", "label": "Naslovi stolpcev" },
+    { "type": "color", "id": "phone_color", "label": "Telefonska številka" },
+    { "type": "color", "id": "bottom_color", "label": "Spodnja vrstica" },
+    { "type": "color", "id": "line_color", "label": "Ločilna črta" },
+    { "type": "image_picker", "id": "bg_image", "label": "Slika v ozadju" },
+    { "type": "range", "id": "bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 60 },
+    { "type": "header", "content": "Tipografija" },
+    { "type": "select", "id": "font", "label": "Pisava", "default": "theme", "options": [
+      { "value": "theme", "label": "Privzeto (pisava besedila)" },
+      { "value": "heading", "label": "Pisava naslovov" },
+      { "value": "ui", "label": "Pisava vmesnika" },
+      { "value": "logo", "label": "Montserrat" }
+    ] },
+    { "type": "range", "id": "link_size", "label": "Velikost povezav", "min": 11, "max": 20, "step": 1, "unit": "px", "default": 14 },
+    { "type": "range", "id": "text_size", "label": "Velikost opisa (namizje)", "min": 11, "max": 22, "step": 1, "unit": "px", "default": 15 },
+    { "type": "range", "id": "text_size_mobile", "label": "Velikost opisa (mobilno)", "min": 11, "max": 22, "step": 1, "unit": "px", "default": 14 },
+    { "type": "header", "content": "Razmik" },
+    { "type": "range", "id": "pt", "label": "Razmik nad nogo (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 140 },
+    { "type": "range", "id": "pt_product", "label": "Razmik nad nogo na strani izdelka", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 120 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik nad nogo (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 },
+    { "type": "range", "id": "inner_pt", "label": "Notranji razmik zgoraj (namizje)", "min": 16, "max": 160, "step": 4, "unit": "px", "default": 80 },
+    { "type": "range", "id": "inner_pb", "label": "Notranji razmik spodaj (namizje)", "min": 16, "max": 160, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "inner_pt_mobile", "label": "Notranji razmik zgoraj (mobilno)", "min": 16, "max": 120, "step": 4, "unit": "px", "default": 40 },
+    { "type": "range", "id": "inner_pb_mobile", "label": "Notranji razmik spodaj (mobilno)", "min": 16, "max": 120, "step": 4, "unit": "px", "default": 40 }
   ]
 }
 {% endschema %}

@@ -1,19 +1,55 @@
-{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+{%- liquid
+  assign s = section.settings
+  assign sel = '#Banner-' | append: section.id
+  assign oc = s.overlay_color | default: '#0D1D30'
+  assign ov = s.overlay | times: 0.01
+-%}
+{% render 'section-style', id: section.id, s: s, h: '.banner__heading', b: '.banner__text' %}
 {%- style -%}
-  #Banner-{{ section.id }} { height: {{ section.settings.height }}px; }
-  @media (max-width: 749px) { #Banner-{{ section.id }} { height: {{ section.settings.height_mobile }}px; } }
+  {{ sel }} { height: {{ s.height }}px; {% if s.placeholder_bg != blank %}background: {{ s.placeholder_bg }};{% endif %} }
+  {%- unless s.full_width %}{{ sel }} { border-radius: {{ s.radius }}px; }{% endunless %}
+  {{ sel }} .banner__overlay { position: absolute; inset: 0; background: {{ oc | color_modify: 'alpha', ov }}; pointer-events: none; }
+  {{ sel }} .banner__content {
+    position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: 16px; padding: 64px;
+    color: {{ s.text_color }};
+    justify-content: {% case s.position %}{% when 'top' %}flex-start{% when 'bottom' %}flex-end{% else %}center{% endcase %};
+    align-items: {% case s.align %}{% when 'left' %}flex-start{% when 'right' %}flex-end{% else %}center{% endcase %};
+    text-align: {{ s.align }};
+  }
+  {{ sel }} .banner__heading { color: {{ s.heading_color | default: s.text_color }}; max-width: {{ s.content_width }}px; }
+  {{ sel }} .banner__text { max-width: {{ s.content_width }}px; line-height: 1.6; }
+  @media (max-width: 749px) {
+    {{ sel }} { height: {{ s.height_mobile }}px; }
+    {%- unless s.full_width %}{{ sel }} { border-radius: {{ s.radius_mobile }}px; }{% endunless %}
+    {{ sel }} .banner__content { padding: 24px 20px; }
+  }
 {%- endstyle -%}
 <section>
-  <div {% unless section.settings.full_width %}class="page-width"{% endunless %}>
-    {%- if section.settings.link != blank -%}<a href="{{ section.settings.link }}">{%- endif -%}
-    <div class="image-banner" id="Banner-{{ section.id }}"{% unless section.settings.full_width %} style="border-radius:16px"{% endunless %}>
-      {%- if section.settings.image != blank -%}
-        {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: section.settings.image.alt }}
+  <div {% unless s.full_width %}class="page-width"{% endunless %}>
+    {%- if s.link != blank and s.button_label == blank -%}<a href="{{ s.link }}">{%- endif -%}
+    <div class="image-banner" id="Banner-{{ section.id }}">
+      {%- if s.image != blank -%}
+        {%- if s.image_mobile != blank -%}
+          <picture style="position:absolute;inset:0">
+            <source media="(max-width: 749px)" srcset="{{ s.image_mobile | image_url: width: 1100 }}">
+            {{ s.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: s.image.alt, style: 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover' }}
+          </picture>
+        {%- else -%}
+          {{ s.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: s.image.alt }}
+        {%- endif -%}
       {%- else -%}
         <span class="ph-icon">{% render 'icon', name: 'image', px: '100%', sw: 0.24 %}</span>
       {%- endif -%}
+      {%- if s.overlay > 0 -%}<div class="banner__overlay"></div>{%- endif -%}
+      {%- if s.heading != blank or s.text != blank or s.button_label != blank -%}
+        <div class="banner__content">
+          {%- if s.heading != blank -%}<h2 class="banner__heading">{{ s.heading }}</h2>{%- endif -%}
+          {%- if s.text != blank -%}<div class="banner__text">{{ s.text }}</div>{%- endif -%}
+          {%- if s.button_label != blank -%}<a class="btn {% if s.button_style == 'light' %}btn--light{% elsif s.button_style == 'outline' %}btn--outline{% endif %}" href="{{ s.link | default: '#' }}">{{ s.button_label | escape }}</a>{%- endif -%}
+        </div>
+      {%- endif -%}
     </div>
-    {%- if section.settings.link != blank -%}</a>{%- endif -%}
+    {%- if s.link != blank and s.button_label == blank -%}</a>{%- endif -%}
   </div>
 </section>
 
@@ -22,14 +58,49 @@
   "name": "Slika čez celo širino",
   "class": "section-image-banner",
   "settings": [
-    { "type": "image_picker", "id": "image", "label": "Slika" },
-    { "type": "url", "id": "link", "label": "Povezava (neobvezno)" },
-    { "type": "checkbox", "id": "full_width", "label": "Čez celotno širino", "default": true },
-    { "type": "range", "id": "height", "label": "Višina (namizje)", "min": 300, "max": 900, "step": 10, "unit": "px", "default": 640 },
-    { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 200, "max": 700, "step": 10, "unit": "px", "default": 300 },
-    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 140 },
-    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+    {"type": "header", "content": "Slika"},
+    {"type": "image_picker", "id": "image", "label": "Slika"},
+    {"type": "image_picker", "id": "image_mobile", "label": "Slika za mobilno (neobvezno)"},
+    {"type": "url", "id": "link", "label": "Povezava (neobvezno)"},
+    {"type": "checkbox", "id": "full_width", "label": "Čez celotno širino", "default": true},
+    {"type": "range", "id": "radius", "label": "Zaobljenost vogalov (ko ni čez celo širino)", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "range", "id": "radius_mobile", "label": "Zaobljenost vogalov (mobilno)", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "color", "id": "placeholder_bg", "label": "Ozadje brez slike"},
+    {"type": "header", "content": "Velikost"},
+    {"type": "range", "id": "height", "label": "Višina (namizje)", "min": 300, "max": 900, "step": 10, "unit": "px", "default": 640},
+    {"type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 200, "max": 700, "step": 10, "unit": "px", "default": 300},
+    {"type": "header", "content": "Besedilo na sliki (neobvezno)"},
+    {"type": "inline_richtext", "id": "heading", "label": "Naslov"},
+    {"type": "richtext", "id": "text", "label": "Besedilo"},
+    {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "info": "Gumb uporabi zgornjo povezavo."},
+    {"type": "select", "id": "button_style", "label": "Videz gumba", "options": [{"value": "dark", "label": "Temen"}, {"value": "light", "label": "Svetlo moder"}, {"value": "outline", "label": "Obroba"}], "default": "light"},
+    {"type": "select", "id": "position", "label": "Navpični položaj", "options": [{"value": "top", "label": "Zgoraj"}, {"value": "center", "label": "Sredina"}, {"value": "bottom", "label": "Spodaj"}], "default": "center"},
+    {"type": "select", "id": "align", "label": "Vodoravna poravnava", "options": [{"value": "left", "label": "Levo"}, {"value": "center", "label": "Sredina"}, {"value": "right", "label": "Desno"}], "default": "center"},
+    {"type": "range", "id": "content_width", "label": "Širina besedila", "min": 280, "max": 1000, "step": 10, "default": 640, "unit": "px"},
+    {"type": "header", "content": "Barve besedila in prekrivanje"},
+    {"type": "color", "id": "text_color", "label": "Besedilo", "default": "#FFFFFF"},
+    {"type": "color", "id": "heading_color", "label": "Naslov"},
+    {"type": "color", "id": "overlay_color", "label": "Barva prekrivanja", "default": "#0D1D30"},
+    {"type": "range", "id": "overlay", "label": "Temnost prekrivanja", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
+    {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
+    {"type": "color", "id": "s_btn2_bg", "label": "Svetel gumb – ozadje"},
+    {"type": "color", "id": "s_btn2_fg", "label": "Svetel gumb – besedilo"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 20, "max": 100, "step": 1, "default": 50, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 16, "max": 64, "step": 1, "default": 32, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 11, "max": 26, "step": 1, "default": 17, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 11, "max": 26, "step": 1, "default": 15, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 140, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 64, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ],
-  "presets": [{ "name": "Slika čez celo širino" }]
+  "presets": [{"name": "Slika čez celo širino"}]
 }
 {% endschema %}

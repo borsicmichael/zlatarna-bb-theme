@@ -1,3 +1,13 @@
+{%- render 'section-style', id: section.id, s: section.settings, h: '.page-content h1', b: '.page-content .rte' -%}
+{%- liquid
+  assign st = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+{%- style -%}
+  {{ sel }} .page-content { max-width: {{ st.content_width }}px; }
+  {{ sel }} .page-content h1 { margin-bottom: {{ st.title_gap }}px; }
+  {%- unless st.show_phone %}{{ sel }} .field--phone { display: none; }{% endunless %}
+{%- endstyle -%}
 <div class="page-width">
   <article class="page-content">
     <h1>{{ page.title | escape }}</h1>
@@ -17,7 +27,7 @@
           <label class="field__label" for="ContactEmail">{{ 'newsletter.email' | t }}</label>
           <input class="field__input" id="ContactEmail" type="email" name="contact[email]" autocomplete="email" required value="{{ form.email }}">
         </div>
-        <div class="field">
+        <div class="field field--phone">
           <label class="field__label" for="ContactPhone">Telefon</label>
           <input class="field__input" id="ContactPhone" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone }}">
         </div>
@@ -36,8 +46,36 @@
   "name": "Kontaktni obrazec",
   "class": "section-main-contact",
   "settings": [
-    { "type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji sporočilo" },
-    { "type": "text", "id": "success", "label": "Sporočilo ob uspehu", "default": "Hvala! Odgovorili vam bomo v najkrajšem možnem času." }
+    {"type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji sporočilo"},
+    {"type": "text", "id": "success", "label": "Sporočilo ob uspehu", "default": "Hvala! Odgovorili vam bomo v najkrajšem možnem času."},
+    {"type": "checkbox", "id": "show_phone", "label": "Prikaži polje za telefon", "default": true},
+    {"type": "header", "content": "Postavitev"},
+    {"type": "range", "id": "content_width", "label": "Širina vsebine", "min": 480, "max": 1280, "step": 8, "default": 760, "unit": "px"},
+    {"type": "range", "id": "title_gap", "label": "Razmik pod naslovom", "min": 0, "max": 80, "step": 4, "default": 32, "unit": "px"},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_accent", "label": "Poudarek (nadnaslovi, številke)"},
+    {"type": "color", "id": "s_btn2_bg", "label": "Svetel gumb – ozadje"},
+    {"type": "color", "id": "s_btn2_fg", "label": "Svetel gumb – besedilo"},
+    {"type": "header", "content": "Slika v ozadju"},
+    {"type": "image_picker", "id": "s_bg_image", "label": "Slika v ozadju sekcije"},
+    {"type": "range", "id": "s_bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 24, "max": 90, "step": 1, "default": 50, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 18, "max": 60, "step": 1, "default": 34, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 12, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 12, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ]
 }
 {% endschema %}

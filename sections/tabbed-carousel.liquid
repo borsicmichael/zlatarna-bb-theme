@@ -1,10 +1,45 @@
-{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
 {%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
   assign has_aside = false
-  if section.settings.text != blank or section.settings.button_label != blank
+  if s.text != blank or s.button_label != blank
     assign has_aside = true
   endif
+  case s.tab_font
+    when 'heading'
+      assign tf = 'var(--f-heading)'
+    when 'body'
+      assign tf = 'var(--f-serif)'
+    else
+      assign tf = ''
+  endcase
 -%}
+{% render 'section-style', id: section.id, s: s, h: '.sec-head__title', b: '.sec-head__aside p' %}
+{%- style -%}
+  {{ sel }} .tab {
+    font-size: {{ s.tab_size }}px;
+    {%- if s.tab_color != blank %} color: {{ s.tab_color }};{% endif %}
+    {%- if tf != '' %} font-family: {{ tf }};{% endif %}
+    {%- unless s.tab_uppercase %} text-transform: none; letter-spacing: .02em;{% endunless %}
+  }
+  {%- if s.tab_active_color != blank %}{{ sel }} .tab[aria-selected="true"] { color: {{ s.tab_active_color }}; border-bottom-color: {{ s.tab_active_color }}; }{% endif %}
+  {%- if s.tab_line_color != blank %}{{ sel }} .tabs { border-bottom-color: {{ s.tab_line_color }}; }{% endif %}
+  {%- unless s.show_arrows %}{{ sel }} .arrows { display: none; }{% endunless %}
+  {{ sel }} .panels { border-radius: {{ s.panel_radius }}px; }
+  {{ sel }} .panel { flex-basis: {{ s.panel_width | plus: 1 }}px; height: {{ s.panel_height }}px; }
+  {%- if s.panel_bg != blank %}{{ sel }} .panel { background: {{ s.panel_bg }}; }{% endif %}
+  {%- if s.panel_text != blank %}{{ sel }} .panel__name, {{ sel }} .panel__label { color: {{ s.panel_text }}; }{% endif %}
+  {{ sel }} .panel__name { font-size: {{ s.panel_name_size }}px; }
+  {%- if s.panel_overlay > 0 %}{{ sel }} .panel--image::after { background: linear-gradient(180deg, rgba(13,29,48,0) 45%, rgba(13,29,48,{{ s.panel_overlay | times: 0.01 }}) 100%); }{% endif %}
+  {%- if s.panel_overlay == 0 %}{{ sel }} .panel--image::after { display: none; }{% endif %}
+  {%- unless s.show_panel_arrow %}{{ sel }} .panel__arrow { display: none; }{% endunless %}
+  @media (max-width: 749px) {
+    {{ sel }} .tab { font-size: {{ s.tab_size_mobile }}px; padding: 0 14px; }
+    {{ sel }} .panels { border-radius: {{ s.panel_radius }}px 0 0 {{ s.panel_radius }}px; }
+    {{ sel }} .panel { flex-basis: {{ s.panel_width_mobile | plus: 1 }}px; height: {{ s.panel_height_mobile }}px; }
+    {{ sel }} .panel__name { font-size: {{ s.panel_name_size_mobile }}px; }
+  }
+{%- endstyle -%}
 <section class="tabbed{% if has_aside %} tabbed--aside{% endif %}" data-tabbed>
   <div class="page-width">
     <div class="sec-head{% if has_aside %} sec-head--stack{% endif %}">
@@ -40,14 +75,14 @@
         {%- assign coll = block.settings.collection -%}
         {%- if coll != blank and coll.products_count > 0 -%}
           {%- for product in coll.products limit: block.settings.limit -%}
-            {% render 'product-panel', item: product, show_price: section.settings.show_price %}
+            {% render 'product-panel', item: product, show_price: s.show_price %}
           {%- endfor -%}
         {%- else -%}
           {%- assign names = block.settings.placeholder_names | newline_to_br | split: '<br />' -%}
           {%- for i in (1..6) -%}
             {%- assign idx = forloop.index0 -%}
             {%- assign n = names[idx] | strip -%}
-            {% render 'product-panel', title: n %}
+            {% render 'product-panel', title: n, image: block.settings.panel_image, url: block.settings.panel_url %}
           {%- endfor -%}
         {%- endif -%}
       </div>
@@ -60,38 +95,67 @@
   "name": "Zavihki z izdelki",
   "class": "section-tabbed",
   "settings": [
-    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Izberite svoj BB kos", "info": "Za poševni del označite besedo in kliknite I." },
-    { "type": "textarea", "id": "text", "label": "Besedilo" },
-    { "type": "text", "id": "button_label", "label": "Gumb – besedilo" },
-    { "type": "url", "id": "button_url", "label": "Gumb – URL" },
-    { "type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Celotna ponudba", "info": "Prikaže se, če ni besedila in gumba." },
-    { "type": "text", "id": "link_label_mobile", "label": "Povezava – besedilo (mobilno)", "default": "Vse" },
-    { "type": "url", "id": "link_url", "label": "Povezava – URL" },
-    { "type": "checkbox", "id": "show_price", "label": "Prikaži ceno na karticah", "default": false },
-    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 120 },
-    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+    {"type": "header", "content": "Vsebina"},
+    {"type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Izberite svoj BB kos", "info": "Za poševni del označite besedo in kliknite I."},
+    {"type": "textarea", "id": "text", "label": "Besedilo"},
+    {"type": "text", "id": "button_label", "label": "Gumb – besedilo"},
+    {"type": "url", "id": "button_url", "label": "Gumb – URL"},
+    {"type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Celotna ponudba", "info": "Prikaže se, če ni besedila in gumba."},
+    {"type": "text", "id": "link_label_mobile", "label": "Povezava – besedilo (mobilno)", "default": "Vse"},
+    {"type": "url", "id": "link_url", "label": "Povezava – URL"},
+    {"type": "checkbox", "id": "show_price", "label": "Prikaži ceno na karticah", "default": false},
+    {"type": "header", "content": "Zavihki"},
+    {"type": "select", "id": "tab_font", "label": "Pisava zavihkov", "options": [{"value": "theme", "label": "Privzeto (pisava vmesnika)"}, {"value": "heading", "label": "Pisava naslovov"}, {"value": "body", "label": "Pisava besedila"}], "default": "theme"},
+    {"type": "range", "id": "tab_size", "label": "Velikost pisave zavihkov (namizje)", "min": 11, "max": 24, "step": 1, "default": 17, "unit": "px"},
+    {"type": "range", "id": "tab_size_mobile", "label": "Velikost pisave zavihkov (mobilno)", "min": 10, "max": 18, "step": 1, "default": 13, "unit": "px"},
+    {"type": "checkbox", "id": "tab_uppercase", "label": "Zavihki z velikimi črkami", "default": true},
+    {"type": "color", "id": "tab_color", "label": "Barva zavihkov"},
+    {"type": "color", "id": "tab_active_color", "label": "Barva izbranega zavihka"},
+    {"type": "color", "id": "tab_line_color", "label": "Barva črte pod zavihki"},
+    {"type": "checkbox", "id": "show_arrows", "label": "Prikaži puščici", "default": true},
+    {"type": "header", "content": "Kartice izdelkov"},
+    {"type": "range", "id": "panel_width", "label": "Širina kartice (namizje)", "min": 200, "max": 400, "step": 2, "default": 290, "unit": "px"},
+    {"type": "range", "id": "panel_height", "label": "Višina kartice (namizje)", "min": 300, "max": 700, "step": 4, "default": 500, "unit": "px"},
+    {"type": "range", "id": "panel_width_mobile", "label": "Širina kartice (mobilno)", "min": 160, "max": 320, "step": 2, "default": 230, "unit": "px"},
+    {"type": "range", "id": "panel_height_mobile", "label": "Višina kartice (mobilno)", "min": 240, "max": 520, "step": 4, "default": 360, "unit": "px"},
+    {"type": "range", "id": "panel_radius", "label": "Zaobljenost vogalov", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "color", "id": "panel_bg", "label": "Ozadje kartic brez slike", "info": "Pustite prazno za privzete odtenke modre."},
+    {"type": "color", "id": "panel_text", "label": "Besedilo na karticah"},
+    {"type": "range", "id": "panel_name_size", "label": "Velikost imena izdelka (namizje)", "min": 11, "max": 26, "step": 1, "default": 17, "unit": "px"},
+    {"type": "range", "id": "panel_name_size_mobile", "label": "Velikost imena izdelka (mobilno)", "min": 10, "max": 22, "step": 1, "default": 14, "unit": "px"},
+    {"type": "range", "id": "panel_overlay", "label": "Temnenje spodnjega dela fotografije", "min": 0, "max": 90, "step": 5, "default": 45, "unit": "%"},
+    {"type": "checkbox", "id": "show_panel_arrow", "label": "Prikaži puščico v kotu", "default": true},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
+    {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 24, "max": 90, "step": 1, "default": 50, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 18, "max": 60, "step": 1, "default": 32, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 120, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 64, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ],
   "blocks": [
     {
       "type": "tab",
       "name": "Zavihek",
       "settings": [
-        { "type": "text", "id": "label", "label": "Ime zavihka", "default": "Prstani" },
-        { "type": "collection", "id": "collection", "label": "Kolekcija" },
-        { "type": "range", "id": "limit", "label": "Število izdelkov", "min": 2, "max": 16, "step": 1, "default": 8 },
-        { "type": "textarea", "id": "placeholder_names", "label": "Imena za predogled (ena na vrstico)", "info": "Prikazana samo, dokler kolekcija ni izbrana." }
+        {"type": "text", "id": "label", "label": "Ime zavihka", "default": "Prstani"},
+        {"type": "collection", "id": "collection", "label": "Kolekcija"},
+        {"type": "range", "id": "limit", "label": "Število izdelkov", "min": 2, "max": 16, "step": 1, "default": 8},
+        {"type": "textarea", "id": "placeholder_names", "label": "Imena za predogled (ena na vrstico)", "info": "Prikazana samo, dokler kolekcija ni izbrana."},
+        {"type": "image_picker", "id": "panel_image", "label": "Slika za predogledne kartice", "info": "Prikaže se na karticah, dokler kolekcija ni izbrana."},
+        {"type": "url", "id": "panel_url", "label": "Povezava predoglednih kartic"}
       ]
     }
   ],
-  "presets": [
-    {
-      "name": "Zavihki z izdelki",
-      "blocks": [
-        { "type": "tab", "settings": { "label": "Vse" } },
-        { "type": "tab", "settings": { "label": "Prstani" } },
-        { "type": "tab", "settings": { "label": "Uhani" } }
-      ]
-    }
-  ]
+  "presets": [{"name": "Zavihki z izdelki", "blocks": [{"type": "tab", "settings": {"label": "Vse"}}, {"type": "tab", "settings": {"label": "Prstani"}}, {"type": "tab", "settings": {"label": "Uhani"}}]}]
 }
 {% endschema %}

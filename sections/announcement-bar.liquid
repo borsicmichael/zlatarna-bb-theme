@@ -1,13 +1,48 @@
-<div class="announcement" style="color: {{ section.settings.text_color }}">
+{%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+  case s.font
+    when 'heading'
+      assign ff = 'var(--f-heading)'
+    when 'body'
+      assign ff = 'var(--f-serif)'
+    when 'ui'
+      assign ff = 'var(--f-sans)'
+    else
+      assign ff = ''
+  endcase
+-%}
+{%- style -%}
+  {{ sel }} .announcement {
+    {%- if s.bg_color != blank %} background: {{ s.bg_color }};{% endif %}
+    font-size: {{ s.font_size }}px; letter-spacing: {{ s.letter_spacing | times: 0.01 }}em;
+    {%- if ff != '' %} font-family: {{ ff }};{% endif %}
+    {%- if s.uppercase %} text-transform: uppercase;{% endif %}
+  }
+  {{ sel }} .announcement__inner { height: {{ s.height }}px; justify-content: {% if s.alignment == 'center' %}center{% else %}space-between{% endif %}; }
+  {%- if s.alignment == 'center' %}{{ sel }} .announcement__right { display: none; }{% endif %}
+  .template-product {{ sel }} .announcement { letter-spacing: .02em; }
+  @media (max-width: 749px) {
+    {{ sel }} .announcement { color: {{ s.text_color_mobile }} !important; font-size: {{ s.font_size_mobile }}px; letter-spacing: 0; }
+    {{ sel }} .announcement__inner { height: auto; justify-content: center; }
+    {%- if s.bg_color_mobile != blank %} {{ sel }} .announcement { background: {{ s.bg_color_mobile }}; }{% endif %}
+    {%- unless s.show_on_mobile %} {{ sel }} { display: none; }{% endunless %}
+  }
+{%- endstyle -%}
+<div class="announcement" style="color: {{ s.text_color }}">
   <div class="page-width announcement__inner">
     <div class="announcement__left">
-      {%- if section.settings.show_icon -%}<span style="color: {{ section.settings.icon_color }}; display: flex">{% render 'icon', name: 'clock', px: 14, sw: 1.6 %}</span>{%- endif -%}
-      <span>{{ section.settings.text }}</span>
+      {%- if s.show_icon -%}<span style="color: {{ s.icon_color }}; display: flex">{% render 'icon', name: 'clock', px: 14, sw: 1.6 %}</span>{%- endif -%}
+      {%- if s.link != blank -%}
+        <a href="{{ s.link }}">{{ s.text }}</a>
+      {%- else -%}
+        <span>{{ s.text }}</span>
+      {%- endif -%}
     </div>
     <div class="announcement__right">
-      {%- if section.settings.text_right != blank -%}<span>{{ section.settings.text_right }}</span>{%- endif -%}
-      {%- if section.settings.phone != blank -%}
-        <a href="tel:{{ section.settings.phone | remove: ' ' }}" style="color: {{ section.settings.phone_color }}">{{ section.settings.phone }}</a>
+      {%- if s.text_right != blank -%}<span>{{ s.text_right }}</span>{%- endif -%}
+      {%- if s.phone != blank -%}
+        <a href="tel:{{ s.phone | remove: ' ' }}" style="color: {{ s.phone_color }}">{{ s.phone }}</a>
       {%- endif -%}
     </div>
   </div>
@@ -19,12 +54,35 @@
   "class": "section-announcement",
   "settings": [
     { "type": "text", "id": "text", "label": "Besedilo levo", "default": "Cene zlata lahko nihajo – končno ceno potrdimo ob naročilu." },
+    { "type": "url", "id": "link", "label": "Povezava besedila levo" },
     { "type": "text", "id": "text_right", "label": "Besedilo desno", "default": "Brezplačna dostava nad 100 €" },
     { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
-    { "type": "color", "id": "text_color", "label": "Barva besedila (namizje)", "default": "#E4F2FA", "info": "Na mobilnem je besedilo vedno temno modro. Za boljšo berljivost na namizju izberite #13293D." },
-    { "type": "color", "id": "phone_color", "label": "Barva telefonske številke", "default": "#89CFF0" },
     { "type": "checkbox", "id": "show_icon", "label": "Prikaži ikono ure", "default": true },
-    { "type": "color", "id": "icon_color", "label": "Barva ikone", "default": "#89CFF0" }
+    { "type": "select", "id": "alignment", "label": "Postavitev", "default": "split", "options": [
+      { "value": "split", "label": "Levo in desno" },
+      { "value": "center", "label": "Samo sredina (skrije desno stran)" }
+    ] },
+    { "type": "header", "content": "Barve" },
+    { "type": "color", "id": "bg_color", "label": "Ozadje", "info": "Pustite prazno za svetlo modro iz Nastavitev teme." },
+    { "type": "color", "id": "text_color", "label": "Besedilo (namizje)", "default": "#E4F2FA", "info": "Za boljšo berljivost izberite #13293D." },
+    { "type": "color", "id": "phone_color", "label": "Telefonska številka", "default": "#89CFF0" },
+    { "type": "color", "id": "icon_color", "label": "Ikona", "default": "#89CFF0" },
+    { "type": "header", "content": "Tipografija" },
+    { "type": "select", "id": "font", "label": "Pisava", "default": "theme", "options": [
+      { "value": "theme", "label": "Privzeto (pisava besedila)" },
+      { "value": "heading", "label": "Pisava naslovov" },
+      { "value": "ui", "label": "Pisava vmesnika" }
+    ] },
+    { "type": "range", "id": "font_size", "label": "Velikost pisave (namizje)", "min": 10, "max": 20, "step": 1, "unit": "px", "default": 13 },
+    { "type": "range", "id": "letter_spacing", "label": "Razmik med črkami", "min": 0, "max": 30, "step": 1, "unit": "%", "default": 4 },
+    { "type": "checkbox", "id": "uppercase", "label": "Velike črke", "default": false },
+    { "type": "header", "content": "Velikost" },
+    { "type": "range", "id": "height", "label": "Višina vrstice (namizje)", "min": 28, "max": 80, "step": 2, "unit": "px", "default": 40 },
+    { "type": "header", "content": "Mobilno" },
+    { "type": "checkbox", "id": "show_on_mobile", "label": "Prikaži na mobilnem", "default": true },
+    { "type": "color", "id": "bg_color_mobile", "label": "Ozadje (mobilno)" },
+    { "type": "color", "id": "text_color_mobile", "label": "Besedilo (mobilno)", "default": "#13293D" },
+    { "type": "range", "id": "font_size_mobile", "label": "Velikost pisave (mobilno)", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 12 }
   ],
   "presets": [{ "name": "Obvestilna vrstica" }]
 }

@@ -1,15 +1,38 @@
+{%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+{% render 'section-style', id: section.id, s: s, h: '.feature__title', b: '.feature__text' %}
+{%- style -%}
+  {{ sel }} .features { grid-template-columns: repeat({{ s.columns }}, minmax(0,1fr)); column-gap: {{ s.gap }}px; }
+  {{ sel }} .feature__img { width: {{ s.icon_size }}px; height: {{ s.icon_size }}px; {% if s.icon_round %}border-radius: 50%; object-fit: cover;{% endif %} }
+  {{ sel }} .feature__text { max-width: {{ s.text_width }}px; }
+  {%- if s.card_bg != blank %}
+  {{ sel }} .feature { background: {{ s.card_bg }}; border-radius: var(--radius); padding: 28px 24px; }
+  {%- endif %}
+  @media (max-width: 1100px) { {{ sel }} .features { grid-template-columns: repeat({{ s.columns | at_most: 2 }}, minmax(0,1fr)); } }
+  @media (max-width: 749px) {
+    {{ sel }} .features { grid-template-columns: repeat({{ s.columns_mobile }}, minmax(0,1fr)); column-gap: 12px; }
+    {{ sel }} .feature__img { width: {{ s.icon_size_mobile }}px; height: {{ s.icon_size_mobile }}px; }
+    {{ sel }} .feature__text { max-width: none; }
+  }
+{%- endstyle -%}
 <section class="features-wrap">
   <div class="page-width">
     <div class="features">
       {%- for block in section.blocks -%}
-        <div class="feature" {{ block.shopify_attributes }}>
+        <div class="feature s-align" {{ block.shopify_attributes }}>
           {%- if block.settings.image != blank -%}
             {{ block.settings.image | image_url: width: 240 | image_tag: class: 'feature__img', loading: 'lazy', alt: block.settings.title }}
           {%- elsif block.settings.default_icon != 'none' -%}
             {%- assign icon_file = 'icon-' | append: block.settings.default_icon | append: '.png' -%}
             <img class="feature__img" src="{{ icon_file | asset_url }}" alt="" width="104" height="104" loading="lazy">
           {%- endif -%}
-          <h3 class="feature__title">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.link != blank -%}
+            <h3 class="feature__title"><a href="{{ block.settings.link }}">{{ block.settings.title | escape }}</a></h3>
+          {%- else -%}
+            <h3 class="feature__title">{{ block.settings.title | escape }}</h3>
+          {%- endif -%}
           <p class="feature__text">{{ block.settings.text }}</p>
         </div>
       {%- endfor -%}
@@ -21,35 +44,54 @@
 {
   "name": "Prednosti",
   "class": "section-features",
-  "max_blocks": 4,
+  "max_blocks": 6,
   "blocks": [
     {
       "type": "feature",
       "name": "Prednost",
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Ilustracija" },
-        { "type": "select", "id": "default_icon", "label": "Privzeta ilustracija (če slika ni naložena)", "default": "personaliziran", "options": [
-          { "value": "personaliziran", "label": "Personaliziran nakit" },
-          { "value": "dostava", "label": "Dostava" },
-          { "value": "posvet", "label": "Posvet" },
-          { "value": "rocna", "label": "Ročna izdelava" },
-          { "value": "none", "label": "Brez" }
-        ] },
-        { "type": "text", "id": "title", "label": "Naslov", "default": "Personaliziran nakit" },
-        { "type": "textarea", "id": "text", "label": "Besedilo", "default": "Gravura in nakit po meri – oblikujemo ga skupaj z vami." }
+        {"type": "image_picker", "id": "image", "label": "Ilustracija"},
+        {"type": "select", "id": "default_icon", "label": "Privzeta ilustracija (če slika ni naložena)", "default": "personaliziran", "options": [{"value": "personaliziran", "label": "Personaliziran nakit"}, {"value": "dostava", "label": "Dostava"}, {"value": "posvet", "label": "Posvet"}, {"value": "rocna", "label": "Ročna izdelava"}, {"value": "none", "label": "Brez"}]},
+        {"type": "text", "id": "title", "label": "Naslov", "default": "Personaliziran nakit"},
+        {"type": "textarea", "id": "text", "label": "Besedilo", "default": "Gravura in nakit po meri – oblikujemo ga skupaj z vami."},
+        {"type": "url", "id": "link", "label": "Povezava (neobvezno)"}
       ]
     }
   ],
-  "presets": [
-    {
-      "name": "Prednosti",
-      "blocks": [
-        { "type": "feature", "settings": { "default_icon": "personaliziran", "title": "Personaliziran nakit", "text": "Gravura in nakit po meri – oblikujemo ga skupaj z vami." } },
-        { "type": "feature", "settings": { "default_icon": "dostava", "title": "Brezplačna dostava", "text": "Pri nakupu nad 100 € vam nakit pošljemo brezplačno." } },
-        { "type": "feature", "settings": { "default_icon": "posvet", "title": "Posvet z mojstrom", "text": "Pokličite nas ali se oglasite – svetuje vam zlatarski mojster." } },
-        { "type": "feature", "settings": { "default_icon": "rocna", "title": "Ročna izdelava", "text": "Vsak kos ročno izdelamo v naši delavnici. Slovensko poreklo." } }
-      ]
-    }
+  "presets": [{"name": "Prednosti", "blocks": [{"type": "feature", "settings": {"default_icon": "personaliziran", "title": "Personaliziran nakit", "text": "Gravura in nakit po meri – oblikujemo ga skupaj z vami."}}, {"type": "feature", "settings": {"default_icon": "dostava", "title": "Brezplačna dostava", "text": "Pri nakupu nad 100 € vam nakit pošljemo brezplačno."}}, {"type": "feature", "settings": {"default_icon": "posvet", "title": "Posvet z mojstrom", "text": "Pokličite nas ali se oglasite – svetuje vam zlatarski mojster."}}, {"type": "feature", "settings": {"default_icon": "rocna", "title": "Ročna izdelava", "text": "Vsak kos ročno izdelamo v naši delavnici. Slovensko poreklo."}}]}],
+  "settings": [
+    {"type": "header", "content": "Postavitev"},
+    {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 2, "max": 6, "step": 1, "default": 4},
+    {"type": "range", "id": "columns_mobile", "label": "Stolpci (mobilno)", "min": 1, "max": 2, "step": 1, "default": 2},
+    {"type": "range", "id": "gap", "label": "Razmik med stolpci", "min": 0, "max": 64, "step": 2, "default": 24, "unit": "px"},
+    {"type": "range", "id": "text_width", "label": "Največja širina besedila", "min": 160, "max": 400, "step": 10, "default": 260, "unit": "px"},
+    {"type": "color", "id": "card_bg", "label": "Ozadje posamezne prednosti", "info": "Neobvezno – prikaže vsako prednost kot kartico."},
+    {"type": "header", "content": "Ilustracije"},
+    {"type": "range", "id": "icon_size", "label": "Velikost ilustracije (namizje)", "min": 40, "max": 160, "step": 4, "default": 104, "unit": "px"},
+    {"type": "range", "id": "icon_size_mobile", "label": "Velikost ilustracije (mobilno)", "min": 40, "max": 120, "step": 4, "default": 84, "unit": "px"},
+    {"type": "checkbox", "id": "icon_round", "label": "Okrogle ilustracije", "default": false},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "header", "content": "Slika v ozadju"},
+    {"type": "image_picker", "id": "s_bg_image", "label": "Slika v ozadju sekcije"},
+    {"type": "range", "id": "s_bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova prednosti (namizje)", "min": 14, "max": 48, "step": 1, "default": 22, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova prednosti (mobilno)", "min": 12, "max": 36, "step": 1, "default": 18, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost opisa (namizje)", "min": 11, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost opisa (mobilno)", "min": 11, "max": 22, "step": 1, "default": 13, "unit": "px"},
+    {"type": "select", "id": "s_align", "label": "Poravnava besedila", "options": [{"value": "default", "label": "Privzeto"}, {"value": "left", "label": "Levo"}, {"value": "center", "label": "Sredina"}, {"value": "right", "label": "Desno"}], "default": "default"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 72, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 48, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ]
 }
 {% endschema %}

@@ -1,19 +1,43 @@
+{%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.card__price' -%}
+{%- liquid
+  assign st = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+  case st.image_ratio
+    when 'square'
+      assign ar = '1 / 1'
+    when 'landscape'
+      assign ar = '4 / 3'
+    when 'tall'
+      assign ar = '2 / 3'
+    else
+      assign ar = '4 / 5'
+  endcase
+-%}
+{%- style -%}
+  {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns }}, minmax(0,1fr)) !important; gap: {{ st.gap }}px; }
+  {{ sel }} .card__media { aspect-ratio: {{ ar }} !important; border-radius: {{ st.card_radius }}px; {% if st.card_bg != blank %}background: {{ st.card_bg }};{% endif %} }
+  {{ sel }} .card__title { font-size: {{ st.card_title_size }}px; }
+  {%- if st.price_color != blank %}{{ sel }} .card__price { color: {{ st.price_color }}; }{% endif %}
+  
+  @media (max-width: 1100px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns | at_most: 3 }}, minmax(0,1fr)) !important; } }
+  @media (max-width: 749px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns_mobile }}, minmax(0,1fr)) !important; gap: 16px; } }
+{%- endstyle -%}
 <div class="page-width">
-  <div class="coll-head"><h1 class="h-display">{{ blog.title | escape }}</h1></div>
+  <div class="coll-head s-align"><h1 class="h-display">{{ blog.title | escape }}</h1></div>
   {%- paginate blog.articles by 12 -%}
-    <div class="product-grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">
+    <div class="product-grid">
       {%- for article in blog.articles -%}
         <a class="card" href="{{ article.url }}">
-          <div class="card__media" style="aspect-ratio:4/3">
+          <div class="card__media">
             {%- if article.image -%}
               {{ article.image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400,600,900', sizes: '(max-width: 749px) 100vw, 33vw' }}
             {%- else -%}
               {{ 'lifestyle-1' | placeholder_svg_tag }}
             {%- endif -%}
           </div>
-          <p class="eyebrow">{{ article.published_at | date: '%d. %m. %Y' }}</p>
+          {%- if st.show_date -%}<p class="eyebrow">{{ article.published_at | date: '%d. %m. %Y' }}</p>{%- endif -%}
           <h2 class="card__title">{{ article.title | escape }}</h2>
-          <p class="card__price">{{ article.excerpt_or_content | strip_html | truncatewords: 24 }}</p>
+          {%- if st.show_excerpt -%}<p class="card__price">{{ article.excerpt_or_content | strip_html | truncatewords: st.excerpt_words }}</p>{%- endif -%}
         </a>
       {%- endfor -%}
     </div>
@@ -31,6 +55,43 @@
 {
   "name": "Blog",
   "class": "section-main-blog",
-  "settings": []
+  "settings": [
+    {"type": "header", "content": "Prispevki"},
+    {"type": "checkbox", "id": "show_date", "label": "Prikaži datum", "default": true},
+    {"type": "checkbox", "id": "show_excerpt", "label": "Prikaži povzetek", "default": true},
+    {"type": "range", "id": "excerpt_words", "label": "Dolžina povzetka (besede)", "min": 8, "max": 60, "step": 2, "default": 24},
+    {"type": "header", "content": "Mreža"},
+    {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 1, "max": 4, "step": 1, "default": 3},
+    {"type": "range", "id": "columns_mobile", "label": "Stolpci (mobilno)", "min": 1, "max": 2, "step": 1, "default": 1},
+    {"type": "range", "id": "gap", "label": "Razmik med karticami", "min": 8, "max": 48, "step": 2, "default": 24, "unit": "px"},
+    {"type": "select", "id": "image_ratio", "label": "Razmerje slik", "options": [{"value": "portrait", "label": "Pokončno (4:5)"}, {"value": "square", "label": "Kvadrat (1:1)"}, {"value": "landscape", "label": "Ležeče (4:3)"}, {"value": "tall", "label": "Visoko (2:3)"}], "default": "landscape"},
+    {"type": "range", "id": "card_radius", "label": "Zaobljenost slik", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "color", "id": "card_bg", "label": "Ozadje slik brez fotografije"},
+    {"type": "range", "id": "card_title_size", "label": "Velikost naslova kartice", "min": 12, "max": 36, "step": 1, "default": 21, "unit": "px"},
+    {"type": "color", "id": "price_color", "label": "Barva cene / podnaslova"},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_accent", "label": "Poudarek (nadnaslovi, številke)"},
+    {"type": "header", "content": "Slika v ozadju"},
+    {"type": "image_picker", "id": "s_bg_image", "label": "Slika v ozadju sekcije"},
+    {"type": "range", "id": "s_bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 24, "max": 90, "step": 1, "default": 50, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 18, "max": 60, "step": 1, "default": 32, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 11, "max": 20, "step": 1, "default": 14, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 11, "max": 20, "step": 1, "default": 14, "unit": "px"},
+    {"type": "select", "id": "s_align", "label": "Poravnava besedila", "options": [{"value": "default", "label": "Privzeto"}, {"value": "left", "label": "Levo"}, {"value": "center", "label": "Sredina"}, {"value": "right", "label": "Desno"}], "default": "default"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
+  ]
 }
 {% endschema %}

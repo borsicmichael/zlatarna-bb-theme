@@ -6,6 +6,28 @@
     assign has_options = false
   endif
 -%}
+{% render 'section-style', id: section.id, s: section.settings, h: '.product__title', b: '.product__info' %}
+{%- liquid
+  assign st = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+{%- style -%}
+  {{ sel }} .gallery__main { height: {{ st.gallery_height | default: 820 }}px; border-radius: {{ st.image_radius }}px; }
+    {{ sel }} .gallery__main img { object-fit: {{ st.image_fit }}; }
+  {{ sel }} .product__price { font-size: {{ st.price_size }}px; {% if st.price_color != blank %}color: {{ st.price_color }};{% endif %} }
+  {%- if st.pill_bg != blank %}{{ sel }} .pill input:checked + span { background: {{ st.pill_bg }}; border-color: {{ st.pill_bg }}; }{% endif %}
+  {%- if st.pill_fg != blank %}{{ sel }} .pill input:checked + span { color: {{ st.pill_fg }}; }{% endif %}
+  {%- if st.badge_bg != blank %}{{ sel }} .badge:not(.badge--outline) { background: {{ st.badge_bg }}; }{% endif %}
+  {%- unless st.sticky_info %}{{ sel }} .product__info { position: static; }{% endunless %}
+  {%- if st.layout == 'equal' %}{{ sel }} .gallery { grid-column: span 6; } {{ sel }} .product__info { grid-column: span 6; }{% endif %}
+  {%- if st.layout == 'right' %}{{ sel }} .gallery { order: 2; } {{ sel }} .product__info { padding: 8px 32px 0 0; }{% endif %}
+  {%- unless st.show_breadcrumbs %}{{ sel }} .breadcrumbs { display: none; }{% endunless %}
+  {%- unless st.show_details %}{{ sel }} .product-details { display: none; }{% endunless %}
+  @media (max-width: 1100px) { {{ sel }} .gallery__main { height: auto; aspect-ratio: 4 / 5; } }
+  @media (max-width: 749px) {
+    {{ sel }} .product__info { padding: 0; }
+  }
+{%- endstyle -%}
 <div class="page-width" data-product data-money-format="{{ shop.money_format | escape }}">
   <nav class="breadcrumbs" aria-label="Breadcrumbs">
     <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
@@ -160,22 +182,53 @@
   "name": "Izdelek",
   "class": "section-main-product",
   "settings": [
-    { "type": "text", "id": "badge_1", "label": "Značka 1", "default": "Izdelava po naročilu" },
-    { "type": "text", "id": "badge_2", "label": "Značka 2", "default": "Ročno delo" },
-    { "type": "text", "id": "selected_prefix", "label": "Predpona izbrane možnosti", "default": "Izbrana" },
-    { "type": "text", "id": "price_note", "label": "Opomba pod ceno", "default": "končno ceno potrdimo ob naročilu" },
-    { "type": "text", "id": "button_label", "label": "Gumb – besedilo", "default": "Oddaj povpraševanje" },
-    { "type": "checkbox", "id": "show_length", "label": "Polje »Želena dolžina (cm)«", "default": true },
-    { "type": "checkbox", "id": "length_required", "label": "Dolžina je obvezna", "default": false },
-    { "type": "checkbox", "id": "show_note", "label": "Polje za opombo / gravuro", "default": false },
-    { "type": "text", "id": "phone_label", "label": "Gumb za klic – besedilo", "default": "Posvet z mojstrom · 070 644 056" },
-    { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
-    { "type": "header", "content": "Spodnji stolpci" },
-    { "type": "text", "id": "details_1_title", "label": "Stolpec 1 – naslov (vsebina = opis izdelka)", "default": "O izdelku" },
-    { "type": "text", "id": "details_2_title", "label": "Stolpec 2 – naslov", "default": "Kako poteka naročilo" },
-    { "type": "richtext", "id": "details_2_text", "label": "Stolpec 2 – besedilo", "default": "<p>Oddajte povpraševanje ali nas pokličite. Potrdimo debelino, dolžino in končno ceno, nato verižico ročno izdelamo.</p>" },
-    { "type": "text", "id": "details_3_title", "label": "Stolpec 3 – naslov", "default": "Zakaj cena niha?" },
-    { "type": "richtext", "id": "details_3_text", "label": "Stolpec 3 – besedilo", "default": "<p>Cena je vezana na trenutno ceno zlata. Zato jo potrdimo ob naročilu – tako plačate pošteno ceno dneva.</p>" }
+    {"type": "text", "id": "badge_1", "label": "Značka 1", "default": "Izdelava po naročilu"},
+    {"type": "text", "id": "badge_2", "label": "Značka 2", "default": "Ročno delo"},
+    {"type": "text", "id": "selected_prefix", "label": "Predpona izbrane možnosti", "default": "Izbrana"},
+    {"type": "text", "id": "price_note", "label": "Opomba pod ceno", "default": "končno ceno potrdimo ob naročilu"},
+    {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "default": "Oddaj povpraševanje"},
+    {"type": "checkbox", "id": "show_length", "label": "Polje »Želena dolžina (cm)«", "default": true},
+    {"type": "checkbox", "id": "length_required", "label": "Dolžina je obvezna", "default": false},
+    {"type": "checkbox", "id": "show_note", "label": "Polje za opombo / gravuro", "default": false},
+    {"type": "text", "id": "phone_label", "label": "Gumb za klic – besedilo", "default": "Posvet z mojstrom · 070 644 056"},
+    {"type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056"},
+    {"type": "header", "content": "Spodnji stolpci"},
+    {"type": "text", "id": "details_1_title", "label": "Stolpec 1 – naslov (vsebina = opis izdelka)", "default": "O izdelku"},
+    {"type": "text", "id": "details_2_title", "label": "Stolpec 2 – naslov", "default": "Kako poteka naročilo"},
+    {"type": "richtext", "id": "details_2_text", "label": "Stolpec 2 – besedilo", "default": "<p>Oddajte povpraševanje ali nas pokličite. Potrdimo debelino, dolžino in končno ceno, nato verižico ročno izdelamo.</p>"},
+    {"type": "text", "id": "details_3_title", "label": "Stolpec 3 – naslov", "default": "Zakaj cena niha?"},
+    {"type": "richtext", "id": "details_3_text", "label": "Stolpec 3 – besedilo", "default": "<p>Cena je vezana na trenutno ceno zlata. Zato jo potrdimo ob naročilu – tako plačate pošteno ceno dneva.</p>"},
+    {"type": "header", "content": "Postavitev"},
+    {"type": "select", "id": "layout", "label": "Postavitev", "options": [{"value": "default", "label": "Galerija levo (7/5)"}, {"value": "equal", "label": "Galerija levo (polovica/polovica)"}, {"value": "right", "label": "Galerija desno"}], "default": "default"},
+    {"type": "checkbox", "id": "sticky_info", "label": "Podatki ostanejo vidni ob pomikanju", "default": true},
+    {"type": "checkbox", "id": "show_breadcrumbs", "label": "Prikaži drobtinice", "default": true},
+    {"type": "checkbox", "id": "show_details", "label": "Prikaži spodnje tri stolpce", "default": true},
+    {"type": "header", "content": "Galerija"},
+    {"type": "number", "id": "gallery_height", "label": "Višina glavne slike v px (namizje)", "default": 820},
+    {"type": "select", "id": "image_fit", "label": "Prikaz slike", "options": [{"value": "cover", "label": "Zapolni okvir"}, {"value": "contain", "label": "Prikaži celo sliko"}], "default": "cover"},
+    {"type": "range", "id": "image_radius", "label": "Zaobljenost glavne slike", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "header", "content": "Cena, možnosti in značke"},
+    {"type": "range", "id": "price_size", "label": "Velikost cene (namizje)", "min": 16, "max": 48, "step": 1, "default": 29, "unit": "px"},
+    {"type": "color", "id": "price_color", "label": "Barva cene"},
+    {"type": "color", "id": "pill_bg", "label": "Izbrana možnost – ozadje", "info": "Pustite prazno za svetlo modro."},
+    {"type": "color", "id": "pill_fg", "label": "Izbrana možnost – besedilo"},
+    {"type": "color", "id": "badge_bg", "label": "Značka 1 – ozadje"},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
+    {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
+    {"type": "color", "id": "s_btn2_bg", "label": "Svetel gumb – ozadje"},
+    {"type": "color", "id": "s_btn2_fg", "label": "Svetel gumb – besedilo"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost imena izdelka (namizje)", "min": 24, "max": 90, "step": 1, "default": 52, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost imena izdelka (mobilno)", "min": 20, "max": 60, "step": 1, "default": 36, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ],
   "blocks": [
     {
@@ -183,15 +236,9 @@
       "name": "Zaupanje (vrstica)",
       "limit": 5,
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "Ilustracija" },
-        { "type": "select", "id": "default_icon", "label": "Privzeta ilustracija", "default": "dostava", "options": [
-          { "value": "personaliziran", "label": "Personaliziran nakit" },
-          { "value": "dostava", "label": "Dostava" },
-          { "value": "posvet", "label": "Posvet" },
-          { "value": "rocna", "label": "Ročna izdelava" },
-          { "value": "none", "label": "Brez" }
-        ] },
-        { "type": "text", "id": "text", "label": "Besedilo", "default": "Brezplačna dostava nad 100 € · sledljiva pošiljka" }
+        {"type": "image_picker", "id": "image", "label": "Ilustracija"},
+        {"type": "select", "id": "default_icon", "label": "Privzeta ilustracija", "default": "dostava", "options": [{"value": "personaliziran", "label": "Personaliziran nakit"}, {"value": "dostava", "label": "Dostava"}, {"value": "posvet", "label": "Posvet"}, {"value": "rocna", "label": "Ročna izdelava"}, {"value": "none", "label": "Brez"}]},
+        {"type": "text", "id": "text", "label": "Besedilo", "default": "Brezplačna dostava nad 100 € · sledljiva pošiljka"}
       ]
     }
   ]

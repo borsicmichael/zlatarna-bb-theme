@@ -1,42 +1,84 @@
 {%- liquid
-  assign op = section.settings.overlay | times: 0.01
-  assign op_outer = section.settings.overlay | times: 0.0044
-  assign m1 = section.settings.overlay | times: 0.0024
-  assign m2 = section.settings.overlay | times: 0.0056
-  assign m3 = section.settings.overlay | times: 0.0124
+  assign s = section.settings
+  assign op = s.overlay | times: 0.01
+  assign op_outer = s.overlay | times: 0.0044
+  assign m1 = s.overlay | times: 0.0024
+  assign m2 = s.overlay | times: 0.0056
+  assign m3 = s.overlay | times: 0.0124
+  assign oc = s.overlay_color | default: '#0D1D30'
+  assign sel = '#Hero-' | append: section.id
 -%}
+{% render 'section-style', id: section.id, s: s, h: '.hero__heading', b: '.hero__sub' %}
 {%- style -%}
-  #Hero-{{ section.id }} { height: {{ section.settings.height | default: 617 }}px; }
-  #Hero-{{ section.id }} .hero__overlay { background: radial-gradient(ellipse 42% 60% at 50% 50%, rgba(13,29,48,{{ op }}), rgba(13,29,48,{{ op_outer }})); }
+  {{ sel }} { height: {{ s.height | default: 617 }}px; }
+  {%- if s.bg_color != blank %}{{ sel }} { background: {{ s.bg_color }}; }{% endif %}
+  {{ sel }} .hero__overlay {
+    {%- if s.overlay_style == 'flat' %}
+    background: {{ oc | color_modify: 'alpha', op }};
+    {%- elsif s.overlay_style == 'bottom' %}
+    background: linear-gradient(180deg, {{ oc | color_modify: 'alpha', m1 }} 0%, {{ oc | color_modify: 'alpha', m2 }} 45%, {{ oc | color_modify: 'alpha', m3 }} 100%);
+    {%- else %}
+    background: radial-gradient(ellipse 42% 60% at 50% 50%, {{ oc | color_modify: 'alpha', op }}, {{ oc | color_modify: 'alpha', op_outer }});
+    {%- endif %}
+  }
+  {{ sel }} .hero__content {
+    color: {{ s.text_color }};
+    max-width: {{ s.content_width }}px;
+    justify-content: {% case s.position %}{% when 'top' %}flex-start{% when 'bottom' %}flex-end{% else %}center{% endcase %};
+    {%- if s.position != 'center' %} padding-top: 64px; padding-bottom: 64px;{% endif %}
+    {%- case s.align %}{% when 'left' %} align-items: flex-start; text-align: left; margin-left: 64px;{% when 'right' %} align-items: flex-end; text-align: right; margin-right: 64px;{% endcase %}
+    {%- unless s.text_shadow %} text-shadow: none;{% endunless %}
+  }
+  {{ sel }} .hero__heading { color: {{ s.heading_color | default: s.text_color }}; }
+  {{ sel }} .hero__sub { max-width: {{ s.sub_width }}px; {% unless s.sub_italic %}font-style: normal;{% endunless %} }
+  {{ sel }} .hero__links a:not(.btn) { color: {{ s.link_color | default: s.text_color }}; font-size: {{ s.link_size }}px; }
+  {{ sel }} .hero__links { gap: {{ s.link_gap }}px; }
   @media (max-width: 749px) {
-    #Hero-{{ section.id }} { height: {{ section.settings.height_mobile }}px; }
-    #Hero-{{ section.id }} .hero__overlay { background: linear-gradient(180deg, rgba(13,29,48,{{ m1 }}) 0%, rgba(13,29,48,{{ m2 }}) 45%, rgba(13,29,48,{{ m3 }}) 100%); }
-    #Hero-{{ section.id }} .hero__media video, #Hero-{{ section.id }} .hero__media img { object-position: {{ section.settings.mobile_focus }}% 50%; }
+    {{ sel }} { height: {{ s.height_mobile }}px; }
+    {{ sel }} .hero__overlay { background: linear-gradient(180deg, {{ oc | color_modify: 'alpha', m1 }} 0%, {{ oc | color_modify: 'alpha', m2 }} 45%, {{ oc | color_modify: 'alpha', m3 }} 100%); }
+    {{ sel }} .hero__media video, {{ sel }} .hero__media img { object-position: {{ s.mobile_focus }}% 50%; }
+    {{ sel }} .hero__content {
+      justify-content: {% case s.position_mobile %}{% when 'top' %}flex-start{% when 'center' %}center{% else %}flex-end{% endcase %};
+      margin: 0; align-items: center; text-align: center; padding-top: 40px;
+    }
+    {{ sel }} .hero__sub { max-width: none; }
+    {{ sel }} .hero__links { gap: 20px; }
   }
 {%- endstyle -%}
 
 <section class="hero" id="Hero-{{ section.id }}" data-hero>
   <div class="hero__media">
-    {%- if section.settings.video != blank -%}
-      {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1920x' }}
-    {%- elsif section.settings.image != blank -%}
-      {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920,2400', sizes: '100vw' }}
+    {%- if s.video != blank -%}
+      {{ s.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1920x' }}
+    {%- elsif s.image != blank -%}
+      {%- if s.image_mobile != blank -%}
+        <picture>
+          <source media="(max-width: 749px)" srcset="{{ s.image_mobile | image_url: width: 1100 }}">
+          {{ s.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920,2400', sizes: '100vw' }}
+        </picture>
+      {%- else -%}
+        {{ s.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920,2400', sizes: '100vw' }}
+      {%- endif -%}
     {%- else -%}
       {%- assign poster_file = 'hero-poster' | append: '.jpg' -%}
       {%- assign video_file = 'hero-video' | append: '.mp4' -%}
-      <video autoplay muted loop playsinline preload="auto" poster="{{ poster_file | asset_url }}">
+      <video autoplay muted loop playsinline preload="auto" poster="{% if s.poster != blank %}{{ s.poster | image_url: width: 1920 }}{% else %}{{ poster_file | asset_url }}{% endif %}">
         <source src="{{ video_file | asset_url }}" type="video/mp4">
       </video>
     {%- endif -%}
   </div>
   <div class="hero__overlay"></div>
   <div class="hero__content">
-    {%- if section.settings.heading != blank -%}<h1 class="hero__heading">{{ section.settings.heading }}</h1>{%- endif -%}
-    {%- if section.settings.subheading != blank -%}<p class="hero__sub">{{ section.settings.subheading }}</p>{%- endif -%}
+    {%- if s.heading != blank -%}<h1 class="hero__heading">{{ s.heading }}</h1>{%- endif -%}
+    {%- if s.subheading != blank -%}<p class="hero__sub">{{ s.subheading }}</p>{%- endif -%}
     {%- if section.blocks.size > 0 -%}
       <div class="hero__links">
         {%- for block in section.blocks -%}
-          <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+          {%- if block.settings.style == 'button' -%}
+            <a class="btn btn--light" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }} style="text-decoration:none">{{ block.settings.label | escape }}</a>
+          {%- else -%}
+            <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+          {%- endif -%}
         {%- endfor -%}
       </div>
     {%- endif -%}
@@ -48,14 +90,60 @@
   "name": "Hero z videom",
   "class": "section-hero",
   "settings": [
+    { "type": "header", "content": "Medij" },
     { "type": "video", "id": "video", "label": "Video (Shopify)", "info": "Če ni izbran, se predvaja vgrajeni video iz teme. Zvok in kontrole so vedno izklopljeni." },
+    { "type": "image_picker", "id": "poster", "label": "Slika pred nalaganjem videa", "info": "Za vgrajeni video. Pustite prazno za privzeto sliko." },
     { "type": "image_picker", "id": "image", "label": "Slika (namesto videa)" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Slika za mobilno (neobvezno)" },
+    { "type": "range", "id": "mobile_focus", "label": "Vodoravna točka na mobilnem", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 24 },
+    { "type": "header", "content": "Vsebina" },
     { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Sestavi svoj sijaj" },
     { "type": "text", "id": "subheading", "label": "Podnaslov", "default": "Ročno in mojstrsko narejen nakit – iz zlata in dragih kamnov." },
+    { "type": "select", "id": "position", "label": "Navpični položaj (namizje)", "default": "center", "options": [
+      { "value": "top", "label": "Zgoraj" }, { "value": "center", "label": "Sredina" }, { "value": "bottom", "label": "Spodaj" }
+    ] },
+    { "type": "select", "id": "align", "label": "Vodoravna poravnava (namizje)", "default": "center", "options": [
+      { "value": "left", "label": "Levo" }, { "value": "center", "label": "Sredina" }, { "value": "right", "label": "Desno" }
+    ] },
+    { "type": "select", "id": "position_mobile", "label": "Navpični položaj (mobilno)", "default": "bottom", "options": [
+      { "value": "top", "label": "Zgoraj" }, { "value": "center", "label": "Sredina" }, { "value": "bottom", "label": "Spodaj" }
+    ] },
+    { "type": "range", "id": "content_width", "label": "Širina vsebine", "min": 400, "max": 1200, "step": 10, "unit": "px", "default": 700 },
+    { "type": "range", "id": "sub_width", "label": "Širina podnaslova", "min": 240, "max": 800, "step": 10, "unit": "px", "default": 420 },
+    { "type": "header", "content": "Prekrivanje" },
+    { "type": "select", "id": "overlay_style", "label": "Oblika prekrivanja (namizje)", "default": "radial", "options": [
+      { "value": "radial", "label": "Okrogla (temneje na sredini)" }, { "value": "flat", "label": "Enakomerna" }, { "value": "bottom", "label": "Temneje spodaj" }
+    ] },
+    { "type": "color", "id": "overlay_color", "label": "Barva prekrivanja", "default": "#0D1D30" },
     { "type": "range", "id": "overlay", "label": "Temnost prekrivanja", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 50 },
+    { "type": "header", "content": "Barve" },
+    { "type": "color", "id": "text_color", "label": "Besedilo", "default": "#FFFFFF" },
+    { "type": "color", "id": "heading_color", "label": "Naslov", "info": "Pustite prazno za barvo besedila." },
+    { "type": "color", "id": "link_color", "label": "Povezave", "info": "Pustite prazno za barvo besedila." },
+    { "type": "color", "id": "bg_color", "label": "Ozadje med nalaganjem", "default": "#EAF6FD" },
+    { "type": "color", "id": "s_btn2_bg", "label": "Gumb – ozadje" },
+    { "type": "color", "id": "s_btn2_fg", "label": "Gumb – besedilo" },
+    { "type": "checkbox", "id": "text_shadow", "label": "Senca pod besedilom", "default": true },
+    { "type": "header", "content": "Tipografija" },
+    { "type": "select", "id": "s_heading_font", "label": "Pisava naslova", "default": "theme", "options": [
+      { "value": "theme", "label": "Privzeto (tema)" }, { "value": "heading", "label": "Pisava naslovov (Nastavitve teme)" }, { "value": "body", "label": "Pisava besedila (Nastavitve teme)" }, { "value": "ui", "label": "Pisava vmesnika (Nastavitve teme)" }, { "value": "logo", "label": "Montserrat" }, { "value": "georgia", "label": "Georgia" }, { "value": "system", "label": "Sistemska pisava" }, { "value": "custom1", "label": "Pisava po meri 1" }, { "value": "custom2", "label": "Pisava po meri 2" }
+    ] },
+    { "type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "default": "theme", "options": [
+      { "value": "theme", "label": "Privzeto" }, { "value": "300", "label": "Tanka (300)" }, { "value": "400", "label": "Navadna (400)" }, { "value": "500", "label": "Srednja (500)" }, { "value": "600", "label": "Polkrepka (600)" }, { "value": "700", "label": "Krepka (700)" }
+    ] },
+    { "type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "default": "theme", "options": [
+      { "value": "theme", "label": "Privzeto" }, { "value": "none", "label": "Kot je vpisano" }, { "value": "upper", "label": "VELIKE ČRKE" }
+    ] },
+    { "type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 32, "max": 120, "step": 1, "unit": "px", "default": 78 },
+    { "type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 24, "max": 80, "step": 1, "unit": "px", "default": 46 },
+    { "type": "range", "id": "s_body_size", "label": "Velikost podnaslova (namizje)", "min": 12, "max": 32, "step": 1, "unit": "px", "default": 19 },
+    { "type": "range", "id": "s_body_size_m", "label": "Velikost podnaslova (mobilno)", "min": 12, "max": 28, "step": 1, "unit": "px", "default": 16 },
+    { "type": "checkbox", "id": "sub_italic", "label": "Podnaslov v ležečem tisku", "default": true },
+    { "type": "range", "id": "link_size", "label": "Velikost povezav", "min": 10, "max": 18, "step": 1, "unit": "px", "default": 12 },
+    { "type": "range", "id": "link_gap", "label": "Razmik med povezavami", "min": 8, "max": 60, "step": 2, "unit": "px", "default": 22 },
+    { "type": "header", "content": "Velikost" },
     { "type": "number", "id": "height", "label": "Višina v px (namizje)", "default": 617 },
-    { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 360, "max": 800, "step": 10, "unit": "px", "default": 540 },
-    { "type": "range", "id": "mobile_focus", "label": "Vodoravna točka na mobilnem", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 24 }
+    { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 360, "max": 800, "step": 10, "unit": "px", "default": 540 }
   ],
   "blocks": [
     {
@@ -64,7 +152,10 @@
       "limit": 3,
       "settings": [
         { "type": "text", "id": "label", "label": "Besedilo", "default": "Oglej si nakit" },
-        { "type": "url", "id": "url", "label": "URL" }
+        { "type": "url", "id": "url", "label": "URL" },
+        { "type": "select", "id": "style", "label": "Videz", "default": "link", "options": [
+          { "value": "link", "label": "Podčrtana povezava" }, { "value": "button", "label": "Gumb" }
+        ] }
       ]
     }
   ],

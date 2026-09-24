@@ -1,33 +1,75 @@
-{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+{%- liquid
+  assign s = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+-%}
+{% render 'section-style', id: section.id, s: s, h: '.newsletter__text h2', b: '.newsletter__text p:not(.eyebrow)' %}
+{%- style -%}
+  {{ sel }} .newsletter {
+    min-height: {{ s.min_height }}px; border-radius: {{ s.radius }}px;
+    {%- if s.box_bg != blank %} background-color: {{ s.box_bg }};{% endif %}
+    {%- if s.box_image != blank -%}
+      {%- assign ov = 0.4 %}
+      background-image: linear-gradient(rgba(13,29,48,{{ ov }}), rgba(13,29,48,{{ ov }})), url('{{ s.box_image | image_url: width: 2000 }}'); background-size: cover; background-position: center;
+    {%- endif %}
+    {%- if s.layout == 'stacked' %} grid-template-columns: 1fr; text-align: center;{% endif %}
+    {%- if s.full_width %} border-radius: 0;{% endif %}
+  }
+  {%- if s.layout == 'stacked' %}
+  {{ sel }} .newsletter__text { align-items: center; padding-bottom: 0; }
+  {{ sel }} .newsletter__form { border-left: 0; max-width: 640px; width: 100%; margin: 0 auto; }
+  {{ sel }} .newsletter__consent { justify-content: center; }
+  {%- endif %}
+  {%- if s.layout == 'form_left' %}
+  {{ sel }} .newsletter__text { order: 2; }
+  {{ sel }} .newsletter__form { border-left: 0; border-right: 1px solid {{ s.line_color | default: '#C3D6E3' }}; }
+  {%- endif %}
+  {%- if s.line_color != blank %}{{ sel }} .newsletter__form { border-color: {{ s.line_color }}; }{% endif %}
+  {%- unless s.show_divider %}{{ sel }} .newsletter__form { border: 0; }{% endunless %}
+  {%- if s.input_bg != blank %}{{ sel }} .newsletter .field__input { background: {{ s.input_bg }}; }{% endif %}
+  {%- if s.full_width %}{{ sel }} > section > .page-width { max-width: none; padding: 0; }{% endif %}
+  @media (max-width: 749px) {
+    {{ sel }} .newsletter { border-radius: {{ s.radius_mobile }}px; min-height: 0; }
+    {%- if s.full_width %}{{ sel }} .newsletter { border-radius: 0; }{% endif %}
+    {{ sel }} .newsletter__form { border: 0; }
+    {%- if s.show_text_mobile %}{{ sel }} .newsletter__text p:not(.eyebrow) { display: block !important; }{% endif %}
+  }
+{%- endstyle -%}
 <section>
   <div class="page-width">
     <div class="newsletter">
       <div class="newsletter__text">
-        {%- if section.settings.eyebrow != blank -%}<p class="eyebrow" style="color: var(--c-accent-dark)">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
-        <h2>{{ section.settings.heading }}</h2>
-        {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+        {%- if s.image != blank -%}
+          {{ s.image | image_url: width: 400 | image_tag: loading: 'lazy', alt: '', style: 'width: 120px; height: auto;' }}
+        {%- endif -%}
+        {%- if s.eyebrow != blank -%}<p class="eyebrow" style="color: var(--c-accent-dark)">{{ s.eyebrow | escape }}</p>{%- endif -%}
+        <h2>{{ s.heading }}</h2>
+        {%- if s.text != blank -%}<p>{{ s.text }}</p>{%- endif -%}
       </div>
       <div class="newsletter__form">
         {%- assign form_id = 'Newsletter-' | append: section.id -%}
         {%- form 'customer', id: form_id -%}
-          <input type="hidden" name="contact[tags]" value="{{ section.settings.tags | escape }}">
+          <input type="hidden" name="contact[tags]" value="{{ s.tags | escape }}">
           {%- if form.posted_successfully? -%}
-            <p class="form-message" role="status">{{ 'newsletter.success' | t }}</p>
+            <p class="form-message" role="status">{% if s.success_message != blank %}{{ s.success_message }}{% else %}{{ 'newsletter.success' | t }}{% endif %}</p>
           {%- elsif form.errors -%}
             <p class="form-message" role="alert">{{ form.errors | default_errors }}</p>
           {%- endif -%}
           <div class="newsletter__fields">
-            <label class="newsletter__label newsletter__name" for="NewsletterName-{{ section.id }}">{{ 'newsletter.name' | t }}</label>
-            <input class="field__input newsletter__name" id="NewsletterName-{{ section.id }}" type="text" name="contact[first_name]" autocomplete="given-name" placeholder="{{ section.settings.name_placeholder | escape }}">
+            {%- if s.show_name -%}
+              <label class="newsletter__label newsletter__name" for="NewsletterName-{{ section.id }}">{{ 'newsletter.name' | t }}</label>
+              <input class="field__input newsletter__name" id="NewsletterName-{{ section.id }}" type="text" name="contact[first_name]" autocomplete="given-name" placeholder="{{ s.name_placeholder | escape }}">
+            {%- endif -%}
             <label class="newsletter__label" for="NewsletterEmail-{{ section.id }}">{{ 'newsletter.email' | t }}</label>
             <div class="newsletter__row">
-              <input class="field__input" id="NewsletterEmail-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ section.settings.email_placeholder | escape }}">
-              <button type="submit" class="btn">{{ section.settings.button_label | escape }}</button>
+              <input class="field__input" id="NewsletterEmail-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ s.email_placeholder | escape }}">
+              <button type="submit" class="btn">{{ s.button_label | escape }}</button>
             </div>
-            <label class="newsletter__consent">
-              <input type="checkbox" name="contact[accepts_marketing]" value="true">
-              {{- 'newsletter.consent' | t -}}
-            </label>
+            {%- if s.show_consent -%}
+              <label class="newsletter__consent">
+                <input type="checkbox" name="contact[accepts_marketing]" value="true">
+                {{- 'newsletter.consent' | t -}}
+              </label>
+            {%- endif -%}
           </div>
         {%- endform -%}
       </div>
@@ -40,16 +82,55 @@
   "name": "E-knjiga / novice",
   "class": "section-newsletter",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Nadnaslov", "default": "Brezplačna e-knjiga" },
-    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Kateri nakit najbolje pristaja vašemu <em>znamenju?</em>" },
-    { "type": "textarea", "id": "text", "label": "Besedilo", "default": "Prejmite vodič po astrologiji in nakitu ter obvestila o novostih in akcijah." },
-    { "type": "text", "id": "name_placeholder", "label": "Namig v polju za ime", "default": "Vaše ime" },
-    { "type": "text", "id": "email_placeholder", "label": "Namig v polju za e-pošto", "default": "ime@primer.si" },
-    { "type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji e-knjigo" },
-    { "type": "text", "id": "tags", "label": "Oznaka stranke", "default": "newsletter,e-knjiga", "info": "Po tej oznaki v Shopify Flow ali e-poštni aplikaciji pošljete e-knjigo." },
-    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 160 },
-    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+    {"type": "header", "content": "Vsebina"},
+    {"type": "text", "id": "eyebrow", "label": "Nadnaslov", "default": "Brezplačna e-knjiga"},
+    {"type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Kateri nakit najbolje pristaja vašemu <em>znamenju?</em>"},
+    {"type": "textarea", "id": "text", "label": "Besedilo", "default": "Prejmite vodič po astrologiji in nakitu ter obvestila o novostih in akcijah."},
+    {"type": "text", "id": "name_placeholder", "label": "Namig v polju za ime", "default": "Vaše ime"},
+    {"type": "text", "id": "email_placeholder", "label": "Namig v polju za e-pošto", "default": "ime@primer.si"},
+    {"type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji e-knjigo"},
+    {"type": "text", "id": "tags", "label": "Oznaka stranke", "default": "newsletter,e-knjiga", "info": "Po tej oznaki v Shopify Flow ali e-poštni aplikaciji pošljete e-knjigo."},
+    {"type": "text", "id": "success_message", "label": "Sporočilo po prijavi", "info": "Pustite prazno za privzeto besedilo."},
+    {"type": "image_picker", "id": "image", "label": "Slika nad besedilom (npr. naslovnica e-knjige)"},
+    {"type": "checkbox", "id": "show_name", "label": "Prikaži polje za ime", "default": true},
+    {"type": "checkbox", "id": "show_consent", "label": "Prikaži soglasje za obvestila", "default": true},
+    {"type": "header", "content": "Postavitev"},
+    {"type": "select", "id": "layout", "label": "Postavitev", "options": [{"value": "split", "label": "Besedilo levo, obrazec desno"}, {"value": "form_left", "label": "Obrazec levo, besedilo desno"}, {"value": "stacked", "label": "Eno pod drugim (sredinsko)"}], "default": "split"},
+    {"type": "checkbox", "id": "full_width", "label": "Okvir čez celo širino", "default": false},
+    {"type": "range", "id": "min_height", "label": "Najmanjša višina okvirja", "min": 200, "max": 700, "step": 10, "default": 420, "unit": "px"},
+    {"type": "range", "id": "radius", "label": "Zaobljenost okvirja (namizje)", "min": 0, "max": 40, "step": 2, "default": 0, "unit": "px"},
+    {"type": "range", "id": "radius_mobile", "label": "Zaobljenost okvirja (mobilno)", "min": 0, "max": 40, "step": 2, "default": 20, "unit": "px"},
+    {"type": "checkbox", "id": "show_divider", "label": "Ločilna črta med besedilom in obrazcem", "default": true},
+    {"type": "header", "content": "Barve okvirja in polj"},
+    {"type": "color", "id": "box_bg", "label": "Ozadje okvirja", "info": "Pustite prazno za svetlo modro iz Nastavitev teme."},
+    {"type": "image_picker", "id": "box_image", "label": "Slika v ozadju okvirja"},
+    {"type": "color", "id": "line_color", "label": "Ločilna črta"},
+    {"type": "color", "id": "input_bg", "label": "Ozadje vnosnih polj"},
+    {"type": "header", "content": "Mobilno"},
+    {"type": "checkbox", "id": "show_text_mobile", "label": "Prikaži besedilo na mobilnem", "default": false},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_accent", "label": "Poudarek (nadnaslovi, številke)"},
+    {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
+    {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
+    {"type": "header", "content": "Slika v ozadju"},
+    {"type": "image_picker", "id": "s_bg_image", "label": "Slika v ozadju sekcije"},
+    {"type": "range", "id": "s_bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 20, "max": 80, "step": 1, "default": 40, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 16, "max": 48, "step": 1, "default": 26, "unit": "px"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 11, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 11, "max": 22, "step": 1, "default": 14, "unit": "px"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 160, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 64, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
   ],
-  "presets": [{ "name": "E-knjiga / novice" }]
+  "presets": [{"name": "E-knjiga / novice"}]
 }
 {% endschema %}
