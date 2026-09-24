@@ -46,7 +46,7 @@
     </div>
   {%- endif -%}
 
-  {%- paginate collection.products by st.per_page -%}
+  {%- paginate collection.products by section.settings.per_page -%}
     <form class="facets" action="{{ collection.url }}" method="get" data-facets>
       <div class="facets__bar">
         <div class="facets__filters">
