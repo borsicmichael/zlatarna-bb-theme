@@ -1,0 +1,41 @@
+{%- assign st = section.settings -%}
+  {%- paginate collection.products by section.settings.per_page -%}
+    {%- liquid
+      assign hide_price = true
+      if st.show_price
+        assign hide_price = false
+      endif
+      assign hide_add = true
+      if st.show_quick_add
+        assign hide_add = false
+      endif
+    -%}
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid">
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="{{ 'general.page' | t: page: paginate.current_page }}">
+          {%- if paginate.previous -%}<a class="pagination__arrow" href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left', px: 16 %}</a>{%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="current" aria-current="page">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}<a class="pagination__arrow" href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right', px: 16 %}</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- else -%}
+      <div class="empty">
+        <p>{%- if any_active -%}{{ 'collections.no_match' | t }}{%- else -%}{{ 'collections.empty' | t }}{%- endif -%}</p>
+        {%- if any_active -%}
+          <a class="btn" href="{{ collection.url }}">{{ 'collections.clear' | t }}</a>
+        {%- else -%}
+          <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endpaginate -%}
+{% schema %}
+{"name":"T","settings":[{"type":"checkbox","id":"show_price","label":"a","default":true},{"type":"checkbox","id":"show_quick_add","label":"b","default":true},{"type":"range","id":"per_page","label":"P","min":8,"max":48,"step":4,"default":24}]}
+{% endschema %}
