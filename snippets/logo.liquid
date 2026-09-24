@@ -1,0 +1,25 @@
+{%- comment -%}
+  Renders the shop logo. Uses the uploaded logo from theme settings when present,
+  otherwise the built-in BB monogram + ZLATARNA wordmark.
+  Params: inverted (boolean) – light version for dark backgrounds, height (number)
+{%- endcomment -%}
+{%- liquid
+  assign h = height | default: settings.logo_height
+  if inverted
+    assign box = '#E6E6E6'
+    assign stroke = '#0D1D30'
+    assign text_color = '#F7F9FA'
+  else
+    assign box = '#0D1D30'
+    assign stroke = '#E6E6E6'
+    assign text_color = '#0D1D30'
+  endif
+  assign w = h | times: 442 | divided_by: 360
+  assign font_size = h | times: 0.48 | round
+-%}
+{%- if settings.logo != blank and inverted != true -%}
+  {{ settings.logo | image_url: height: 200 | image_tag: height: h, alt: shop.name, loading: 'eager' }}
+{%- else -%}
+  <svg width="{{ w }}" height="{{ h }}" viewBox="0 0 442 360" aria-hidden="true" focusable="false" style="flex-shrink:0"><rect width="442" height="360" fill="{{ box }}"/><g fill="none" stroke="{{ stroke }}" stroke-width="28"><path d="M248 30V265"/><path d="M262 45H140A68 55 0 0 0 140 155H145"/><path d="M145 197H135A80 58 0 0 0 135 313H145"/><path d="M188 94V328"/><path d="M174 313H308A78 58 0 0 0 308 197H295"/><path d="M295 155H306A64 55 0 0 0 306 45H295"/></g></svg>
+  <span class="logo__text" style="font-size:{{ font_size }}px;color:{{ text_color }}">ZLATARNA</span>
+{%- endif -%}

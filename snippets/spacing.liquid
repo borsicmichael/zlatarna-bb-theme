@@ -1,0 +1,5 @@
+{%- comment -%} Section top spacing. Params: id (section.id), top (px desktop), mobile (px mobile) {%- endcomment -%}
+{%- style -%}
+  #shopify-section-{{ id }} { padding-top: {{ top }}px; }
+  @media (max-width: 749px) { #shopify-section-{{ id }} { padding-top: {{ mobile }}px; } }
+{%- endstyle -%}
