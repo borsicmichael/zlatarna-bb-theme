@@ -1,0 +1,77 @@
+{
+  "general": {
+    "page": "Page {{ page }}",
+    "home": "Home",
+    "menu": "Menu",
+    "close": "Close",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart",
+    "previous": "Previous",
+    "next": "Next",
+    "view_all": "View all",
+    "continue_shopping": "Continue shopping",
+    "rights": "All rights reserved."
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "home_link": "{{ shop }} – home",
+    "main_menu": "Main menu",
+    "categories": "Categories",
+    "previous_slide": "Previous product",
+    "next_slide": "Next product"
+  },
+  "products": {
+    "from": "from {{ price }}",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "add_to_cart": "Add to cart",
+    "inquiry": "Send inquiry",
+    "quantity": "Quantity",
+    "selected": "Selected",
+    "price_note": "Final price is confirmed when you order – gold prices fluctuate.",
+    "length": "Desired length (cm)",
+    "length_placeholder": "e.g. 50",
+    "note": "Note (engraving, wishes …)",
+    "made_to_order": "Made to order",
+    "handmade": "Handmade"
+  },
+  "collections": {
+    "empty": "No products in this collection yet.",
+    "all": "All collections"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "product": "Product",
+    "quantity": "Quantity",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "remove": "Remove",
+    "update": "Update",
+    "checkout": "Checkout",
+    "note": "Order note",
+    "taxes": "Tax included. Shipping calculated at checkout."
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "What are you looking for?",
+    "submit": "Search",
+    "results": "Results for “{{ terms }}”",
+    "no_results": "No results for “{{ terms }}”."
+  },
+  "newsletter": {
+    "name": "Name",
+    "email": "Email",
+    "success": "Thank you! We'll email you the e-book.",
+    "consent": "I want to receive news and offers"
+  },
+  "blogs": {
+    "read_more": "Read more",
+    "back": "Back to blog"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "text": "The page you are looking for does not exist or has moved."
+  }
+}

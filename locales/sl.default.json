@@ -1,0 +1,77 @@
+{
+  "general": {
+    "page": "Stran {{ page }}",
+    "home": "Domov",
+    "menu": "Meni",
+    "close": "Zapri",
+    "search": "Iskanje",
+    "account": "Moj račun",
+    "cart": "Košarica",
+    "previous": "Prejšnji",
+    "next": "Naslednji",
+    "view_all": "Celotna ponudba",
+    "continue_shopping": "Nadaljuj z nakupovanjem",
+    "rights": "Vse pravice pridržane."
+  },
+  "accessibility": {
+    "skip_to_content": "Preskoči na vsebino",
+    "home_link": "{{ shop }} – domov",
+    "main_menu": "Glavni meni",
+    "categories": "Kategorije",
+    "previous_slide": "Prejšnji izdelek",
+    "next_slide": "Naslednji izdelek"
+  },
+  "products": {
+    "from": "od {{ price }}",
+    "sold_out": "Razprodano",
+    "unavailable": "Ni na voljo",
+    "add_to_cart": "Dodaj v košarico",
+    "inquiry": "Oddaj povpraševanje",
+    "quantity": "Količina",
+    "selected": "Izbrano",
+    "price_note": "Končno ceno potrdimo ob naročilu – cena zlata niha.",
+    "length": "Želena dolžina (cm)",
+    "length_placeholder": "npr. 50",
+    "note": "Opomba (gravura, želje …)",
+    "made_to_order": "Izdelava po naročilu",
+    "handmade": "Ročno delo"
+  },
+  "collections": {
+    "empty": "V tej kategoriji še ni izdelkov.",
+    "all": "Vse kategorije"
+  },
+  "cart": {
+    "title": "Košarica",
+    "empty": "Vaša košarica je prazna.",
+    "product": "Izdelek",
+    "quantity": "Količina",
+    "total": "Skupaj",
+    "subtotal": "Vmesni seštevek",
+    "remove": "Odstrani",
+    "update": "Posodobi",
+    "checkout": "Na blagajno",
+    "note": "Opomba k naročilu",
+    "taxes": "DDV vključen. Poštnina se izračuna na blagajni."
+  },
+  "search": {
+    "title": "Iskanje",
+    "placeholder": "Kaj iščete?",
+    "submit": "Išči",
+    "results": "Rezultati za »{{ terms }}«",
+    "no_results": "Za »{{ terms }}« ni zadetkov."
+  },
+  "newsletter": {
+    "name": "Ime",
+    "email": "E-pošta",
+    "success": "Hvala! E-knjigo vam pošljemo na e-pošto.",
+    "consent": "Želim prejemati obvestila o novostih in akcijah"
+  },
+  "blogs": {
+    "read_more": "Preberi več",
+    "back": "Nazaj na blog"
+  },
+  "not_found": {
+    "title": "Strani ni mogoče najti",
+    "text": "Stran, ki jo iščete, ne obstaja ali je bila premaknjena."
+  }
+}
