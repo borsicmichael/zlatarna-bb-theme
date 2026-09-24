@@ -6,7 +6,7 @@
   assign m3 = section.settings.overlay | times: 0.0124
 -%}
 {%- style -%}
-  #Hero-{{ section.id }} { height: {{ section.settings.height }}px; }
+  #Hero-{{ section.id }} { height: {{ section.settings.height | default: 617 }}px; }
   #Hero-{{ section.id }} .hero__overlay { background: radial-gradient(ellipse 42% 60% at 50% 50%, rgba(13,29,48,{{ op }}), rgba(13,29,48,{{ op_outer }})); }
   @media (max-width: 749px) {
     #Hero-{{ section.id }} { height: {{ section.settings.height_mobile }}px; }
@@ -51,7 +51,7 @@
     { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Sestavi svoj sijaj" },
     { "type": "text", "id": "subheading", "label": "Podnaslov", "default": "Ročno in mojstrsko narejen nakit – iz zlata in dragih kamnov." },
     { "type": "range", "id": "overlay", "label": "Temnost prekrivanja", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 50 },
-    { "type": "range", "id": "height", "label": "Višina (namizje)", "min": 400, "max": 900, "step": 1, "unit": "px", "default": 617 },
+    { "type": "number", "id": "height", "label": "Višina v px (namizje)", "default": 617 },
     { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 360, "max": 800, "step": 10, "unit": "px", "default": 540 },
     { "type": "range", "id": "mobile_focus", "label": "Vodoravna točka na mobilnem", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 24 }
   ],
