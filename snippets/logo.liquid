@@ -4,7 +4,7 @@
   Params: inverted (boolean) – light version for dark backgrounds, height (number)
 {%- endcomment -%}
 {%- liquid
-  assign h = height | default: settings.logo_height
+  assign h = height | default: settings.logo_height | default: 48
   if inverted
     assign box = '#E6E6E6'
     assign stroke = '#0D1D30'
