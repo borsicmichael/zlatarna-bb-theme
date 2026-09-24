@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="theme-color" content="{{ settings.color_primary }}">
+    <meta name="theme-color" content="{{ settings.color_primary | default: '#13293D' }}">
     <link rel="canonical" href="{{ canonical_url }}">
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
@@ -26,12 +26,12 @@
 
     {%- style -%}
       :root {
-        --c-primary: {{ settings.color_primary }};
-        --c-accent: {{ settings.color_accent }};
-        --c-accent-dark: {{ settings.color_accent_dark }};
-        --c-bg: {{ settings.color_background }};
+        --c-primary: {{ settings.color_primary | default: '#13293D' }};
+        --c-accent: {{ settings.color_accent | default: '#89CFF0' }};
+        --c-accent-dark: {{ settings.color_accent_dark | default: '#006494' }};
+        --c-bg: {{ settings.color_background | default: '#F7F9FA' }};
         --c-surface: #FFFFFF;
-        --c-text: {{ settings.color_primary }};
+        --c-text: {{ settings.color_primary | default: '#13293D' }};
         --c-muted: #3F4E5B;
         --c-subtle: #55636F;
         --c-line: #D5DEE5;
@@ -41,8 +41,8 @@
         --f-serif: 'Playfair Display', Georgia, serif;
         --f-sans: 'Manrope', system-ui, sans-serif;
         --f-logo: 'Montserrat', sans-serif;
-        --page-width: {{ settings.page_width }}px;
-        --radius: {{ settings.radius }}px;
+        --page-width: {{ settings.page_width | default: '1312' }}px;
+        --radius: {{ settings.radius | default: '16' }}px;
       }
     {%- endstyle -%}
 
