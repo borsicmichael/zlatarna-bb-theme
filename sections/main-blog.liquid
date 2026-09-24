@@ -1,3 +1,4 @@
+{%- comment -%} rev 7 {%- endcomment -%}
 {%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.card__price' -%}
 {%- liquid
   assign st = section.settings
@@ -65,7 +66,7 @@
     {"type": "range", "id": "excerpt_words", "label": "Dolžina povzetka (besede)", "min": 8, "max": 60, "step": 2, "default": 24},
     {"type": "header", "content": "Mreža"},
     {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 1, "max": 4, "step": 1, "default": 3},
-    {"type": "range", "id": "columns_mobile", "label": "Stolpci (mobilno)", "min": 1, "max": 2, "step": 1, "default": 1},
+    {"type": "select", "id": "columns_mobile", "label": "Stolpci (mobilno)", "options": [{"value": "1", "label": "1"}, {"value": "2", "label": "2"}], "default": "1"},
     {"type": "range", "id": "gap", "label": "Razmik med karticami", "min": 8, "max": 48, "step": 2, "default": 24, "unit": "px"},
     {"type": "select", "id": "image_ratio", "label": "Razmerje slik", "options": [{"value": "portrait", "label": "Pokončno (4:5)"}, {"value": "square", "label": "Kvadrat (1:1)"}, {"value": "landscape", "label": "Ležeče (4:3)"}, {"value": "tall", "label": "Visoko (2:3)"}], "default": "landscape"},
     {"type": "range", "id": "card_radius", "label": "Zaobljenost slik", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
