@@ -31,9 +31,14 @@
         "trust-2",
         "trust-3"
       ]
+    },
+    "related": {
+      "type": "related-products",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "main",
+    "related"
   ]
 }

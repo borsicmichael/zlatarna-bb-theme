@@ -23,7 +23,7 @@
           "type": "link",
           "settings": {
             "label": "Verižice po naročilu",
-            "url": ""
+            "url": "shopify://collections/verizice"
           }
         }
       },
@@ -97,8 +97,8 @@
           "settings": {
             "label": "Vse",
             "collection": "",
-            "limit": 8,
-            "placeholder_names": "Prstani\nUhani\nVerižice\nZapestnice\nObeski\nLinija Prestige"
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "t2": {
@@ -106,7 +106,7 @@
           "settings": {
             "label": "Prstani",
             "collection": "prstani",
-            "limit": 8,
+            "limit": 10,
             "placeholder_names": ""
           }
         },
@@ -114,8 +114,8 @@
           "type": "tab",
           "settings": {
             "label": "Uhani",
-            "collection": "",
-            "limit": 8,
+            "collection": "uhani",
+            "limit": 10,
             "placeholder_names": ""
           }
         },
@@ -123,17 +123,17 @@
           "type": "tab",
           "settings": {
             "label": "Verižice",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Kraljeva verižica\nKraljeva verižica 6,5 mm\nKraljevi vez\nKraljevi par verižic"
+            "collection": "verizice",
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "t5": {
           "type": "tab",
           "settings": {
             "label": "Zapestnice",
-            "collection": "",
-            "limit": 8,
+            "collection": "zapestnice",
+            "limit": 10,
             "placeholder_names": ""
           }
         },
@@ -141,8 +141,8 @@
           "type": "tab",
           "settings": {
             "label": "Obeski",
-            "collection": "",
-            "limit": 8,
+            "collection": "obeski",
+            "limit": 10,
             "placeholder_names": ""
           }
         }
@@ -162,8 +162,8 @@
         "button_url": "",
         "link_label": "Celotna ponudba",
         "link_label_mobile": "Vse",
-        "link_url": "",
-        "show_price": false,
+        "link_url": "shopify://collections/all",
+        "show_price": true,
         "pt": 120,
         "pt_mobile": 64
       }
@@ -171,12 +171,16 @@
     "banner-1": {
       "type": "image-banner",
       "settings": {
-        "link": "",
+        "link": "shopify://collections/linija-prestige",
         "full_width": true,
         "height": 640,
         "height_mobile": 300,
         "pt": 140,
-        "pt_mobile": 64
+        "pt_mobile": 64,
+        "fallback_collection": "linija-prestige",
+        "heading": "Linija Prestige",
+        "text": "<p>Naši najlepši kosi – zlato in dragi kamni v brezčasni obliki.</p>",
+        "button_label": "Odkrij linijo"
       }
     },
     "chains": {
@@ -185,46 +189,51 @@
         "c1": {
           "type": "tab",
           "settings": {
-            "label": "Kraljeva",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Kraljeva verižica 3–8 mm\nKraljeva verižica 6,5 mm\nKraljevi vez 5 mm\nKraljevi par verižic"
+            "label": "Pancer",
+            "collection": "verizice",
+            "title_filter": "pancer",
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "c2": {
           "type": "tab",
           "settings": {
-            "label": "Kubanska",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Kubanska verižica"
+            "label": "Anker",
+            "collection": "verizice",
+            "title_filter": "anker",
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "c3": {
           "type": "tab",
           "settings": {
             "label": "Figaro",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Figaro verižica"
+            "collection": "verizice",
+            "title_filter": "figaro",
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "c4": {
           "type": "tab",
           "settings": {
-            "label": "Ankerska",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Ankerska verižica"
+            "label": "Lunica",
+            "collection": "verizice",
+            "title_filter": "lunica",
+            "limit": 10,
+            "placeholder_names": ""
           }
         },
         "c5": {
           "type": "tab",
           "settings": {
-            "label": "Vrvica",
-            "collection": "",
-            "limit": 8,
-            "placeholder_names": "Vrvica"
+            "label": "Singapur",
+            "collection": "verizice",
+            "title_filter": "singapur",
+            "limit": 10,
+            "placeholder_names": ""
           }
         }
       },
@@ -239,7 +248,7 @@
         "heading": "Ročno narejene verižice, <em>po naročilu</em>",
         "text": "Vsako verižico ročno izdelamo v naši delavnici – v debelini, dolžini in zlatu po vaši želji. Končno ceno potrdimo ob naročilu.",
         "button_label": "Naroči verižico po meri",
-        "button_url": "",
+        "button_url": "shopify://pages/contact",
         "link_label": "",
         "link_label_mobile": "Vse",
         "link_url": "",
@@ -251,12 +260,16 @@
     "banner-2": {
       "type": "image-banner",
       "settings": {
-        "link": "",
+        "link": "shopify://collections/porocni-prstani",
         "full_width": true,
         "height": 640,
         "height_mobile": 300,
         "pt": 140,
-        "pt_mobile": 64
+        "pt_mobile": 64,
+        "fallback_collection": "porocni-prstani",
+        "heading": "Poročni prstani",
+        "text": "<p>Pari prstanov, ročno izdelani za vaš najlepši dan.</p>",
+        "button_label": "Oglej si poročne prstane"
       }
     },
     "tiles": {
@@ -267,7 +280,8 @@
           "settings": {
             "title": "Zaročni prstani",
             "link_label": "Oglej si izbor",
-            "url": ""
+            "url": "",
+            "collection": "zarocni-prstani"
           }
         },
         "tile-2": {
@@ -275,7 +289,8 @@
           "settings": {
             "title": "Poročni prstani",
             "link_label": "Oglej si izbor",
-            "url": ""
+            "url": "",
+            "collection": "porocni-prstani"
           }
         }
       },
@@ -325,7 +340,7 @@
         "button_1_label": "Pokličite mojstra",
         "button_1_url": "tel:+38670644056",
         "button_2_label": "Personaliziraj darilo",
-        "button_2_url": "",
+        "button_2_url": "shopify://pages/contact",
         "pt": 160,
         "pt_mobile": 72
       }
