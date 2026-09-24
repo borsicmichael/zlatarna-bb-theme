@@ -66,7 +66,21 @@
 
     <nav class="header__nav" aria-label="{{ 'accessibility.main_menu' | t }}">
       {%- for link in menu.links -%}
-        {%- if link.links.size > 0 -%}
+        {%- assign auto_dd = false -%}
+        {%- if s.auto_collections and link.links.size == 0 -%}
+          {%- if link.url == routes.collections_url or link.url == routes.all_products_collection_url -%}{%- assign auto_dd = true -%}{%- endif -%}
+        {%- endif -%}
+        {%- if auto_dd -%}
+          <div class="nav-item has-dropdown">
+            <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %} aria-haspopup="true">{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 12 %}</a>
+            <div class="nav-dropdown">
+              {%- for c in collections -%}
+                {%- if c.handle != 'all' and c.all_products_count > 0 -%}<a href="{{ c.url }}"{% if collection.handle == c.handle %} aria-current="page"{% endif %}>{{ c.title | escape }}</a>{%- endif -%}
+              {%- endfor -%}
+              <a href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+            </div>
+          </div>
+        {%- elsif link.links.size > 0 -%}
           <div class="nav-item has-dropdown">
             <a href="{{ link.url }}"{% if link.child_active or link.active %} aria-current="page"{% endif %} aria-haspopup="true">{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 12 %}</a>
             <div class="nav-dropdown">
@@ -107,7 +121,21 @@
 
   <nav class="mobile-nav" id="MobileNav-{{ section.id }}" hidden aria-label="{{ 'accessibility.main_menu' | t }}">
     {%- for link in menu.links -%}
-      {%- if link.links.size > 0 -%}
+      {%- assign auto_dd = false -%}
+      {%- if s.auto_collections and link.links.size == 0 -%}
+        {%- if link.url == routes.collections_url or link.url == routes.all_products_collection_url -%}{%- assign auto_dd = true -%}{%- endif -%}
+      {%- endif -%}
+      {%- if auto_dd -%}
+        <details class="mobile-nav__group">
+          <summary>{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 14 %}</summary>
+          <div class="mobile-nav__sub">
+            {%- for c in collections -%}
+              {%- if c.handle != 'all' and c.all_products_count > 0 -%}<a href="{{ c.url }}">{{ c.title | escape }}</a>{%- endif -%}
+            {%- endfor -%}
+            <a href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+          </div>
+        </details>
+      {%- elsif link.links.size > 0 -%}
         <details class="mobile-nav__group">
           <summary>{{ link.title | escape }}{% render 'icon', name: 'chevron-down', px: 14 %}</summary>
           <div class="mobile-nav__sub">
@@ -165,7 +193,8 @@
     {"type": "paragraph", "content": "Podpovezave v meniju (Vsebina → Meniji) se na namizju prikažejo v spustnem meniju, na mobilnem pa v razširljivem seznamu."},
     {"type": "color", "id": "dropdown_bg", "label": "Ozadje spustnega menija"},
     {"type": "color", "id": "dropdown_text", "label": "Besedilo spustnega menija"},
-    {"type": "text", "id": "mobile_all_label", "label": "Oznaka za »vse« na mobilnem", "default": "Vse"}
+    {"type": "text", "id": "mobile_all_label", "label": "Oznaka za »vse« na mobilnem", "default": "Vse"},
+    {"type": "checkbox", "id": "auto_collections", "label": "Samodejni spustni meni s kolekcijami", "default": true, "info": "Povezava na »Vse kolekcije« ali »Vsi izdelki« brez podpovezav prikaže spustni meni z vsemi kolekcijami."}
   ]
 }
 {% endschema %}
