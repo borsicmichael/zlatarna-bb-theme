@@ -47,6 +47,7 @@
         "f1": {
           "type": "feature",
           "settings": {
+            "image": "shopify://shop_images/ring-engraving_2.webp",
             "default_icon": "personaliziran",
             "title": "Personaliziran nakit",
             "text": "Gravura in nakit po meri – oblikujemo ga skupaj z vami."
@@ -55,6 +56,7 @@
         "f2": {
           "type": "feature",
           "settings": {
+            "image": "shopify://shop_images/gift-box.webp",
             "default_icon": "dostava",
             "title": "Brezplačna dostava",
             "text": "Pri nakupu nad 100 € vam nakit pošljemo brezplačno."
@@ -63,6 +65,7 @@
         "f3": {
           "type": "feature",
           "settings": {
+            "image": "shopify://shop_images/diamond-hand.webp",
             "default_icon": "posvet",
             "title": "Posvet z mojstrom",
             "text": "Pokličite nas ali se oglasite – svetuje vam zlatarski mojster."
@@ -71,6 +74,7 @@
         "f4": {
           "type": "feature",
           "settings": {
+            "image": "shopify://shop_images/chain-hands.webp",
             "default_icon": "rocna",
             "title": "Ročna izdelava",
             "text": "Vsak kos ročno izdelamo v naši delavnici. Slovensko poreklo."
