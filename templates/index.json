@@ -105,7 +105,7 @@
           "type": "tab",
           "settings": {
             "label": "Prstani",
-            "collection": "",
+            "collection": "prstani",
             "limit": 8,
             "placeholder_names": "Zaročni prstani\nPoročni prstani"
           }
