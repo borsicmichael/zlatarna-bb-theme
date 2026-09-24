@@ -22,8 +22,10 @@
     {%- elsif section.settings.image != blank -%}
       {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920,2400', sizes: '100vw' }}
     {%- else -%}
-      <video autoplay muted loop playsinline preload="auto" poster="{{ 'hero-poster.jpg' | asset_url }}">
-        <source src="{{ 'hero-video.mp4' | asset_url }}" type="video/mp4">
+      {%- assign poster_file = 'hero-poster' | append: '.jpg' -%}
+      {%- assign video_file = 'hero-video' | append: '.mp4' -%}
+      <video autoplay muted loop playsinline preload="auto" poster="{{ poster_file | asset_url }}">
+        <source src="{{ video_file | asset_url }}" type="video/mp4">
       </video>
     {%- endif -%}
   </div>
