@@ -1,0 +1,8 @@
+{
+  "type": "footer",
+  "name": "Noga",
+  "sections": {
+    "footer": { "type": "footer", "settings": { "menu_2": "footer" } }
+  },
+  "order": ["footer"]
+}

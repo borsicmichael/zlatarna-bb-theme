@@ -1,0 +1,79 @@
+{%- liquid
+  assign op = section.settings.overlay | times: 0.01
+  assign op_outer = section.settings.overlay | times: 0.0044
+  assign m1 = section.settings.overlay | times: 0.0024
+  assign m2 = section.settings.overlay | times: 0.0056
+  assign m3 = section.settings.overlay | times: 0.0124
+-%}
+{%- style -%}
+  #Hero-{{ section.id }} { height: {{ section.settings.height }}px; }
+  #Hero-{{ section.id }} .hero__overlay { background: radial-gradient(ellipse 42% 60% at 50% 50%, rgba(13,29,48,{{ op }}), rgba(13,29,48,{{ op_outer }})); }
+  @media (max-width: 749px) {
+    #Hero-{{ section.id }} { height: {{ section.settings.height_mobile }}px; }
+    #Hero-{{ section.id }} .hero__overlay { background: linear-gradient(180deg, rgba(13,29,48,{{ m1 }}) 0%, rgba(13,29,48,{{ m2 }}) 45%, rgba(13,29,48,{{ m3 }}) 100%); }
+    #Hero-{{ section.id }} .hero__media video, #Hero-{{ section.id }} .hero__media img { object-position: {{ section.settings.mobile_focus }}% 50%; }
+  }
+{%- endstyle -%}
+
+<section class="hero" id="Hero-{{ section.id }}" data-hero>
+  <div class="hero__media">
+    {%- if section.settings.video != blank -%}
+      {{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: false, playsinline: true, preload: 'auto', image_size: '1920x' }}
+    {%- elsif section.settings.image != blank -%}
+      {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '750,1100,1500,1920,2400', sizes: '100vw' }}
+    {%- else -%}
+      <video autoplay muted loop playsinline preload="auto" poster="{{ 'hero-poster.jpg' | asset_url }}">
+        <source src="{{ 'hero-video.mp4' | asset_url }}" type="video/mp4">
+      </video>
+    {%- endif -%}
+  </div>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    {%- if section.settings.heading != blank -%}<h1 class="hero__heading">{{ section.settings.heading }}</h1>{%- endif -%}
+    {%- if section.settings.subheading != blank -%}<p class="hero__sub">{{ section.settings.subheading }}</p>{%- endif -%}
+    {%- if section.blocks.size > 0 -%}
+      <div class="hero__links">
+        {%- for block in section.blocks -%}
+          <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero z videom",
+  "class": "section-hero",
+  "settings": [
+    { "type": "video", "id": "video", "label": "Video (Shopify)", "info": "Če ni izbran, se predvaja vgrajeni video iz teme. Zvok in kontrole so vedno izklopljeni." },
+    { "type": "image_picker", "id": "image", "label": "Slika (namesto videa)" },
+    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Sestavi svoj sijaj" },
+    { "type": "text", "id": "subheading", "label": "Podnaslov", "default": "Ročno in mojstrsko narejen nakit – iz zlata in dragih kamnov." },
+    { "type": "range", "id": "overlay", "label": "Temnost prekrivanja", "min": 0, "max": 90, "step": 5, "unit": "%", "default": 50 },
+    { "type": "range", "id": "height", "label": "Višina (namizje)", "min": 400, "max": 900, "step": 1, "unit": "px", "default": 617 },
+    { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 360, "max": 800, "step": 10, "unit": "px", "default": 540 },
+    { "type": "range", "id": "mobile_focus", "label": "Vodoravna točka na mobilnem", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 24 }
+  ],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Povezava",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Besedilo", "default": "Oglej si nakit" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero z videom",
+      "blocks": [
+        { "type": "link", "settings": { "label": "Oglej si nakit" } },
+        { "type": "link", "settings": { "label": "Verižice po naročilu" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,97 @@
+{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+{%- liquid
+  assign has_aside = false
+  if section.settings.text != blank or section.settings.button_label != blank
+    assign has_aside = true
+  endif
+-%}
+<section class="tabbed{% if has_aside %} tabbed--aside{% endif %}" data-tabbed>
+  <div class="page-width">
+    <div class="sec-head{% if has_aside %} sec-head--stack{% endif %}">
+      <h2 class="h-display sec-head__title">{{ section.settings.heading }}</h2>
+      {%- if has_aside -%}
+        <div class="sec-head__aside">
+          {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+          {%- if section.settings.button_label != blank -%}
+            <a class="btn btn--sm" href="{{ section.settings.button_url | default: '#' }}">{{ section.settings.button_label | escape }}{% render 'icon', name: 'arrow-right', px: 16 %}</a>
+          {%- endif -%}
+        </div>
+      {%- elsif section.settings.link_label != blank -%}
+        {%- assign link = section.settings.link_url | default: routes.all_products_collection_url -%}
+        <a class="link-underline desktop-only" href="{{ link }}">{{ section.settings.link_label | escape }}</a>
+        <a class="link-underline mobile-only" href="{{ link }}">{{ section.settings.link_label_mobile | default: section.settings.link_label | escape }}</a>
+      {%- endif -%}
+    </div>
+
+    <div class="tabs-row">
+      <div class="tabs" role="tablist" aria-label="{{ 'accessibility.categories' | t }}">
+        {%- for block in section.blocks -%}
+          <button type="button" class="tab" role="tab" id="Tab-{{ block.id }}" aria-controls="Panel-{{ block.id }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" {{ block.shopify_attributes }}>{{ block.settings.label | escape }}</button>
+        {%- endfor -%}
+      </div>
+      <div class="arrows">
+        <button type="button" class="arrow" data-prev aria-label="{{ 'accessibility.previous_slide' | t }}">{% render 'icon', name: 'arrow-left', sw: 1.6 %}</button>
+        <button type="button" class="arrow" data-next aria-label="{{ 'accessibility.next_slide' | t }}">{% render 'icon', name: 'arrow-right', sw: 1.6 %}</button>
+      </div>
+    </div>
+
+    {%- for block in section.blocks -%}
+      <div class="panels" role="tabpanel" id="Panel-{{ block.id }}" aria-labelledby="Tab-{{ block.id }}"{% unless forloop.first %} hidden{% endunless %}>
+        {%- assign coll = block.settings.collection -%}
+        {%- if coll != blank and coll.products_count > 0 -%}
+          {%- for product in coll.products limit: block.settings.limit -%}
+            {% render 'product-panel', item: product, show_price: section.settings.show_price %}
+          {%- endfor -%}
+        {%- else -%}
+          {%- assign names = block.settings.placeholder_names | newline_to_br | split: '<br />' -%}
+          {%- for i in (1..6) -%}
+            {%- assign idx = forloop.index0 -%}
+            {%- assign n = names[idx] | strip -%}
+            {% render 'product-panel', title: n %}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Zavihki z izdelki",
+  "class": "section-tabbed",
+  "settings": [
+    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Izberite svoj BB kos", "info": "Za poševni del označite besedo in kliknite I." },
+    { "type": "textarea", "id": "text", "label": "Besedilo" },
+    { "type": "text", "id": "button_label", "label": "Gumb – besedilo" },
+    { "type": "url", "id": "button_url", "label": "Gumb – URL" },
+    { "type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Celotna ponudba", "info": "Prikaže se, če ni besedila in gumba." },
+    { "type": "text", "id": "link_label_mobile", "label": "Povezava – besedilo (mobilno)", "default": "Vse" },
+    { "type": "url", "id": "link_url", "label": "Povezava – URL" },
+    { "type": "checkbox", "id": "show_price", "label": "Prikaži ceno na karticah", "default": false },
+    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 120 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Zavihek",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Ime zavihka", "default": "Prstani" },
+        { "type": "collection", "id": "collection", "label": "Kolekcija" },
+        { "type": "range", "id": "limit", "label": "Število izdelkov", "min": 2, "max": 16, "step": 1, "default": 8 },
+        { "type": "textarea", "id": "placeholder_names", "label": "Imena za predogled (ena na vrstico)", "info": "Prikazana samo, dokler kolekcija ni izbrana." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Zavihki z izdelki",
+      "blocks": [
+        { "type": "tab", "settings": { "label": "Vse" } },
+        { "type": "tab", "settings": { "label": "Prstani" } },
+        { "type": "tab", "settings": { "label": "Uhani" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,9 @@
+{
+  "type": "header",
+  "name": "Glava",
+  "sections": {
+    "announcement": { "type": "announcement-bar", "settings": {} },
+    "header": { "type": "header", "settings": { "menu": "main-menu", "right_link_label": "Po naročilu" } }
+  },
+  "order": ["announcement", "header"]
+}

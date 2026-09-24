@@ -1,0 +1,21 @@
+<div class="page-width">
+  <article class="page-content">
+    <p class="eyebrow" style="margin-bottom:16px">{{ article.published_at | date: '%d. %m. %Y' }}</p>
+    <h1>{{ article.title | escape }}</h1>
+    {%- if article.image -%}
+      <div style="border-radius:var(--radius);overflow:hidden;margin-bottom:40px">
+        {{ article.image | image_url: width: 1600 | image_tag: loading: 'eager', widths: '600,900,1200,1600', sizes: '(max-width: 749px) 100vw, 760px' }}
+      </div>
+    {%- endif -%}
+    <div class="rte">{{ article.content }}</div>
+    <p style="margin-top:48px"><a class="link-underline" href="{{ blog.url }}">{{ 'blogs.back' | t }}</a></p>
+  </article>
+</div>
+
+{% schema %}
+{
+  "name": "Članek",
+  "class": "section-main-article",
+  "settings": []
+}
+{% endschema %}

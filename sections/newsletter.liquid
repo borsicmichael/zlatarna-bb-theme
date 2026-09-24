@@ -1,0 +1,55 @@
+{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+<section>
+  <div class="page-width">
+    <div class="newsletter">
+      <div class="newsletter__text">
+        {%- if section.settings.eyebrow != blank -%}<p class="eyebrow" style="color: var(--c-accent-dark)">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+        <h2>{{ section.settings.heading }}</h2>
+        {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+      </div>
+      <div class="newsletter__form">
+        {%- assign form_id = 'Newsletter-' | append: section.id -%}
+        {%- form 'customer', id: form_id -%}
+          <input type="hidden" name="contact[tags]" value="{{ section.settings.tags | escape }}">
+          {%- if form.posted_successfully? -%}
+            <p class="form-message" role="status">{{ 'newsletter.success' | t }}</p>
+          {%- elsif form.errors -%}
+            <p class="form-message" role="alert">{{ form.errors | default_errors }}</p>
+          {%- endif -%}
+          <div class="newsletter__fields">
+            <label class="newsletter__label newsletter__name" for="NewsletterName-{{ section.id }}">{{ 'newsletter.name' | t }}</label>
+            <input class="field__input newsletter__name" id="NewsletterName-{{ section.id }}" type="text" name="contact[first_name]" autocomplete="given-name" placeholder="{{ section.settings.name_placeholder | escape }}">
+            <label class="newsletter__label" for="NewsletterEmail-{{ section.id }}">{{ 'newsletter.email' | t }}</label>
+            <div class="newsletter__row">
+              <input class="field__input" id="NewsletterEmail-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ section.settings.email_placeholder | escape }}">
+              <button type="submit" class="btn">{{ section.settings.button_label | escape }}</button>
+            </div>
+            <label class="newsletter__consent">
+              <input type="checkbox" name="contact[accepts_marketing]" value="true">
+              {{- 'newsletter.consent' | t -}}
+            </label>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "E-knjiga / novice",
+  "class": "section-newsletter",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Nadnaslov", "default": "Brezplačna e-knjiga" },
+    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "Kateri nakit najbolje pristaja vašemu <em>znamenju?</em>" },
+    { "type": "textarea", "id": "text", "label": "Besedilo", "default": "Prejmite vodič po astrologiji in nakitu ter obvestila o novostih in akcijah." },
+    { "type": "text", "id": "name_placeholder", "label": "Namig v polju za ime", "default": "Vaše ime" },
+    { "type": "text", "id": "email_placeholder", "label": "Namig v polju za e-pošto", "default": "ime@primer.si" },
+    { "type": "text", "id": "button_label", "label": "Gumb", "default": "Pošlji e-knjigo" },
+    { "type": "text", "id": "tags", "label": "Oznaka stranke", "default": "newsletter,e-knjiga", "info": "Po tej oznaki v Shopify Flow ali e-poštni aplikaciji pošljete e-knjigo." },
+    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 160 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "presets": [{ "name": "E-knjiga / novice" }]
+}
+{% endschema %}

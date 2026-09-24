@@ -1,0 +1,47 @@
+<div class="page-width">
+  <div class="coll-head">
+    <h1 class="h-display">{{ 'search.title' | t }}</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="newsletter__row" style="max-width:640px">
+      <label class="visually-hidden" for="SearchInput">{{ 'search.placeholder' | t }}</label>
+      <input class="field__input" id="SearchInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
+      <button type="submit" class="btn">{{ 'search.submit' | t }}</button>
+    </form>
+    {%- if search.performed -%}
+      <p class="rte">{%- if search.results_count > 0 -%}{{ 'search.results' | t: terms: search.terms }}{%- else -%}{{ 'search.no_results' | t: terms: search.terms }}{%- endif -%}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if search.performed and search.results_count > 0 -%}
+    {%- paginate search.results by 24 -%}
+      <div class="product-grid">
+        {%- for item in search.results -%}
+          {%- if item.object_type == 'product' -%}
+            {% render 'product-card', product: item %}
+          {%- else -%}
+            <a class="card" href="{{ item.url }}">
+              <div class="card__media">
+                {%- if item.image -%}{{ item.image | image_url: width: 800 | image_tag: loading: 'lazy' }}{%- else -%}{{ 'image' | placeholder_svg_tag }}{%- endif -%}
+              </div>
+              <h2 class="card__title">{{ item.title | escape }}</h2>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination">
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="current">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+        </nav>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Iskanje",
+  "class": "section-main-search",
+  "settings": []
+}
+{% endschema %}

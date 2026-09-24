@@ -1,0 +1,51 @@
+{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+<section>
+  <div class="page-width">
+    <div class="tiles">
+      {%- for block in section.blocks -%}
+        <a class="tile{% if block.settings.image != blank %} tile--has-image{% endif %}" href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600,900,1200,1400', sizes: '(max-width: 749px) 100vw, 50vw', alt: block.settings.title }}
+          {%- endif -%}
+          <h2 class="tile__title">{{ block.settings.title | escape }}</h2>
+          {%- if block.settings.link_label != blank -%}
+            <span class="tile__link">{{ block.settings.link_label | escape }}{% render 'icon', name: 'arrow-right', px: 16 %}</span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Ploščici",
+  "class": "section-tiles",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 140 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Ploščica",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Slika" },
+        { "type": "text", "id": "title", "label": "Naslov", "default": "Zaročni prstani" },
+        { "type": "text", "id": "link_label", "label": "Povezava – besedilo", "default": "Oglej si izbor" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ploščici",
+      "blocks": [
+        { "type": "tile", "settings": { "title": "Zaročni prstani" } },
+        { "type": "tile", "settings": { "title": "Poročni prstani" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

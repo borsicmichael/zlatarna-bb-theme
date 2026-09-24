@@ -1,0 +1,55 @@
+{%- assign menu = linklists[section.settings.menu] -%}
+<header class="header">
+  <div class="page-width header__inner">
+    <button type="button" class="icon-btn header__menu-toggle" data-menu-toggle aria-controls="MobileNav-{{ section.id }}" aria-expanded="false" aria-label="{{ 'general.menu' | t }}">
+      {% render 'icon', name: 'menu', px: 22 %}
+    </button>
+
+    <nav class="header__nav" aria-label="{{ 'accessibility.main_menu' | t }}">
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.root_url }}" class="logo header__logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">
+      {%- render 'logo' -%}
+    </a>
+
+    <div class="header__right">
+      {%- if section.settings.right_link_label != blank -%}
+        <a class="header__right-link" href="{{ section.settings.right_link_url | default: '#' }}">{{ section.settings.right_link_label | escape }}</a>
+      {%- endif -%}
+      <a class="icon-btn icon-btn--desktop" href="{{ routes.search_url }}" aria-label="{{ 'general.search' | t }}">{% render 'icon', name: 'search' %}</a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-btn icon-btn--desktop" href="{{ routes.account_url }}" aria-label="{{ 'general.account' | t }}">{% render 'icon', name: 'account' %}</a>
+      {%- endif -%}
+      <a class="icon-btn" href="{{ routes.cart_url }}" aria-label="{{ 'general.cart' | t }}">
+        {% render 'icon', name: 'cart' %}
+        {%- if cart.item_count > 0 -%}<span class="cart-count">{{ cart.item_count }}</span>{%- endif -%}
+      </a>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="MobileNav-{{ section.id }}" hidden aria-label="{{ 'accessibility.main_menu' | t }}">
+    {%- for link in menu.links -%}
+      <a href="{{ link.url }}">{{ link.title | escape }}</a>
+    {%- endfor -%}
+    {%- if section.settings.right_link_label != blank -%}
+      <a href="{{ section.settings.right_link_url | default: '#' }}">{{ section.settings.right_link_label | escape }}</a>
+    {%- endif -%}
+    <a href="{{ routes.search_url }}">{{ 'general.search' | t }}</a>
+    {%- if shop.customer_accounts_enabled -%}<a href="{{ routes.account_url }}">{{ 'general.account' | t }}</a>{%- endif -%}
+  </nav>
+</header>
+
+{% schema %}
+{
+  "name": "Glava",
+  "class": "section-header",
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Meni", "default": "main-menu" },
+    { "type": "text", "id": "right_link_label", "label": "Povezava desno", "default": "Po naročilu" },
+    { "type": "url", "id": "right_link_url", "label": "URL povezave desno" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+<section class="features-wrap">
+  <div class="page-width">
+    <div class="features">
+      {%- for block in section.blocks -%}
+        <div class="feature" {{ block.shopify_attributes }}>
+          {%- if block.settings.image != blank -%}
+            {{ block.settings.image | image_url: width: 240 | image_tag: class: 'feature__img', loading: 'lazy', alt: block.settings.title }}
+          {%- elsif block.settings.default_icon != 'none' -%}
+            {%- assign icon_file = 'icon-' | append: block.settings.default_icon | append: '.png' -%}
+            <img class="feature__img" src="{{ icon_file | asset_url }}" alt="" width="104" height="104" loading="lazy">
+          {%- endif -%}
+          <h3 class="feature__title">{{ block.settings.title | escape }}</h3>
+          <p class="feature__text">{{ block.settings.text }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Prednosti",
+  "class": "section-features",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Prednost",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Ilustracija" },
+        { "type": "select", "id": "default_icon", "label": "Privzeta ilustracija (če slika ni naložena)", "default": "personaliziran", "options": [
+          { "value": "personaliziran", "label": "Personaliziran nakit" },
+          { "value": "dostava", "label": "Dostava" },
+          { "value": "posvet", "label": "Posvet" },
+          { "value": "rocna", "label": "Ročna izdelava" },
+          { "value": "none", "label": "Brez" }
+        ] },
+        { "type": "text", "id": "title", "label": "Naslov", "default": "Personaliziran nakit" },
+        { "type": "textarea", "id": "text", "label": "Besedilo", "default": "Gravura in nakit po meri – oblikujemo ga skupaj z vami." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Prednosti",
+      "blocks": [
+        { "type": "feature", "settings": { "default_icon": "personaliziran", "title": "Personaliziran nakit", "text": "Gravura in nakit po meri – oblikujemo ga skupaj z vami." } },
+        { "type": "feature", "settings": { "default_icon": "dostava", "title": "Brezplačna dostava", "text": "Pri nakupu nad 100 € vam nakit pošljemo brezplačno." } },
+        { "type": "feature", "settings": { "default_icon": "posvet", "title": "Posvet z mojstrom", "text": "Pokličite nas ali se oglasite – svetuje vam zlatarski mojster." } },
+        { "type": "feature", "settings": { "default_icon": "rocna", "title": "Ročna izdelava", "text": "Vsak kos ročno izdelamo v naši delavnici. Slovensko poreklo." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

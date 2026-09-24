@@ -1,0 +1,52 @@
+<footer class="footer">
+  <div class="page-width">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="{{ routes.root_url }}" class="logo" aria-label="{{ 'accessibility.home_link' | t: shop: shop.name }}">{% render 'logo', inverted: true, height: 52 %}</a>
+        {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+        {%- if section.settings.phone != blank -%}
+          <a class="footer__phone" href="tel:{{ section.settings.phone | remove: ' ' }}">{{ section.settings.phone }}</a>
+        {%- endif -%}
+      </div>
+      {%- assign mobile_list = linklists[section.settings.menu_mobile] -%}
+      <div class="footer__links{% if mobile_list.links.size > 0 %} footer__links--has-mobile{% endif %}">
+        {%- assign menus = 'menu_1,menu_2,menu_3' | split: ',' -%}
+        {%- for key in menus -%}
+          {%- assign handle = section.settings[key] -%}
+          {%- assign list = linklists[handle] -%}
+          {%- if list.links.size > 0 -%}
+            <div class="footer__col">
+              <p class="footer__col-title">{{ list.title | escape }}</p>
+              {%- for link in list.links -%}<a href="{{ link.url }}">{{ link.title | escape }}</a>{%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if mobile_list.links.size > 0 -%}
+        <div class="footer__links footer__links--mobile">
+          {%- for link in mobile_list.links -%}<a href="{{ link.url }}">{{ link.title | escape }}</a>{%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+    <div class="footer__bottom">
+      <span>&copy; {{ shop.name }}. {{ 'general.rights' | t }}</span>
+      {%- if section.settings.bottom_right != blank -%}<span>{{ section.settings.bottom_right }}</span>{%- endif -%}
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Noga",
+  "class": "section-footer",
+  "settings": [
+    { "type": "textarea", "id": "text", "label": "Opis", "default": "Ročno in mojstrsko narejen nakit iz zlata in dragih kamnov. Slovensko poreklo." },
+    { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
+    { "type": "link_list", "id": "menu_1", "label": "Meni 1 (npr. Nakit)" },
+    { "type": "link_list", "id": "menu_2", "label": "Meni 2 (npr. Pomoč)", "default": "footer" },
+    { "type": "link_list", "id": "menu_3", "label": "Meni 3 (npr. Pravno)" },
+    { "type": "link_list", "id": "menu_mobile", "label": "Meni za mobilno (neobvezno)", "info": "Na mobilnem se prikaže namesto zgornjih treh menijev (2 stolpca, brez naslovov)." },
+    { "type": "text", "id": "bottom_right", "label": "Besedilo spodaj desno", "default": "Brezplačna dostava nad 100 €" }
+  ]
+}
+{% endschema %}

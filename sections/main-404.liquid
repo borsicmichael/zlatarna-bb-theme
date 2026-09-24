@@ -1,0 +1,16 @@
+<div class="page-width">
+  <div class="empty">
+    <p class="eyebrow">404</p>
+    <h1 class="h-display">{{ 'not_found.title' | t }}</h1>
+    <p class="rte">{{ 'not_found.text' | t }}</p>
+    <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "404",
+  "class": "section-main-404",
+  "settings": []
+}
+{% endschema %}

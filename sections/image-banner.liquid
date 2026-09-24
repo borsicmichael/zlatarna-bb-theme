@@ -1,0 +1,35 @@
+{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+{%- style -%}
+  #Banner-{{ section.id }} { height: {{ section.settings.height }}px; }
+  @media (max-width: 749px) { #Banner-{{ section.id }} { height: {{ section.settings.height_mobile }}px; } }
+{%- endstyle -%}
+<section>
+  <div {% unless section.settings.full_width %}class="page-width"{% endunless %}>
+    {%- if section.settings.link != blank -%}<a href="{{ section.settings.link }}">{%- endif -%}
+    <div class="image-banner" id="Banner-{{ section.id }}"{% unless section.settings.full_width %} style="border-radius:16px"{% endunless %}>
+      {%- if section.settings.image != blank -%}
+        {{ section.settings.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: section.settings.image.alt }}
+      {%- else -%}
+        <span class="ph-icon">{% render 'icon', name: 'image', px: '100%', sw: 0.24 %}</span>
+      {%- endif -%}
+    </div>
+    {%- if section.settings.link != blank -%}</a>{%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Slika čez celo širino",
+  "class": "section-image-banner",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Slika" },
+    { "type": "url", "id": "link", "label": "Povezava (neobvezno)" },
+    { "type": "checkbox", "id": "full_width", "label": "Čez celotno širino", "default": true },
+    { "type": "range", "id": "height", "label": "Višina (namizje)", "min": 300, "max": 900, "step": 10, "unit": "px", "default": 640 },
+    { "type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 200, "max": 700, "step": 10, "unit": "px", "default": 300 },
+    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 140 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 64 }
+  ],
+  "presets": [{ "name": "Slika čez celo širino" }]
+}
+{% endschema %}

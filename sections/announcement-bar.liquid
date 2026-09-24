@@ -1,0 +1,31 @@
+<div class="announcement" style="color: {{ section.settings.text_color }}">
+  <div class="page-width announcement__inner">
+    <div class="announcement__left">
+      {%- if section.settings.show_icon -%}<span style="color: {{ section.settings.icon_color }}; display: flex">{% render 'icon', name: 'clock', px: 14, sw: 1.6 %}</span>{%- endif -%}
+      <span>{{ section.settings.text }}</span>
+    </div>
+    <div class="announcement__right">
+      {%- if section.settings.text_right != blank -%}<span>{{ section.settings.text_right }}</span>{%- endif -%}
+      {%- if section.settings.phone != blank -%}
+        <a href="tel:{{ section.settings.phone | remove: ' ' }}" style="color: {{ section.settings.phone_color }}">{{ section.settings.phone }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Obvestilna vrstica",
+  "class": "section-announcement",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Besedilo levo", "default": "Cene zlata lahko nihajo – končno ceno potrdimo ob naročilu." },
+    { "type": "text", "id": "text_right", "label": "Besedilo desno", "default": "Brezplačna dostava nad 100 €" },
+    { "type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056" },
+    { "type": "color", "id": "text_color", "label": "Barva besedila (namizje)", "default": "#E4F2FA", "info": "Na mobilnem je besedilo vedno temno modro. Za boljšo berljivost na namizju izberite #13293D." },
+    { "type": "color", "id": "phone_color", "label": "Barva telefonske številke", "default": "#89CFF0" },
+    { "type": "checkbox", "id": "show_icon", "label": "Prikaži ikono ure", "default": true },
+    { "type": "color", "id": "icon_color", "label": "Barva ikone", "default": "#89CFF0" }
+  ],
+  "presets": [{ "name": "Obvestilna vrstica" }]
+}
+{% endschema %}

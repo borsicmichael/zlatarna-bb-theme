@@ -1,0 +1,73 @@
+{% render 'spacing', id: section.id, top: section.settings.pt, mobile: section.settings.pt_mobile %}
+<section>
+  <div class="page-width process">
+    <div class="process__head">
+      {%- if section.settings.eyebrow != blank -%}<p class="eyebrow">{{ section.settings.eyebrow | escape }}</p>{%- endif -%}
+      <h2 class="h-display">{{ section.settings.heading }}</h2>
+      {%- if section.settings.text != blank -%}<p>{{ section.settings.text }}</p>{%- endif -%}
+    </div>
+    <div class="steps">
+      {%- for block in section.blocks -%}
+        <div class="step" {{ block.shopify_attributes }}>
+          <span class="step__num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <div class="step__body">
+            <h3 class="step__title">{{ block.settings.title | escape }}</h3>
+            <p class="step__text">{{ block.settings.text }}</p>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+    {%- if section.settings.button_1_label != blank or section.settings.button_2_label != blank -%}
+      <div class="process__buttons">
+        {%- if section.settings.button_1_label != blank -%}
+          <a class="btn" href="{{ section.settings.button_1_url | default: '#' }}">
+            {%- if section.settings.button_1_url contains 'tel:' -%}{% render 'icon', name: 'phone', px: 16 %}{%- endif -%}
+            {{- section.settings.button_1_label | escape -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.button_2_label != blank -%}
+          <a class="btn btn--outline" href="{{ section.settings.button_2_url | default: '#' }}">{{ section.settings.button_2_label | escape }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Postopek (koraki)",
+  "class": "section-process",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Nadnaslov", "default": "Nakit po naročilu" },
+    { "type": "inline_richtext", "id": "heading", "label": "Naslov", "default": "V poplavi izdelkov poskrbimo za tiste <em>prave</em>." },
+    { "type": "textarea", "id": "text", "label": "Besedilo", "default": "Visoka kakovost, ročna izdelava in slovensko poreklo. Od prve ideje do končnega kosa – z vami je zlatarski mojster." },
+    { "type": "text", "id": "button_1_label", "label": "Gumb 1 – besedilo", "default": "Pokličite mojstra" },
+    { "type": "text", "id": "button_1_url", "label": "Gumb 1 – povezava", "default": "tel:+38670644056", "info": "Npr. tel:+38670644056 ali /pages/kontakt" },
+    { "type": "text", "id": "button_2_label", "label": "Gumb 2 – besedilo", "default": "Personaliziraj darilo" },
+    { "type": "url", "id": "button_2_url", "label": "Gumb 2 – URL" },
+    { "type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "unit": "px", "default": 160 },
+    { "type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "unit": "px", "default": 72 }
+  ],
+  "max_blocks": 6,
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Korak",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Naslov", "default": "Posvet z mojstrom" },
+        { "type": "textarea", "id": "text", "label": "Besedilo" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Postopek (koraki)",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Posvet z mojstrom", "text": "Pokličite ali nas obiščite. Skupaj izberemo obliko, debelino, zlato in kamne." } },
+        { "type": "step", "settings": { "title": "Potrditev cene", "text": "Ker cene zlata nihajo, vam končno ceno potrdimo ob naročilu – brez presenečenj." } },
+        { "type": "step", "settings": { "title": "Ročna izdelava", "text": "Vaš kos nastane v naši delavnici in vas doseže v darilni embalaži." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
