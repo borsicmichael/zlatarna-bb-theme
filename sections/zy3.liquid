@@ -1,0 +1,227 @@
+{%- comment -%} rev 5 {%- endcomment -%}
+{%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.coll-head .rte' -%}
+{%- liquid
+  assign st = section.settings
+  assign sel = '#shopify-section-' | append: section.id
+  case st.image_ratio
+    when 'square'
+      assign ar = '1 / 1'
+    when 'landscape'
+      assign ar = '4 / 3'
+    when 'tall'
+      assign ar = '2 / 3'
+    else
+      assign ar = '4 / 5'
+  endcase
+-%}
+{%- style -%}
+  {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns }}, minmax(0,1fr)) !important; gap: {{ st.gap }}px; }
+  {{ sel }} .card__media { aspect-ratio: {{ ar }} !important; border-radius: {{ st.card_radius }}px; {% if st.card_bg != blank %}background: {{ st.card_bg }};{% endif %} }
+  {{ sel }} .card__title { font-size: {{ st.card_title_size }}px; }
+  {%- if st.price_color != blank %}{{ sel }} .card__price { color: {{ st.price_color }}; }{% endif %}
+  
+  @media (max-width: 1100px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns | at_most: 3 }}, minmax(0,1fr)) !important; } }
+  @media (max-width: 749px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns_mobile }}, minmax(0,1fr)) !important; gap: 16px; } }
+{%- endstyle -%}
+<div class="page-width coll" data-collection>
+  <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a><span>/</span>
+    <a href="{{ routes.collections_url }}">{{ 'collections.all' | t }}</a><span>/</span>
+    <span aria-current="page">{{ collection.title | escape }}</span>
+  </nav>
+
+  <div class="coll-head s-align">
+    {%- if st.show_eyebrow -%}<p class="eyebrow">{{ shop.name | escape }}</p>{%- endif -%}
+    <h1 class="h-display">{{ collection.title | escape }}</h1>
+    {%- if collection.description != blank and st.show_description -%}<div class="rte coll-head__desc">{{ collection.description }}</div>{%- endif -%}
+  </div>
+
+  {%- if st.show_chips -%}
+    <div class="chips" role="list">
+      <a role="listitem" class="chip{% if collection.handle == 'all' %} is-active{% endif %}" href="{{ routes.all_products_collection_url }}">{{ 'collections.everything' | t }}</a>
+      {%- for c in collections -%}
+        {%- if c.handle != 'all' and c.all_products_count > 0 -%}
+          <a role="listitem" class="chip{% if c.handle == collection.handle %} is-active{% endif %}" href="{{ c.url }}">{{ c.title | escape }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- paginate collection.products by section.settings.per_page -%}
+    <form class="facets" action="{{ collection.url }}" method="get" data-facets>
+      <div class="facets__bar">
+        <div class="facets__filters">
+          {%- if st.show_filters -%}
+            {%- for filter in collection.filters -%}
+              {%- assign active_count = filter.active_values.size -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}{%- assign active_count = 1 -%}{%- endif -%}
+              {%- endif -%}
+              <details class="facet" data-facet>
+                <summary class="facet__summary">
+                  <span>{{ filter.label | escape }}{% if active_count > 0 %} <b class="facet__count">{{ active_count }}</b>{% endif %}</span>
+                  {% render 'icon', name: 'chevron-down', px: 14 %}
+                </summary>
+                <div class="facet__panel">
+                  {%- case filter.type -%}
+                    {%- when 'price_range' -%}
+                      <div class="facet__price">
+                        <label><span>Od €</span><input type="number" inputmode="numeric" min="0" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value %}{{ filter.min_value.value | divided_by: 100 }}{% endif %}" placeholder="0"></label>
+                        <label><span>Do €</span><input type="number" inputmode="numeric" min="0" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value %}{{ filter.max_value.value | divided_by: 100 }}{% endif %}" placeholder="{{ filter.range_max | divided_by: 100 }}"></label>
+                      </div>
+                      <button type="submit" class="btn btn--sm btn--sans facet__apply">{{ 'collections.apply' | t }}</button>
+                    {%- else -%}
+                      {%- for value in filter.values -%}
+                        <label class="facet__check{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                          <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
+                          <span class="facet__box">{% render 'icon', name: 'check', px: 12, sw: 2.4 %}</span>
+                          <span class="facet__label">{{ value.label | escape }}</span>
+                          <span class="facet__num">{{ value.count }}</span>
+                        </label>
+                      {%- endfor -%}
+                      <noscript><button type="submit" class="btn btn--sm btn--sans">{{ 'collections.apply' | t }}</button></noscript>
+                  {%- endcase -%}
+                </div>
+              </details>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+        <div class="facets__right">
+          <span class="facets__total">{{ 'collections.product_count' | t: count: collection.products_count }}</span>
+          {%- if st.show_sort -%}
+            {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+            <label class="facet-sort">
+              <span class="visually-hidden">{{ 'collections.sort' | t }}</span>
+              <select name="sort_by" data-sort>
+                {%- for option in collection.sort_options -%}
+                  <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name | escape }}</option>
+                {%- endfor -%}
+              </select>
+              {% render 'icon', name: 'chevron-down', px: 14 %}
+            </label>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- liquid
+        assign any_active = false
+        for filter in collection.filters
+          if filter.active_values.size > 0
+            assign any_active = true
+          endif
+          if filter.type == 'price_range'
+            if filter.min_value.value != nil or filter.max_value.value != nil
+              assign any_active = true
+            endif
+          endif
+        endfor
+      -%}
+      {%- if any_active -%}
+        <div class="facets__active">
+          {%- for filter in collection.filters -%}
+            {%- for value in filter.active_values -%}
+              <a class="chip chip--active" href="{{ value.url_to_remove }}">{{ filter.label | escape }}: {{ value.label | escape }} {% render 'icon', name: 'close', px: 12 %}</a>
+            {%- endfor -%}
+            {%- if filter.type == 'price_range' -%}
+              {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                <a class="chip chip--active" href="{{ filter.url_to_remove }}">
+                  {{- filter.label | escape }}: {% if filter.min_value.value %}{{ filter.min_value.value | money }}{% else %}{{ 0 | money }}{% endif %} – {% if filter.max_value.value %}{{ filter.max_value.value | money }}{% else %}{{ filter.range_max | money }}{% endif %} {% render 'icon', name: 'close', px: 12 -%}
+                </a>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+          <a class="facets__clear" href="{{ collection.url }}?sort_by={{ collection.sort_by | default: collection.default_sort_by }}">{{ 'collections.clear' | t }}</a>
+        </div>
+      {%- endif -%}
+    </form>
+
+    {%- liquid
+      assign hide_price = true
+      if st.show_price
+        assign hide_price = false
+      endif
+      assign hide_add = true
+      if st.show_quick_add
+        assign hide_add = false
+      endif
+    -%}
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid">
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
+        {%- endfor -%}
+      </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="pagination" aria-label="{{ 'general.page' | t: page: paginate.current_page }}">
+          {%- if paginate.previous -%}<a class="pagination__arrow" href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left', px: 16 %}</a>{%- endif -%}
+          {%- for part in paginate.parts -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="current" aria-current="page">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+          {%- endfor -%}
+          {%- if paginate.next -%}<a class="pagination__arrow" href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right', px: 16 %}</a>{%- endif -%}
+        </nav>
+      {%- endif -%}
+    {%- else -%}
+      <div class="empty">
+        <p>{%- if any_active -%}{{ 'collections.no_match' | t }}{%- else -%}{{ 'collections.empty' | t }}{%- endif -%}</p>
+        {%- if any_active -%}
+          <a class="btn" href="{{ collection.url }}">{{ 'collections.clear' | t }}</a>
+        {%- else -%}
+          <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Kolekcija",
+  "class": "section-main-collection",
+  "settings": [
+    {"type": "range", "id": "per_page", "label": "Izdelkov na stran", "min": 8, "max": 48, "step": 4, "default": 24},
+    {"type": "header", "content": "Mreža"},
+    {"type": "range", "id": "columns", "label": "Stolpci (namizje)", "min": 1, "max": 6, "step": 1, "default": 4},
+    {"type": "range", "id": "columns_mobile", "label": "Stolpci (mobilno)", "min": 1, "max": 2, "step": 1, "default": 2},
+    {"type": "range", "id": "gap", "label": "Razmik med karticami", "min": 8, "max": 48, "step": 2, "default": 24, "unit": "px"},
+    {"type": "select", "id": "image_ratio", "label": "Razmerje slik", "options": [{"value": "portrait", "label": "Pokončno (4:5)"}, {"value": "square", "label": "Kvadrat (1:1)"}, {"value": "landscape", "label": "Ležeče (4:3)"}, {"value": "tall", "label": "Visoko (2:3)"}], "default": "square"},
+    {"type": "range", "id": "card_radius", "label": "Zaobljenost slik", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
+    {"type": "color", "id": "card_bg", "label": "Ozadje slik brez fotografije"},
+    {"type": "range", "id": "card_title_size", "label": "Velikost naslova kartice", "min": 12, "max": 36, "step": 1, "default": 19, "unit": "px"},
+    {"type": "color", "id": "price_color", "label": "Barva cene / podnaslova"},
+    {"type": "header", "content": "Glava kolekcije"},
+    {"type": "checkbox", "id": "show_eyebrow", "label": "Prikaži nadnaslov (ime trgovine)", "default": false},
+    {"type": "checkbox", "id": "show_description", "label": "Prikaži opis kolekcije", "default": true},
+    {"type": "checkbox", "id": "show_price", "label": "Prikaži ceno na karticah", "default": true},
+    {"type": "checkbox", "id": "show_quick_add", "label": "Gumb »Dodaj v košarico« na karticah", "default": true},
+    {"type": "header", "content": "Filtri in razvrščanje"},
+    {"type": "checkbox", "id": "show_chips", "label": "Povezave do drugih kolekcij", "default": true},
+    {"type": "checkbox", "id": "show_filters", "label": "Filtri", "default": true, "info": "Filtre urejate v aplikaciji Search & Discovery."},
+    {"type": "checkbox", "id": "show_sort", "label": "Razvrščanje", "default": true},
+    {"type": "header", "content": "Barve"},
+    {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
+    {"type": "color", "id": "s_text", "label": "Besedilo"},
+    {"type": "color", "id": "s_heading", "label": "Naslovi"},
+    {"type": "color", "id": "s_accent", "label": "Poudarek (nadnaslovi, številke)"},
+    {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
+    {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
+    {"type": "header", "content": "Slika v ozadju"},
+    {"type": "image_picker", "id": "s_bg_image", "label": "Slika v ozadju sekcije"},
+    {"type": "range", "id": "s_bg_overlay", "label": "Temnost prekrivanja slike", "min": 0, "max": 90, "step": 5, "default": 0, "unit": "%"},
+    {"type": "header", "content": "Tipografija"},
+    {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_weight", "label": "Debelina naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "300", "label": "Tanka (300)"}, {"value": "400", "label": "Navadna (400)"}, {"value": "500", "label": "Srednja (500)"}, {"value": "600", "label": "Polkrepka (600)"}, {"value": "700", "label": "Krepka (700)"}], "default": "theme"},
+    {"type": "select", "id": "s_heading_case", "label": "Velike/male črke naslova", "options": [{"value": "theme", "label": "Privzeto"}, {"value": "none", "label": "Kot je vpisano"}, {"value": "upper", "label": "VELIKE ČRKE"}], "default": "theme"},
+    {"type": "range", "id": "s_heading_size", "label": "Velikost naslova (namizje)", "min": 24, "max": 90, "step": 1, "default": 50, "unit": "px"},
+    {"type": "range", "id": "s_heading_size_m", "label": "Velikost naslova (mobilno)", "min": 18, "max": 60, "step": 1, "default": 32, "unit": "px"},
+    {"type": "select", "id": "s_body_font", "label": "Pisava besedila", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
+    {"type": "range", "id": "s_body_size", "label": "Velikost besedila (namizje)", "min": 11, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "range", "id": "s_body_size_m", "label": "Velikost besedila (mobilno)", "min": 11, "max": 22, "step": 1, "default": 15, "unit": "px"},
+    {"type": "select", "id": "s_align", "label": "Poravnava besedila", "options": [{"value": "default", "label": "Privzeto"}, {"value": "left", "label": "Levo"}, {"value": "center", "label": "Sredina"}, {"value": "right", "label": "Desno"}], "default": "default"},
+    {"type": "header", "content": "Razmik"},
+    {"type": "range", "id": "pt", "label": "Razmik zgoraj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb", "label": "Razmik spodaj (namizje)", "min": 0, "max": 200, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pt_mobile", "label": "Razmik zgoraj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"},
+    {"type": "range", "id": "pb_mobile", "label": "Razmik spodaj (mobilno)", "min": 0, "max": 120, "step": 4, "default": 0, "unit": "px"}
+  ]
+}
+{% endschema %}
