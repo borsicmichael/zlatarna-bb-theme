@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
@@ -13,7 +22,8 @@
         "link-2": {
           "type": "link",
           "settings": {
-            "label": "Verižice po naročilu"
+            "label": "Verižice po naročilu",
+            "url": ""
           }
         }
       },
@@ -22,6 +32,7 @@
         "link-2"
       ],
       "settings": {
+        "video": "shopify://files/videos/hf_20260924_151326_860e3740-37b4-4675-b4dc-b305188b9b16.mp4",
         "heading": "Sestavi svoj sijaj",
         "subheading": "Ročno in mojstrsko narejen nakit – iz zlata in dragih kamnov.",
         "overlay": 50,
@@ -71,7 +82,8 @@
         "f2",
         "f3",
         "f4"
-      ]
+      ],
+      "settings": {}
     },
     "collections": {
       "type": "tabbed-carousel",
@@ -80,6 +92,7 @@
           "type": "tab",
           "settings": {
             "label": "Vse",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Prstani\nUhani\nVerižice\nZapestnice\nObeski\nLinija Prestige"
           }
@@ -88,6 +101,7 @@
           "type": "tab",
           "settings": {
             "label": "Prstani",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Zaročni prstani\nPoročni prstani"
           }
@@ -96,13 +110,16 @@
           "type": "tab",
           "settings": {
             "label": "Uhani",
-            "limit": 8
+            "collection": "",
+            "limit": 8,
+            "placeholder_names": ""
           }
         },
         "t4": {
           "type": "tab",
           "settings": {
             "label": "Verižice",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Kraljeva verižica\nKraljeva verižica 6,5 mm\nKraljevi vez\nKraljevi par verižic"
           }
@@ -111,14 +128,18 @@
           "type": "tab",
           "settings": {
             "label": "Zapestnice",
-            "limit": 8
+            "collection": "",
+            "limit": 8,
+            "placeholder_names": ""
           }
         },
         "t6": {
           "type": "tab",
           "settings": {
             "label": "Obeski",
-            "limit": 8
+            "collection": "",
+            "limit": 8,
+            "placeholder_names": ""
           }
         }
       },
@@ -132,16 +153,21 @@
       ],
       "settings": {
         "heading": "Izberite svoj BB kos",
+        "text": "",
+        "button_label": "",
+        "button_url": "",
         "link_label": "Celotna ponudba",
+        "link_label_mobile": "Vse",
+        "link_url": "",
         "show_price": false,
         "pt": 120,
-        "pt_mobile": 64,
-        "link_label_mobile": "Vse"
+        "pt_mobile": 64
       }
     },
     "banner-1": {
       "type": "image-banner",
       "settings": {
+        "link": "",
         "full_width": true,
         "height": 640,
         "height_mobile": 300,
@@ -156,6 +182,7 @@
           "type": "tab",
           "settings": {
             "label": "Kraljeva",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Kraljeva verižica 3–8 mm\nKraljeva verižica 6,5 mm\nKraljevi vez 5 mm\nKraljevi par verižic"
           }
@@ -164,6 +191,7 @@
           "type": "tab",
           "settings": {
             "label": "Kubanska",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Kubanska verižica"
           }
@@ -172,6 +200,7 @@
           "type": "tab",
           "settings": {
             "label": "Figaro",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Figaro verižica"
           }
@@ -180,6 +209,7 @@
           "type": "tab",
           "settings": {
             "label": "Ankerska",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Ankerska verižica"
           }
@@ -188,6 +218,7 @@
           "type": "tab",
           "settings": {
             "label": "Vrvica",
+            "collection": "",
             "limit": 8,
             "placeholder_names": "Vrvica"
           }
@@ -204,7 +235,10 @@
         "heading": "Ročno narejene verižice, <em>po naročilu</em>",
         "text": "Vsako verižico ročno izdelamo v naši delavnici – v debelini, dolžini in zlatu po vaši želji. Končno ceno potrdimo ob naročilu.",
         "button_label": "Naroči verižico po meri",
+        "button_url": "",
         "link_label": "",
+        "link_label_mobile": "Vse",
+        "link_url": "",
         "show_price": true,
         "pt": 140,
         "pt_mobile": 64
@@ -213,6 +247,7 @@
     "banner-2": {
       "type": "image-banner",
       "settings": {
+        "link": "",
         "full_width": true,
         "height": 640,
         "height_mobile": 300,
@@ -227,14 +262,16 @@
           "type": "tile",
           "settings": {
             "title": "Zaročni prstani",
-            "link_label": "Oglej si izbor"
+            "link_label": "Oglej si izbor",
+            "url": ""
           }
         },
         "tile-2": {
           "type": "tile",
           "settings": {
             "title": "Poročni prstani",
-            "link_label": "Oglej si izbor"
+            "link_label": "Oglej si izbor",
+            "url": ""
           }
         }
       },
@@ -278,9 +315,13 @@
         "s3"
       ],
       "settings": {
+        "eyebrow": "Nakit po naročilu",
+        "heading": "V poplavi izdelkov poskrbimo za tiste <em>prave</em>.",
+        "text": "Visoka kakovost, ročna izdelava in slovensko poreklo. Od prve ideje do končnega kosa – z vami je zlatarski mojster.",
         "button_1_label": "Pokličite mojstra",
         "button_1_url": "tel:+38670644056",
         "button_2_label": "Personaliziraj darilo",
+        "button_2_url": "",
         "pt": 160,
         "pt_mobile": 72
       }
@@ -288,6 +329,13 @@
     "newsletter": {
       "type": "newsletter",
       "settings": {
+        "eyebrow": "Brezplačna e-knjiga",
+        "heading": "Kateri nakit najbolje pristaja vašemu <em>znamenju?</em>",
+        "text": "Prejmite vodič po astrologiji in nakitu ter obvestila o novostih in akcijah.",
+        "name_placeholder": "Vaše ime",
+        "email_placeholder": "ime@primer.si",
+        "button_label": "Pošlji e-knjigo",
+        "tags": "newsletter,e-knjiga",
         "pt": 160,
         "pt_mobile": 64
       }
