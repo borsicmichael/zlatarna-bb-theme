@@ -1,3 +1,4 @@
+{%- comment -%} rev 3 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign form_id = 'ProductForm-' | append: section.id
@@ -96,6 +97,13 @@
         </span>
       </div>
 
+      {%- if section.settings.show_excerpt and product.description != blank -%}
+        <div class="product__excerpt">
+          <p>{{ product.description | replace: '</li>', ' · ' | replace: '</p>', ' ' | replace: '<br>', ' ' | replace: '<br/>', ' ' | replace: '<br />', ' ' | strip_html | strip_newlines | replace: '&nbsp;', ' ' | truncatewords: 26, '…' }}</p>
+          <a href="#Opis-{{ section.id }}" class="product__more">{{ section.settings.excerpt_link | escape }}</a>
+        </div>
+      {%- endif -%}
+
       {%- form 'product', product, id: form_id, novalidate: 'novalidate' -%}
         <input type="hidden" name="id" value="{{ current_variant.id }}">
         <div style="display:flex;flex-direction:column;gap:28px">
@@ -179,19 +187,43 @@
     </div>
   </div>
 
-  <div class="product-details">
-    <div>
-      <h3>{{ section.settings.details_1_title | escape }}</h3>
-      <div class="rte">{{ product.description }}</div>
+  <div class="pdp-more product-details" id="Opis-{{ section.id }}">
+    <div class="pdp-more__desc">
+      <p class="pdp-more__eyebrow">{{ section.settings.details_1_title | escape }}</p>
+      <h2 class="pdp-more__title">{{ product.title | escape }}</h2>
+      <div class="rte pdp-more__rte">{{ product.description }}</div>
     </div>
-    <div>
-      <h3>{{ section.settings.details_2_title | escape }}</h3>
-      <div class="rte">{{ section.settings.details_2_text }}</div>
-    </div>
-    <div>
-      <h3>{{ section.settings.details_3_title | escape }}</h3>
-      <div class="rte">{{ section.settings.details_3_text }}</div>
-    </div>
+    <aside class="pdp-more__side">
+      <div class="acc-list">
+        {%- if section.settings.details_2_title != blank -%}
+          <details class="acc" open>
+            <summary>{{ section.settings.details_2_title | escape }}{% render 'icon', name: 'plus', px: 16 %}</summary>
+            <div class="rte acc__body">{{ section.settings.details_2_text }}</div>
+          </details>
+        {%- endif -%}
+        {%- if section.settings.details_3_title != blank -%}
+          <details class="acc">
+            <summary>{{ section.settings.details_3_title | escape }}{% render 'icon', name: 'plus', px: 16 %}</summary>
+            <div class="rte acc__body">{{ section.settings.details_3_text }}</div>
+          </details>
+        {%- endif -%}
+        {%- if section.settings.details_4_title != blank and section.settings.details_4_text != blank -%}
+          <details class="acc">
+            <summary>{{ section.settings.details_4_title | escape }}{% render 'icon', name: 'plus', px: 16 %}</summary>
+            <div class="rte acc__body">{{ section.settings.details_4_text }}</div>
+          </details>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.help_title != blank -%}
+        <div class="pdp-help">
+          <p class="pdp-help__title">{{ section.settings.help_title | escape }}</p>
+          {%- if section.settings.help_text != blank -%}<p class="pdp-help__text">{{ section.settings.help_text | escape }}</p>{%- endif -%}
+          {%- if section.settings.phone != blank -%}
+            <a class="btn btn--sans btn--block" href="tel:{{ section.settings.phone | remove: ' ' }}">{% render 'icon', name: 'phone', px: 16 %}{{ section.settings.phone | escape }}</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </aside>
   </div>
 </div>
 
@@ -202,7 +234,6 @@
   "settings": [
     {"type": "text", "id": "badge_1", "label": "Značka 1", "default": "Izdelava po naročilu"},
     {"type": "text", "id": "badge_2", "label": "Značka 2", "default": "Ročno delo"},
-    {"type": "text", "id": "selected_prefix", "label": "Predpona izbrane možnosti", "info": "Npr. »Izbrani«. Pustite prazno za »Material: …«."},
     {"type": "text", "id": "price_note", "label": "Opomba pod ceno", "default": "končno ceno potrdimo ob naročilu"},
     {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "default": "Dodaj v košarico"},
     {"type": "checkbox", "id": "show_length", "label": "Polje »Želena dolžina (cm)«", "default": false},
@@ -210,34 +241,35 @@
     {"type": "checkbox", "id": "show_note", "label": "Polje za opombo / gravuro", "default": false},
     {"type": "text", "id": "phone_label", "label": "Gumb za klic – besedilo", "default": "Posvet z mojstrom · 070 644 056"},
     {"type": "text", "id": "phone", "label": "Telefon", "default": "+386 70 644 056"},
-    {"type": "header", "content": "Spodnji stolpci"},
-    {"type": "text", "id": "details_1_title", "label": "Stolpec 1 – naslov (vsebina = opis izdelka)", "default": "O izdelku"},
+    {"type": "checkbox", "id": "show_excerpt", "label": "Kratek povzetek opisa ob ceni", "default": true},
+    {"type": "text", "id": "excerpt_link", "label": "Povezava na opis – besedilo", "default": "Preberi celoten opis"},
+    {"type": "header", "content": "Opis in informacije pod izdelkom"},
+    {"type": "text", "id": "details_1_title", "label": "Nadnaslov opisa (vsebina = opis izdelka)", "default": "O izdelku"},
     {"type": "text", "id": "details_2_title", "label": "Stolpec 2 – naslov", "default": "Dostava in darilo"},
     {"type": "richtext", "id": "details_2_text", "label": "Stolpec 2 – besedilo", "default": "<p>Pošiljke so sledljive, nakit prejmete v darilni embalaži. Pri nakupu nad 100 € je dostava brezplačna.</p>"},
     {"type": "text", "id": "details_3_title", "label": "Stolpec 3 – naslov", "default": "Zakaj cena niha?"},
     {"type": "richtext", "id": "details_3_text", "label": "Stolpec 3 – besedilo", "default": "<p>Cena je vezana na trenutno ceno zlata. Če se cena ob naročilu spremeni, vas pred izdelavo pokličemo in jo potrdimo z vami.</p>"},
+    {"type": "text", "id": "details_4_title", "label": "Razdelek 4 – naslov", "default": "Nega nakita"},
+    {"type": "richtext", "id": "details_4_text", "label": "Razdelek 4 – besedilo", "default": "<p>Nakit hranite ločeno v mehki vrečki, ga ne izpostavljajte kemikalijam in ga občasno očistite z mehko krpo. Za profesionalno čiščenje nas obiščite v delavnici.</p>"},
+    {"type": "text", "id": "help_title", "label": "Kartica za pomoč – naslov", "default": "Imate vprašanje?"},
+    {"type": "text", "id": "help_text", "label": "Kartica za pomoč – besedilo", "default": "Pokličite nas – zlatarski mojster vam z veseljem svetuje glede izbire, velikosti ali izdelave po meri."},
     {"type": "header", "content": "Postavitev"},
     {"type": "select", "id": "layout", "label": "Postavitev", "options": [{"value": "default", "label": "Galerija levo (7/5)"}, {"value": "equal", "label": "Galerija levo (polovica/polovica)"}, {"value": "right", "label": "Galerija desno"}], "default": "default"},
     {"type": "checkbox", "id": "sticky_info", "label": "Podatki ostanejo vidni ob pomikanju", "default": true},
     {"type": "checkbox", "id": "show_breadcrumbs", "label": "Prikaži drobtinice", "default": true},
-    {"type": "checkbox", "id": "show_details", "label": "Prikaži spodnje tri stolpce", "default": true},
+    {"type": "checkbox", "id": "show_details", "label": "Prikaži opis in informacije pod izdelkom", "default": true},
     {"type": "header", "content": "Galerija"},
     {"type": "number", "id": "gallery_height", "label": "Višina glavne slike v px (namizje)", "default": 820},
     {"type": "select", "id": "image_fit", "label": "Prikaz slike", "options": [{"value": "cover", "label": "Zapolni okvir"}, {"value": "contain", "label": "Prikaži celo sliko"}], "default": "cover"},
     {"type": "range", "id": "image_radius", "label": "Zaobljenost glavne slike", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
     {"type": "header", "content": "Cena, možnosti in značke"},
     {"type": "range", "id": "price_size", "label": "Velikost cene (namizje)", "min": 16, "max": 48, "step": 1, "default": 29, "unit": "px"},
-    {"type": "color", "id": "price_color", "label": "Barva cene"},
     {"type": "color", "id": "pill_bg", "label": "Izbrana možnost – ozadje", "info": "Pustite prazno za svetlo modro."},
-    {"type": "color", "id": "pill_fg", "label": "Izbrana možnost – besedilo"},
-    {"type": "color", "id": "badge_bg", "label": "Značka 1 – ozadje"},
     {"type": "header", "content": "Barve"},
     {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
     {"type": "color", "id": "s_heading", "label": "Naslovi"},
     {"type": "color", "id": "s_btn_bg", "label": "Gumb – ozadje"},
     {"type": "color", "id": "s_btn_fg", "label": "Gumb – besedilo"},
-    {"type": "color", "id": "s_btn2_bg", "label": "Svetel gumb – ozadje"},
-    {"type": "color", "id": "s_btn2_fg", "label": "Svetel gumb – besedilo"},
     {"type": "header", "content": "Tipografija"},
     {"type": "select", "id": "s_heading_font", "label": "Pisava naslova", "options": [{"value": "theme", "label": "Privzeto (tema)"}, {"value": "heading", "label": "Pisava naslovov (Nastavitve teme)"}, {"value": "body", "label": "Pisava besedila (Nastavitve teme)"}, {"value": "ui", "label": "Pisava vmesnika (Nastavitve teme)"}, {"value": "logo", "label": "Montserrat"}, {"value": "georgia", "label": "Georgia"}, {"value": "system", "label": "Sistemska pisava"}, {"value": "custom1", "label": "Pisava po meri 1"}, {"value": "custom2", "label": "Pisava po meri 2"}], "default": "theme"},
     {"type": "range", "id": "s_heading_size", "label": "Velikost imena izdelka (namizje)", "min": 24, "max": 90, "step": 1, "default": 52, "unit": "px"},
