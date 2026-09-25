@@ -173,14 +173,20 @@
       "settings": {
         "link": "shopify://collections/linija-prestige",
         "full_width": true,
-        "height": 640,
-        "height_mobile": 300,
+        "height": 460,
+        "height_mobile": 400,
         "pt": 140,
         "pt_mobile": 64,
         "fallback_collection": "linija-prestige",
         "heading": "Linija Prestige",
         "text": "<p>Naši najlepši kosi – zlato in dragi kamni v brezčasni obliki.</p>",
-        "button_label": "Odkrij linijo"
+        "button_label": "Odkrij linijo",
+        "s_heading_size": 64,
+        "s_heading_size_m": 40,
+        "s_body_size": 19,
+        "s_body_size_m": 16,
+        "position": "center",
+        "align": "center"
       }
     },
     "chains": {
@@ -262,14 +268,20 @@
       "settings": {
         "link": "shopify://collections/porocni-prstani",
         "full_width": true,
-        "height": 640,
-        "height_mobile": 300,
+        "height": 460,
+        "height_mobile": 400,
         "pt": 140,
         "pt_mobile": 64,
         "fallback_collection": "porocni-prstani",
         "heading": "Poročni prstani",
         "text": "<p>Pari prstanov, ročno izdelani za vaš najlepši dan.</p>",
-        "button_label": "Oglej si poročne prstane"
+        "button_label": "Oglej si poročne prstane",
+        "s_heading_size": 64,
+        "s_heading_size_m": 40,
+        "s_body_size": 19,
+        "s_body_size_m": 16,
+        "position": "center",
+        "align": "center"
       }
     },
     "tiles": {
