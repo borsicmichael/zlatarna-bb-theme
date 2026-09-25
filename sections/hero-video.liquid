@@ -1,3 +1,4 @@
+{%- comment -%} rev 2 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
   assign op = s.overlay | times: 0.01
@@ -84,6 +85,18 @@
     {%- endif -%}
   </div>
 </section>
+<script>
+  (function () {
+    var hero = document.getElementById('Hero-{{ section.id }}');
+    if (!hero) return;
+    var rate = parseFloat('{{ s.video_speed | default: "1.5" }}') || 1;
+    hero.querySelectorAll('video').forEach(function (v) {
+      var apply = function () { if (v.playbackRate !== rate) v.playbackRate = rate; };
+      apply();
+      ['loadedmetadata', 'play', 'playing', 'seeked'].forEach(function (e) { v.addEventListener(e, apply); });
+    });
+  })();
+</script>
 
 {% schema %}
 {
@@ -91,6 +104,7 @@
   "class": "section-hero",
   "settings": [
     { "type": "header", "content": "Medij" },
+    { "type": "select", "id": "video_speed", "label": "Hitrost predvajanja videa", "options": [{ "value": "1", "label": "Normalna (1×)" }, { "value": "1.25", "label": "1,25×" }, { "value": "1.5", "label": "1,5×" }, { "value": "1.75", "label": "1,75×" }, { "value": "2", "label": "2×" }], "default": "1.5" },
     { "type": "video", "id": "video", "label": "Video (Shopify)", "info": "Če ni izbran, se predvaja vgrajeni video iz teme. Zvok in kontrole so vedno izklopljeni." },
     { "type": "image_picker", "id": "poster", "label": "Slika pred nalaganjem videa", "info": "Za vgrajeni video. Pustite prazno za privzeto sliko." },
     { "type": "image_picker", "id": "image", "label": "Slika (namesto videa)" },
