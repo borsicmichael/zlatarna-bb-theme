@@ -335,10 +335,40 @@
         window.location.href = form.getAttribute('action') + (params.toString() ? '?' + params.toString() : '');
       }
       form.addEventListener('change', function (e) {
-        if (e.target.type === 'number') return;
+        if (e.target.type === 'number' || e.target.type === 'range') return;
         go();
       });
       form.addEventListener('submit', function (e) { e.preventDefault(); go(); });
+      // dual-thumb price slider synced with the number inputs
+      form.querySelectorAll('[data-price-slider]').forEach(function (ps) {
+        var max = parseFloat(ps.getAttribute('data-max')) || 1;
+        var rMin = ps.querySelector('[data-ps-min]'), rMax = ps.querySelector('[data-ps-max]');
+        var fill = ps.querySelector('[data-ps-fill]'), lo = ps.querySelector('[data-ps-lo]'), hi = ps.querySelector('[data-ps-hi]');
+        var panel = ps.parentNode, nMin = panel.querySelector('[data-ps-nmin]'), nMax = panel.querySelector('[data-ps-nmax]');
+        function paint() {
+          var a = +rMin.value, b = +rMax.value;
+          fill.style.left = (a / max * 100) + '%';
+          fill.style.right = (100 - b / max * 100) + '%';
+          lo.textContent = a + ' €'; hi.textContent = b + ' €';
+          rMin.style.zIndex = a > max * 0.9 ? 5 : 3;
+        }
+        function fromRange(e) {
+          var a = +rMin.value, b = +rMax.value;
+          if (a > b) { if (e && e.target === rMin) rMin.value = a = b; else rMax.value = b = a; }
+          nMin.value = a > 0 ? a : '';
+          nMax.value = b < max ? b : '';
+          paint();
+        }
+        function fromNumber() {
+          var a = nMin.value === '' ? 0 : Math.max(0, Math.min(max, +nMin.value));
+          var b = nMax.value === '' ? max : Math.max(0, Math.min(max, +nMax.value));
+          if (a > b) { var t = a; a = b; b = t; }
+          rMin.value = a; rMax.value = b; paint();
+        }
+        rMin.addEventListener('input', fromRange); rMax.addEventListener('input', fromRange);
+        nMin.addEventListener('input', fromNumber); nMax.addEventListener('input', fromNumber);
+        paint();
+      });
       // close other dropdowns when one opens
       var facets = form.querySelectorAll('[data-facet]');
       facets.forEach(function (d) {
