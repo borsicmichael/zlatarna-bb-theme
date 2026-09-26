@@ -144,6 +144,8 @@
         if (idInput) idInput.value = match.id;
         if (priceEl) priceEl.textContent = match.price > 0 ? money(match.price) : 'Cena po povpraševanju';
         if (selectedEl) selectedEl.textContent = chosen.join(' / ');
+        var skuEl = el.querySelector('[data-sku]');
+        if (skuEl) { skuEl.textContent = match.sku || ''; skuEl.parentNode.hidden = !match.sku; }
         if (submit) {
           submit.disabled = !match.available || !(match.price > 0);
           if (label) label.textContent = match.available ? submit.getAttribute('data-label') : submit.getAttribute('data-soldout');
