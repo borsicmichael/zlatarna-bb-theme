@@ -338,3 +338,4 @@ html.drawer-open { overflow: hidden; }
   .pcard__title { font-size: 15px; }
   .pcard__add { height: 38px; }
 }
+.pcard__title { min-height: 0; }
