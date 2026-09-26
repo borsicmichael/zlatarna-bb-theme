@@ -266,22 +266,22 @@
     "banner-2": {
       "type": "image-banner",
       "settings": {
-        "link": "shopify://collections/porocni-prstani",
+        "link": "/collections/bella-italia",
         "full_width": true,
         "height": 460,
         "height_mobile": 400,
         "pt": 140,
         "pt_mobile": 64,
-        "fallback_collection": "porocni-prstani",
-        "heading": "Poročni prstani",
-        "text": "<p>Pari prstanov, ročno izdelani za vaš najlepši dan.</p>",
-        "button_label": "Oglej si poročne prstane",
-        "s_heading_size": 64,
-        "s_heading_size_m": 40,
-        "s_body_size": 19,
-        "s_body_size_m": 16,
+        "heading": "Linija BELLA ITALIA",
+        "text": "<p>Odkrijte skrbno izbrano kolekcijo 14-karatnega zlatega nakita, izdelanega v Italiji. Prefinjeno italijansko oblikovanje, kakovostna izdelava in brezčasna eleganca za vsak trenutek.</p>",
+        "button_label": "Odkrij linijo Bella Italia",
+        "s_heading_size": 52,
+        "s_heading_size_m": 34,
+        "s_body_size": 17,
+        "s_body_size_m": 15,
         "position": "center",
-        "align": "center"
+        "align": "center",
+        "text_position": "above"
       }
     },
     "tiles": {
