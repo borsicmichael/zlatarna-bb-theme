@@ -277,6 +277,7 @@
     "banner-1": {
       "type": "image-banner",
       "settings": {
+        "image": "shopify://shop_images/prestige-couple-desktop.jpg",
         "link": "shopify://collections/linija-prestige",
         "full_width": true,
         "radius": 16,
