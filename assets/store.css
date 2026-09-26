@@ -299,3 +299,14 @@ html.drawer-open { overflow: hidden; }
   .acc summary { font-size: 19px; padding: 18px 0; }
   .pdp-help { padding: 22px; }
 }
+
+/* Image banner with text above the picture */
+.banner-above { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; max-width: 760px; margin: 0 auto 40px; }
+.banner-above .banner-above__heading { color: var(--c-primary) !important; line-height: 1.06; }
+.banner-above .banner-above__text { color: var(--c-muted) !important; font-family: var(--f-sans); line-height: 1.65; max-width: 640px; }
+.banner-above .banner-above__text p { margin: 0; }
+.banner-above__link { margin-top: 6px; font-family: var(--f-sans); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 6px; color: var(--c-primary); }
+.banner-above__link:hover { opacity: .7; }
+.image-banner--plain::after { display: none; }
+.banner-above__media-link { display: block; }
+@media (max-width: 749px) { .banner-above { margin-bottom: 24px; gap: 12px; } }
