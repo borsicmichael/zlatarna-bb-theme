@@ -1,4 +1,4 @@
-{%- comment -%} rev 4 {%- endcomment -%}
+{%- comment -%} rev 5 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign form_id = 'ProductForm-' | append: section.id
@@ -24,6 +24,8 @@
   {%- if st.layout == 'right' %}{{ sel }} .gallery { order: 2; } {{ sel }} .product__info { padding: 8px 32px 0 0; }{% endif %}
   {%- unless st.show_breadcrumbs %}{{ sel }} .breadcrumbs { display: none; }{% endunless %}
   {%- unless st.show_details %}{{ sel }} .product-details { display: none; }{% endunless %}
+  {{ sel }} .product__sku { margin: 10px 0 0; font-family: var(--f-sans); font-size: 13px; letter-spacing: .04em; color: var(--c-muted); }
+  {{ sel }} .product__sku span { color: var(--c-text); font-weight: 600; }
   @media (max-width: 1100px) { {{ sel }} .gallery__main { height: auto; aspect-ratio: 4 / 5; } }
   @media (max-width: 749px) {
     {{ sel }} .product__info { padding: 0; }
@@ -79,6 +81,7 @@
       {%- endif -%}
 
         <h1 class="product__title">{{ product.title | escape }}</h1>
+        <p class="product__sku"{% if current_variant.sku == blank %} hidden{% endif %}>Šifra izdelka: <span data-sku>{{ current_variant.sku | escape }}</span></p>
         {%- assign subtitle = product.metafields.custom.subtitle.value -%}
         {%- if subtitle != blank -%}<p class="product__subtitle">{{ subtitle }}</p>{%- endif -%}
       </div>
