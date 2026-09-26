@@ -1,4 +1,4 @@
-{%- comment -%} rev 8 {%- endcomment -%}
+{%- comment -%} rev 9 {%- endcomment -%}
 {%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.coll-head .rte' -%}
 {%- liquid
   assign st = section.settings
@@ -47,7 +47,32 @@
     </div>
   {%- endif -%}
 
-  {%- paginate collection.products by section.settings.per_page -%}
+  {%- liquid
+    assign any_active = false
+    for filter in collection.filters
+      if filter.active_values.size > 0
+        assign any_active = true
+      endif
+      if filter.type == 'price_range'
+        if filter.min_value.value != nil or filter.max_value.value != nil
+          assign any_active = true
+        endif
+      endif
+    endfor
+    capture order_list
+      render 'collection-order', handle: collection.handle
+    endcapture
+    assign order_list = order_list | strip
+    assign use_order = false
+    if order_list != blank and any_active == false and collection.sort_by == blank and collection.all_products_count <= 250
+      assign use_order = true
+    endif
+    assign per = section.settings.per_page
+    if use_order
+      assign per = 250
+    endif
+  -%}
+  {%- paginate collection.products by per -%}
     <form class="facets" action="{{ collection.url }}" method="get" data-facets>
       <div class="facets__bar">
         <div class="facets__filters">
@@ -103,19 +128,6 @@
         </div>
       </div>
 
-      {%- liquid
-        assign any_active = false
-        for filter in collection.filters
-          if filter.active_values.size > 0
-            assign any_active = true
-          endif
-          if filter.type == 'price_range'
-            if filter.min_value.value != nil or filter.max_value.value != nil
-              assign any_active = true
-            endif
-          endif
-        endfor
-      -%}
       {%- if any_active -%}
         <div class="facets__active">
           {%- for filter in collection.filters -%}
@@ -147,9 +159,24 @@
     -%}
     {%- if collection.products.size > 0 -%}
       <div class="product-grid">
-        {%- for product in collection.products -%}
-          {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
-        {%- endfor -%}
+        {%- if use_order -%}
+          {%- assign order_handles = order_list | split: ',' -%}
+          {%- for h in order_handles -%}
+            {%- assign product = collection.products | where: 'handle', h | first -%}
+            {%- if product -%}
+              {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- for product in collection.products -%}
+            {%- unless order_handles contains product.handle -%}
+              {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
+            {%- endunless -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product, hide_price: hide_price, hide_add: hide_add, section: section %}
+          {%- endfor -%}
+        {%- endif -%}
       </div>
       {%- if paginate.pages > 1 -%}
         <nav class="pagination" aria-label="{{ 'general.page' | t: page: paginate.current_page }}">
