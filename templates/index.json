@@ -284,7 +284,7 @@
         "fallback_collection": "linija-prestige",
         "radius_mobile": 16,
         "placeholder_bg": "",
-        "height": 460,
+        "height": 380,
         "height_mobile": 400,
         "text_position": "overlay",
         "heading": "Linija Prestige",
