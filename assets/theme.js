@@ -1,4 +1,4 @@
-/* rev 3 */
+/* rev 4 */
 /* Zlatarna BB theme — behaviour */
 (function () {
   'use strict';
@@ -448,7 +448,8 @@ document.addEventListener('change', function (e) {
   function money(v) {
     var n = parseFloat(v);
     if (isNaN(n)) return '';
-    return '€' + n.toLocaleString('sl-SI', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    var s = n.toFixed(2).split('.');
+    return '€' + s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + s[1];
   }
   function bind() {
     document.querySelectorAll('[data-predictive-search]').forEach(function (form) {
