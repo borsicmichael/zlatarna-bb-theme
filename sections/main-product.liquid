@@ -1,4 +1,4 @@
-{%- comment -%} rev 3 {%- endcomment -%}
+{%- comment -%} rev 4 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign form_id = 'ProductForm-' | append: section.id
@@ -85,10 +85,28 @@
 
       <div class="product__price-box">
         <span class="product__price" data-price>
-          {%- if product.price_varies -%}
-            {{ product.price_min | money }} – {{ product.price_max | money }}
-          {%- else -%}
+          {%- liquid
+            assign min_price = 0
+            assign max_price = 0
+            for variant in product.variants
+              if variant.price > 0
+                if min_price == 0 or variant.price < min_price
+                  assign min_price = variant.price
+                endif
+                if variant.price > max_price
+                  assign max_price = variant.price
+                endif
+              endif
+            endfor
+          -%}
+          {%- if current_variant.price > 0 -%}
             {{ current_variant.price | money }}
+          {%- elsif min_price == 0 -%}
+            Cena po povpraševanju
+          {%- elsif min_price != max_price -%}
+            Od {{ min_price | money }}
+          {%- else -%}
+            {{ min_price | money }}
           {%- endif -%}
         </span>
         <span class="product__price-note">
@@ -145,7 +163,7 @@
               <button type="button" class="qty__btn" data-qty-plus aria-label="{{ 'products.quantity_increase' | t }}">{% render 'icon', name: 'plus', px: 16 %}</button>
             </div>
             {%- assign soldout_label = 'products.sold_out' | t -%}
-            <button type="submit" name="add" class="btn btn--sans product__add" data-label="{{ section.settings.button_label | escape }}" data-soldout="{{ soldout_label | escape }}"{% unless current_variant.available %} disabled{% endunless %}>
+            <button type="submit" name="add" class="btn btn--sans product__add" data-label="{{ section.settings.button_label | escape }}" data-soldout="{{ soldout_label | escape }}"{% if current_variant.available == false or current_variant.price == 0 %} disabled{% endif %}>
               {% render 'icon', name: 'cart', px: 18 %}
               <span data-add-label>{%- if current_variant.available -%}{{ section.settings.button_label | escape }}{%- else -%}{{ soldout_label }}{%- endif -%}</span>
             </button>
