@@ -1,8 +1,24 @@
+{%- comment -%} rev 2 {%- endcomment -%}
 {%- liquid
   assign s = section.settings
   assign sel = '#Banner-' | append: section.id
   assign oc = s.overlay_color | default: '#0D1D30'
   assign ov = s.overlay | times: 0.01
+  assign col = s.fallback_collection
+  if col == blank and s.link contains '/collections/'
+    assign col_handle = s.link | split: '/collections/' | last | split: '?' | first
+    assign col = collections[col_handle]
+  endif
+  assign has_media = false
+  if s.image != blank
+    assign has_media = true
+  elsif col != blank and col.products_count > 0
+    assign has_media = true
+  endif
+  assign above = false
+  if s.text_position == 'above'
+    assign above = true
+  endif
 -%}
 {% render 'section-style', id: section.id, s: s, h: '.banner__heading', b: '.banner__text' %}
 {%- style -%}
@@ -25,9 +41,17 @@
   }
 {%- endstyle -%}
 <section>
+  {%- if above -%}
+    <div class="page-width banner-above s-align">
+      {%- if s.heading != blank -%}<h2 class="banner__heading banner-above__heading">{{ s.heading }}</h2>{%- endif -%}
+      {%- if s.text != blank -%}<div class="banner__text banner-above__text">{{ s.text }}</div>{%- endif -%}
+      {%- if s.button_label != blank -%}<a class="banner-above__link" href="{{ s.link | default: '#' }}">{{ s.button_label | escape }}</a>{%- endif -%}
+    </div>
+  {%- endif -%}
+  {%- if has_media or above == false -%}
   <div {% unless s.full_width %}class="page-width"{% endunless %}>
-    {%- if s.link != blank and s.button_label == blank -%}<a href="{{ s.link }}">{%- endif -%}
-    <div class="image-banner{% if s.image == blank and s.fallback_collection != blank %} image-banner--collage{% endif %}" id="Banner-{{ section.id }}">
+    {%- if s.link != blank and s.button_label == blank or s.link != blank and above -%}<a href="{{ s.link }}" class="banner-above__media-link">{%- endif -%}
+    <div class="image-banner{% if s.image == blank and col != blank %} image-banner--collage{% endif %}{% if above %} image-banner--plain{% endif %}" id="Banner-{{ section.id }}">
       {%- if s.image != blank -%}
         {%- if s.image_mobile != blank -%}
           <picture style="position:absolute;inset:0">
@@ -37,10 +61,10 @@
         {%- else -%}
           {{ s.image | image_url: width: 2400 | image_tag: loading: 'lazy', widths: '750,1100,1500,1920,2400', sizes: '100vw', alt: s.image.alt }}
         {%- endif -%}
-      {%- elsif s.fallback_collection != blank and s.fallback_collection.products_count > 0 -%}
+      {%- elsif col != blank and col.products_count > 0 -%}
         <div class="banner-collage">
           {%- assign n = 0 -%}
-          {%- for p in s.fallback_collection.products -%}
+          {%- for p in col.products -%}
             {%- if p.featured_media and n < 4 -%}
               {%- assign n = n | plus: 1 -%}
               <span class="banner-collage__item">{{ p.featured_media | image_url: width: 900 | image_tag: loading: 'lazy', widths: '400,600,900', sizes: '(max-width: 749px) 50vw, 25vw', alt: p.title }}</span>
@@ -50,20 +74,23 @@
       {%- else -%}
         <span class="ph-icon">{% render 'icon', name: 'image', px: '100%', sw: 0.24 %}</span>
       {%- endif -%}
-      {%- if s.overlay > 0 -%}<div class="banner__overlay"></div>{%- endif -%}
-      {%- if s.heading != blank or s.text != blank or s.button_label != blank -%}
-        <div class="banner__content">
-          {%- assign collage = false -%}{%- if s.image == blank and s.fallback_collection != blank -%}{%- assign collage = true -%}{%- endif -%}
-          {%- if collage -%}<div class="banner__card">{%- endif -%}
-          {%- if s.heading != blank -%}<h2 class="banner__heading">{{ s.heading }}</h2>{%- endif -%}
-          {%- if s.text != blank -%}<div class="banner__text">{{ s.text }}</div>{%- endif -%}
-          {%- if s.button_label != blank -%}<a class="btn {% if s.button_style == 'light' %}btn--light{% elsif s.button_style == 'outline' %}btn--outline{% endif %}" href="{{ s.link | default: '#' }}">{{ s.button_label | escape }}</a>{%- endif -%}
-          {%- if collage -%}</div>{%- endif -%}
-        </div>
-      {%- endif -%}
+      {%- unless above -%}
+        {%- if s.overlay > 0 -%}<div class="banner__overlay"></div>{%- endif -%}
+        {%- if s.heading != blank or s.text != blank or s.button_label != blank -%}
+          <div class="banner__content">
+            {%- assign collage = false -%}{%- if s.image == blank and col != blank -%}{%- assign collage = true -%}{%- endif -%}
+            {%- if collage -%}<div class="banner__card">{%- endif -%}
+            {%- if s.heading != blank -%}<h2 class="banner__heading">{{ s.heading }}</h2>{%- endif -%}
+            {%- if s.text != blank -%}<div class="banner__text">{{ s.text }}</div>{%- endif -%}
+            {%- if s.button_label != blank -%}<a class="btn {% if s.button_style == 'light' %}btn--light{% elsif s.button_style == 'outline' %}btn--outline{% endif %}" href="{{ s.link | default: '#' }}">{{ s.button_label | escape }}</a>{%- endif -%}
+            {%- if collage -%}</div>{%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endunless -%}
     </div>
-    {%- if s.link != blank and s.button_label == blank -%}</a>{%- endif -%}
+    {%- if s.link != blank and s.button_label == blank or s.link != blank and above -%}</a>{%- endif -%}
   </div>
+  {%- endif -%}
 </section>
 
 {% schema %}
@@ -84,6 +111,7 @@
     {"type": "range", "id": "height", "label": "Višina (namizje)", "min": 300, "max": 900, "step": 10, "unit": "px", "default": 640},
     {"type": "range", "id": "height_mobile", "label": "Višina (mobilno)", "min": 200, "max": 700, "step": 10, "unit": "px", "default": 300},
     {"type": "header", "content": "Besedilo na sliki (neobvezno)"},
+    {"type": "select", "id": "text_position", "label": "Položaj besedila", "options": [{"value": "overlay", "label": "Na sliki"}, {"value": "above", "label": "Nad sliko"}], "default": "overlay"},
     {"type": "inline_richtext", "id": "heading", "label": "Naslov"},
     {"type": "richtext", "id": "text", "label": "Besedilo"},
     {"type": "text", "id": "button_label", "label": "Gumb – besedilo", "info": "Gumb uporabi zgornjo povezavo."},
