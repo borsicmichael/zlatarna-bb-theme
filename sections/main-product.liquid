@@ -1,4 +1,4 @@
-{%- comment -%} rev 5 {%- endcomment -%}
+{%- comment -%} rev 6 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign form_id = 'ProductForm-' | append: section.id
@@ -73,7 +73,9 @@
 
     <div class="product__info">
       <div class="product__head">
-      {%- if section.settings.badge_1 != blank or section.settings.badge_2 != blank -%}
+      {%- assign show_badges = false -%}
+      {%- if product.handle == 'kraljeva-verizica-3-mm-8-mm-izdelava-po-narocilu' or product.tags contains 'po-narocilu' -%}{%- assign show_badges = true -%}{%- endif -%}
+      {%- if show_badges and section.settings.badge_1 != blank or show_badges and section.settings.badge_2 != blank -%}
         <div class="badges">
           {%- if section.settings.badge_1 != blank -%}<span class="badge">{{ section.settings.badge_1 | escape }}</span>{%- endif -%}
           {%- if section.settings.badge_2 != blank -%}<span class="badge badge--outline">{{ section.settings.badge_2 | escape }}</span>{%- endif -%}
