@@ -4,6 +4,14 @@
 {%- endcomment -%}
 {%- liquid
   assign v = product.selected_or_first_available_variant
+  if v.price == 0
+    for variant in product.variants
+      if variant.available and variant.price > 0
+        assign v = variant
+        break
+      endif
+    endfor
+  endif
   assign second = product.media[1]
 -%}
 <div class="card pcard">
@@ -25,13 +33,29 @@
   <div class="pcard__body">
     <a class="card__title pcard__title" href="{{ product.url }}">{{ product.title | escape }}</a>
     {%- unless hide_price -%}
-      <p class="card__price pcard__price">
-        {%- if product.price_varies -%}
-          {{ 'products.from' | t: price: product.price_min | money }}
+      {%- liquid
+        assign min_price = 0
+        assign max_price = 0
+        for variant in product.variants
+          if variant.price > 0
+            if min_price == 0 or variant.price < min_price
+              assign min_price = variant.price
+            endif
+            if variant.price > max_price
+              assign max_price = variant.price
+            endif
+          endif
+        endfor
+      -%}
+      <p class="card__price pcard__price" data-card-price>
+        {%- if min_price == 0 -%}
+          Cena po povpraševanju
+        {%- elsif min_price != max_price -%}
+          Od {{ min_price | money }}
         {%- else -%}
-          {{ product.price | money }}
+          {{ min_price | money }}
         {%- endif -%}
-        {%- if product.compare_at_price > product.price -%} <s>{{ product.compare_at_price | money }}</s>{%- endif -%}
+        {%- if product.compare_at_price > product.price and product.price > 0 -%} <s>{{ product.compare_at_price | money }}</s>{%- endif -%}
       </p>
     {%- endunless -%}
     {%- unless hide_add -%}
@@ -43,8 +67,8 @@
             <label class="visually-hidden" for="Variant-{{ product.id }}-{{ section.id }}">{{ product.options.first | escape }}</label>
             <select id="Variant-{{ product.id }}-{{ section.id }}" name="id">
               {%- for variant in product.variants -%}
-                <option value="{{ variant.id }}"{% if variant.id == v.id %} selected{% endif %}{% unless variant.available %} disabled{% endunless %}>
-                  {{- variant.title | escape -}}{%- if product.price_varies %} · {{ variant.price | money }}{% endif -%}{%- unless variant.available %} ({{ 'products.sold_out' | t }}){% endunless -%}
+                <option value="{{ variant.id }}" data-price="{% if variant.price > 0 %}{{ variant.price | money }}{% endif %}"{% if variant.id == v.id %} selected{% endif %}{% unless variant.available %} disabled{% endunless %}>
+                  {{- variant.title | escape -}}{%- if product.price_varies and variant.price > 0 %} · {{ variant.price | money }}{% endif -%}{%- unless variant.available %} ({{ 'products.sold_out' | t }}){% endunless -%}
                 </option>
               {%- endfor -%}
             </select>
