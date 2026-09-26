@@ -142,10 +142,10 @@
         })[0];
         if (!match) { if (submit) submit.disabled = true; return; }
         if (idInput) idInput.value = match.id;
-        if (priceEl) priceEl.textContent = money(match.price);
+        if (priceEl) priceEl.textContent = match.price > 0 ? money(match.price) : 'Cena po povpraševanju';
         if (selectedEl) selectedEl.textContent = chosen.join(' / ');
         if (submit) {
-          submit.disabled = !match.available;
+          submit.disabled = !match.available || !(match.price > 0);
           if (label) label.textContent = match.available ? submit.getAttribute('data-label') : submit.getAttribute('data-soldout');
         }
         if (match.featured_media && match.featured_media.id) show(match.featured_media.id);
@@ -378,3 +378,14 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   document.addEventListener('shopify:section:load', function (e) { initAll(e.target); });
 })();
+
+// Product cards: show the chosen variant's price
+document.addEventListener('change', function (e) {
+  var sel = e.target;
+  if (!sel.matches || !sel.matches('.pcard__select select')) return;
+  var opt = sel.options[sel.selectedIndex];
+  var price = opt && opt.getAttribute('data-price');
+  var card = sel.closest('.pcard');
+  var el = card && card.querySelector('[data-card-price]');
+  if (el && price) el.textContent = price;
+});
