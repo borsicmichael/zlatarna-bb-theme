@@ -1,5 +1,5 @@
-{%- comment -%} rev 7 {%- endcomment -%}
-{%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.coll-head .rte' -%}
+{%- comment -%} rev 8 {%- endcomment -%}
+{%- render 'section-style', id: section.id, s: section.settings, h: '.coll-head h1', b: '.srch-meta' -%}
 {%- liquid
   assign st = section.settings
   assign sel = '#shopify-section-' | append: section.id
@@ -18,48 +18,239 @@
   {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns }}, minmax(0,1fr)) !important; gap: {{ st.gap }}px; }
   {{ sel }} .card__media { aspect-ratio: {{ ar }} !important; border-radius: {{ st.card_radius }}px; {% if st.card_bg != blank %}background: {{ st.card_bg }};{% endif %} }
   {{ sel }} .card__title { font-size: {{ st.card_title_size }}px; }
-  {%- if st.price_color != blank %}{{ sel }} .card__price { color: {{ st.price_color }}; }{% endif %}
   
   @media (max-width: 1100px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns | at_most: 3 }}, minmax(0,1fr)) !important; } }
   @media (max-width: 749px) { {{ sel }} .product-grid { grid-template-columns: repeat({{ st.columns_mobile }}, minmax(0,1fr)) !important; gap: 16px; } }
 {%- endstyle -%}
-<div class="page-width">
-  <div class="coll-head">
-    <h1 class="h-display">{{ 'search.title' | t }}</h1>
-    <form action="{{ routes.search_url }}" method="get" role="search" class="newsletter__row" style="max-width:640px">
-      <label class="visually-hidden" for="SearchInput">{{ 'search.placeholder' | t }}</label>
-      <input class="field__input" id="SearchInput" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
-      <button type="submit" class="btn">{{ 'search.submit' | t }}</button>
+{%- liquid
+  assign q = search.terms | escape
+  assign results_count = 0
+  if search.performed
+    assign results_count = search.results_count
+  endif
+  assign any_active = false
+  for filter in search.filters
+    if filter.active_values.size > 0
+      assign any_active = true
+    endif
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign any_active = true
+      endif
+    endif
+  endfor
+  assign hide_price = true
+  if st.show_price
+    assign hide_price = false
+  endif
+  assign hide_add = true
+  if st.show_quick_add
+    assign hide_add = false
+  endif
+  assign popular = st.popular_terms | split: ','
+-%}
+<div class="page-width coll srch">
+  <nav class="breadcrumbs" aria-label="Breadcrumbs">
+    <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a><span>/</span>
+    <span aria-current="page">{{ 'search.title' | t }}</span>
+  </nav>
+
+  <div class="coll-head s-align">
+    <p class="eyebrow">{{ 'search.title' | t }}</p>
+    <h1 class="h-display">
+      {%- if search.performed -%}»{{ search.terms | escape }}«{%- else -%}{{ 'search.heading' | t }}{%- endif -%}
+    </h1>
+
+    <form action="{{ routes.search_url }}" method="get" role="search" class="srch-form" data-predictive-search data-label-all="{{ 'search.view_all' | t }}" data-label-empty="{{ 'search.no_suggestions' | t }}" data-label-collections="{{ 'collections.all' | t }}" data-label-products="{{ 'search.products' | t }}">
+      <input type="hidden" name="options[prefix]" value="last">
+      <label class="visually-hidden" for="SearchInput-{{ section.id }}">{{ 'search.placeholder' | t }}</label>
+      <span class="srch-form__icon">{% render 'icon', name: 'search', px: 20 %}</span>
+      <input class="srch-form__input" id="SearchInput-{{ section.id }}" type="search" name="q" value="{{ q }}" placeholder="{{ 'search.placeholder' | t }}" autocomplete="off" autocorrect="off" spellcheck="false"{% unless search.performed %} autofocus{% endunless %} data-ps-input>
+      <button type="button" class="srch-form__clear" aria-label="{{ 'search.clear' | t }}" data-ps-clear{% if q == blank %} hidden{% endif %}>{% render 'icon', name: 'close', px: 14 %}</button>
+      <button type="submit" class="srch-form__submit">{{ 'search.submit' | t }}</button>
+      <div class="srch-suggest" data-ps-results hidden></div>
     </form>
+
     {%- if search.performed -%}
-      <p class="rte">{%- if search.results_count > 0 -%}{{ 'search.results' | t: terms: search.terms }}{%- else -%}{{ 'search.no_results' | t: terms: search.terms }}{%- endif -%}</p>
+      <p class="srch-meta">
+        {%- if results_count > 0 -%}{{ 'search.found' | t: count: results_count }}{%- else -%}{{ 'search.no_results' | t: terms: search.terms }}{%- endif -%}
+      </p>
+    {%- endif -%}
+
+    {%- if popular.size > 0 and results_count == 0 -%}
+      <div class="srch-popular">
+        <span>{{ 'search.popular' | t }}</span>
+        {%- for term in popular -%}
+          {%- assign term_s = term | strip -%}
+          {%- if term_s != blank -%}<a class="chip" href="{{ routes.search_url }}?q={{ term_s | url_encode }}&options%5Bprefix%5D=last">{{ term_s | escape }}</a>{%- endif -%}
+        {%- endfor -%}
+      </div>
     {%- endif -%}
   </div>
 
-  {%- if search.performed and search.results_count > 0 -%}
-    {%- paginate search.results by 24 -%}
-      <div class="product-grid">
-        {%- for item in search.results -%}
-          {%- if item.object_type == 'product' -%}
-            {% render 'product-card', product: item, section: section %}
-          {%- else -%}
-            <a class="card" href="{{ item.url }}">
-              <div class="card__media">
-                {%- if item.image -%}{{ item.image | image_url: width: 800 | image_tag: loading: 'lazy' }}{%- else -%}{{ 'image' | placeholder_svg_tag }}{%- endif -%}
-              </div>
-              <h2 class="card__title">{{ item.title | escape }}</h2>
-            </a>
+  {%- if results_count > 0 -%}
+    {%- if st.show_chips -%}
+      <div class="chips" role="list">
+        {%- for c in collections -%}
+          {%- if c.handle != 'all' and c.all_products_count > 0 -%}
+            <a role="listitem" class="chip" href="{{ c.url }}">{{ c.title | escape }}</a>
           {%- endif -%}
         {%- endfor -%}
       </div>
+    {%- endif -%}
+
+    {%- paginate search.results by st.per_page -%}
+      <form class="facets" action="{{ routes.search_url }}" method="get" data-facets>
+        <input type="hidden" name="q" value="{{ q }}">
+        <input type="hidden" name="options[prefix]" value="last">
+        <div class="facets__bar">
+          <div class="facets__filters">
+            {%- if st.show_filters -%}
+              {%- for filter in search.filters -%}
+                {%- assign active_count = filter.active_values.size -%}
+                {%- if filter.type == 'price_range' -%}
+                  {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}{%- assign active_count = 1 -%}{%- endif -%}
+                {%- endif -%}
+                <details class="facet" data-facet>
+                  <summary class="facet__summary">
+                    <span>{% render 'label-sl', text: filter.label %}{% if active_count > 0 %} <b class="facet__count">{{ active_count }}</b>{% endif %}</span>
+                    {% render 'icon', name: 'chevron-down', px: 14 %}
+                  </summary>
+                  <div class="facet__panel">
+                    {%- case filter.type -%}
+                      {%- when 'price_range' -%}
+                        {%- liquid
+                          assign pmax = filter.range_max | divided_by: 100.0 | ceil
+                          if pmax < 1
+                            assign pmax = 1
+                          endif
+                          assign vmin = 0
+                          if filter.min_value.value
+                            assign vmin = filter.min_value.value | divided_by: 100
+                          endif
+                          assign vmax = pmax
+                          if filter.max_value.value
+                            assign vmax = filter.max_value.value | divided_by: 100.0 | ceil
+                          endif
+                        -%}
+                        <div class="price-slider" data-price-slider data-max="{{ pmax }}">
+                          <div class="price-slider__vals"><span data-ps-lo>{{ vmin }} €</span><span data-ps-hi>{{ vmax }} €</span></div>
+                          <div class="price-slider__track">
+                            <div class="price-slider__fill" data-ps-fill></div>
+                            <input type="range" min="0" max="{{ pmax }}" step="1" value="{{ vmin }}" aria-label="Najnižja cena" data-ps-min>
+                            <input type="range" min="0" max="{{ pmax }}" step="1" value="{{ vmax }}" aria-label="Najvišja cena" data-ps-max>
+                          </div>
+                        </div>
+                        <div class="facet__price">
+                          <label><span>Od €</span><input type="number" inputmode="numeric" min="0" max="{{ pmax }}" name="{{ filter.min_value.param_name }}" value="{% if filter.min_value.value %}{{ vmin }}{% endif %}" placeholder="0" data-ps-nmin></label>
+                          <label><span>Do €</span><input type="number" inputmode="numeric" min="0" max="{{ pmax }}" name="{{ filter.max_value.param_name }}" value="{% if filter.max_value.value %}{{ vmax }}{% endif %}" placeholder="{{ pmax }}" data-ps-nmax></label>
+                        </div>
+                        <button type="submit" class="btn btn--sm btn--sans facet__apply">{{ 'collections.apply' | t }}</button>
+                      {%- else -%}
+                        {%- for value in filter.values -%}
+                          <label class="facet__check{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                            <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
+                            <span class="facet__box">{% render 'icon', name: 'check', px: 12, sw: 2.4 %}</span>
+                            <span class="facet__label">{% render 'label-sl', text: value.label %}</span>
+                            <span class="facet__num">{{ value.count }}</span>
+                          </label>
+                        {%- endfor -%}
+                        <noscript><button type="submit" class="btn btn--sm btn--sans">{{ 'collections.apply' | t }}</button></noscript>
+                    {%- endcase -%}
+                  </div>
+                </details>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+          <div class="facets__right">
+            <span class="facets__total">{{ 'collections.product_count' | t: count: search.results_count }}</span>
+            {%- if st.show_sort -%}
+              {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
+              <label class="facet-sort">
+                <span class="visually-hidden">{{ 'collections.sort' | t }}</span>
+                <select name="sort_by" data-sort>
+                  {%- for option in search.sort_options -%}
+                    <option value="{{ option.value | escape }}"{% if option.value == sort_by %} selected{% endif %}>{% render 'label-sl', text: option.name, sort: option.value %}</option>
+                  {%- endfor -%}
+                </select>
+                {% render 'icon', name: 'chevron-down', px: 14 %}
+              </label>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- if any_active -%}
+          <div class="facets__active">
+            {%- for filter in search.filters -%}
+              {%- for value in filter.active_values -%}
+                <a class="chip chip--active" href="{{ value.url_to_remove }}">{% render 'label-sl', text: filter.label %}: {% render 'label-sl', text: value.label %} {% render 'icon', name: 'close', px: 12 %}</a>
+              {%- endfor -%}
+              {%- if filter.type == 'price_range' -%}
+                {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                  <a class="chip chip--active" href="{{ filter.url_to_remove }}">
+                    {%- render 'label-sl', text: filter.label %}: {% if filter.min_value.value %}{{ filter.min_value.value | money }}{% else %}{{ 0 | money }}{% endif %} – {% if filter.max_value.value %}{{ filter.max_value.value | money }}{% else %}{{ filter.range_max | money }}{% endif %} {% render 'icon', name: 'close', px: 12 -%}
+                  </a>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <a class="facets__clear" href="{{ routes.search_url }}?q={{ search.terms | url_encode }}&options%5Bprefix%5D=last">{{ 'collections.clear' | t }}</a>
+          </div>
+        {%- endif -%}
+      </form>
+
+      <div class="product-grid">
+        {%- for item in search.results -%}
+          {%- case item.object_type -%}
+            {%- when 'product' -%}
+              {% render 'product-card', product: item, hide_price: hide_price, hide_add: hide_add, section: section %}
+            {%- else -%}
+              <a class="srch-page" href="{{ item.url }}">
+                <span class="eyebrow">{% if item.object_type == 'article' %}{{ 'search.article' | t }}{% else %}{{ 'search.page' | t }}{% endif %}</span>
+                <span class="srch-page__title">{{ item.title | escape }}</span>
+                <span class="srch-page__text">{{ item.content | strip_html | truncatewords: 22 }}</span>
+                <span class="srch-page__more">{{ 'blogs.read_more' | t }} {% render 'icon', name: 'arrow-right', px: 14 %}</span>
+              </a>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
       {%- if paginate.pages > 1 -%}
-        <nav class="pagination">
+        <nav class="pagination" aria-label="{{ 'general.page' | t: page: paginate.current_page }}">
+          {%- if paginate.previous -%}<a class="pagination__arrow" href="{{ paginate.previous.url }}" aria-label="{{ 'general.previous' | t }}">{% render 'icon', name: 'arrow-left', px: 16 %}</a>{%- endif -%}
           {%- for part in paginate.parts -%}
-            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="current">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+            {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>{%- elsif part.title == paginate.current_page -%}<span class="current" aria-current="page">{{ part.title }}</span>{%- else -%}<span>{{ part.title }}</span>{%- endif -%}
           {%- endfor -%}
+          {%- if paginate.next -%}<a class="pagination__arrow" href="{{ paginate.next.url }}" aria-label="{{ 'general.next' | t }}">{% render 'icon', name: 'arrow-right', px: 16 %}</a>{%- endif -%}
         </nav>
       {%- endif -%}
     {%- endpaginate -%}
+  {%- else -%}
+    {%- if search.performed -%}
+      <div class="srch-empty">
+        <p class="srch-empty__title">{{ 'search.empty_title' | t }}</p>
+        <p class="srch-empty__text">{{ 'search.empty_text' | t }}</p>
+        <div class="srch-empty__actions">
+          <a class="btn" href="{{ routes.all_products_collection_url }}">{{ 'general.view_all' | t }}</a>
+          <a class="btn btn--outline" href="{{ pages.contact.url | default: '/pages/contact' }}">{{ 'search.contact' | t }}</a>
+        </div>
+      </div>
+    {%- endif -%}
+    {%- if st.show_collections -%}
+      <div class="srch-cols">
+        <h2 class="srch-cols__title">{{ 'search.browse' | t }}</h2>
+        <div class="srch-cols__grid">
+          {%- for c in collections -%}
+            {%- if c.handle != 'all' and c.all_products_count > 0 -%}
+              {%- assign cimg = c.image | default: c.featured_image | default: c.products.first.featured_image -%}
+              <a class="srch-col" href="{{ c.url }}">
+                <span class="srch-col__media">{%- if cimg -%}{{ cimg | image_url: width: 600 | image_tag: loading: 'lazy', widths: '300,450,600', sizes: '(min-width: 990px) 22vw, 45vw', alt: c.title }}{%- endif -%}</span>
+                <span class="srch-col__name">{{ c.title | escape }}</span>
+                <span class="srch-col__count">{{ 'collections.product_count' | t: count: c.all_products_count }}</span>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
   {%- endif -%}
 </div>
 
@@ -75,8 +266,16 @@
     {"type": "select", "id": "image_ratio", "label": "Razmerje slik", "options": [{"value": "portrait", "label": "Pokončno (4:5)"}, {"value": "square", "label": "Kvadrat (1:1)"}, {"value": "landscape", "label": "Ležeče (4:3)"}, {"value": "tall", "label": "Visoko (2:3)"}], "default": "square"},
     {"type": "range", "id": "card_radius", "label": "Zaobljenost slik", "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"},
     {"type": "color", "id": "card_bg", "label": "Ozadje slik brez fotografije"},
-    {"type": "range", "id": "card_title_size", "label": "Velikost naslova kartice", "min": 12, "max": 36, "step": 1, "default": 21, "unit": "px"},
-    {"type": "color", "id": "price_color", "label": "Barva cene / podnaslova"},
+    {"type": "range", "id": "card_title_size", "label": "Velikost naslova kartice", "min": 12, "max": 36, "step": 1, "default": 19, "unit": "px"},
+    {"type": "range", "id": "per_page", "label": "Izdelkov na stran", "min": 12, "max": 48, "step": 4, "default": 24},
+    {"type": "header", "content": "Vsebina"},
+    {"type": "checkbox", "id": "show_filters", "label": "Filtri", "default": true},
+    {"type": "checkbox", "id": "show_sort", "label": "Razvrščanje", "default": true},
+    {"type": "checkbox", "id": "show_chips", "label": "Povezave do kolekcij nad rezultati", "default": true},
+    {"type": "checkbox", "id": "show_price", "label": "Prikaži cene", "default": true},
+    {"type": "checkbox", "id": "show_quick_add", "label": "Gumb za dodajanje v košarico", "default": true},
+    {"type": "checkbox", "id": "show_collections", "label": "Kolekcije, ko ni rezultatov", "default": true},
+    {"type": "text", "id": "popular_terms", "label": "Priljubljena iskanja", "info": "Ločite z vejico.", "default": "Poročni prstani, Verižica, Uhani, Obesek, Zapestnica, Prestige"},
     {"type": "header", "content": "Barve"},
     {"type": "color", "id": "s_bg", "label": "Ozadje sekcije", "info": "Pustite prazno za privzeto barvo."},
     {"type": "color", "id": "s_text", "label": "Besedilo"},
