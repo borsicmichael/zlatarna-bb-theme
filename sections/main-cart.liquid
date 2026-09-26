@@ -37,7 +37,7 @@
       </div>
 
       <aside class="cart-summary">
-        <div class="cart-total"><span>{{ 'cart.subtotal' | t }}</span><span>{{ cart.total_price | money_with_currency }}</span></div>
+        <div class="cart-total"><span>{{ 'cart.subtotal' | t }}</span><span>{{ cart.total_price | money }}</span></div>
         <p class="note">{{ 'cart.taxes' | t }}</p>
         {%- if section.settings.show_note -%}
           <div class="field">

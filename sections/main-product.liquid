@@ -1,4 +1,4 @@
-{%- comment -%} rev 6 {%- endcomment -%}
+{%- comment -%} rev 7 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
   assign form_id = 'ProductForm-' | append: section.id
@@ -214,7 +214,21 @@
     <div class="pdp-more__desc">
       <p class="pdp-more__eyebrow">{{ section.settings.details_1_title | escape }}</p>
       <h2 class="pdp-more__title">{{ product.title | escape }}</h2>
-      <div class="rte pdp-more__rte">{{ product.description }}</div>
+      {%- liquid
+        assign desc_parts = product.description | split: '<img'
+        capture clean_desc
+          echo desc_parts[0]
+          for part in desc_parts offset: 1
+            if part contains 'logo-zlatarna' or part contains 'zlatarna-bb.si/wp-content'
+              assign img_tag = part | split: '>' | first
+              echo part | remove_first: img_tag | remove_first: '>'
+            else
+              echo '<img' | append: part
+            endif
+          endfor
+        endcapture
+      -%}
+      <div class="rte pdp-more__rte">{{ clean_desc }}</div>
     </div>
     <aside class="pdp-more__side">
       <div class="acc-list">
