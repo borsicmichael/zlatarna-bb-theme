@@ -88,7 +88,25 @@
     "placeholder": "Kaj iščete?",
     "submit": "Išči",
     "results": "Rezultati za »{{ terms }}«",
-    "no_results": "Za »{{ terms }}« ni zadetkov."
+    "no_results": "Za »{{ terms }}« ni zadetkov.",
+    "heading": "Kaj iščete?",
+    "found": {
+      "one": "Najden {{ count }} izdelek",
+      "two": "Najdena {{ count }} izdelka",
+      "few": "Najdeni {{ count }} izdelki",
+      "other": "Najdenih {{ count }} izdelkov"
+    },
+    "popular": "Priljubljeno:",
+    "clear": "Počisti iskanje",
+    "view_all": "Prikaži vse rezultate za",
+    "no_suggestions": "Ni predlogov – pritisnite Enter za iskanje.",
+    "products": "Izdelki",
+    "article": "Članek",
+    "page": "Stran",
+    "empty_title": "Tega nismo našli",
+    "empty_text": "Preverite črkovanje ali poskusite s splošnejšim izrazom, npr. »prstan« ali »verižica«. Z veseljem vam pomagamo tudi osebno.",
+    "contact": "Pišite nam",
+    "browse": "Brskajte po kolekcijah"
   },
   "newsletter": {
     "name": "Ime",
