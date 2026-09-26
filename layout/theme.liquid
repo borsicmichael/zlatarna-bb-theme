@@ -11,11 +11,32 @@
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
     {%- endif -%}
 
+    {%- liquid
+      assign title_sl = page_title
+      case request.page_type
+        when 'list-collections'
+          assign title_sl = 'Kolekcije'
+        when 'search'
+          if search.performed
+            assign title_sl = 'Iskanje: ' | append: search.terms
+          else
+            assign title_sl = 'Iskanje'
+          endif
+        when 'cart'
+          assign title_sl = 'Košarica'
+        when '404'
+          assign title_sl = 'Stran ne obstaja'
+        when 'collection'
+          if collection.handle == 'all'
+            assign title_sl = 'Celotna ponudba'
+          endif
+      endcase
+    -%}
     <title>
-      {{ page_title }}
+      {{ title_sl }}
       {%- if current_tags %} &ndash; {{ current_tags | join: ', ' }}{% endif -%}
       {%- if current_page != 1 %} &ndash; {{ 'general.page' | t: page: current_page }}{% endif -%}
-      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+      {%- unless title_sl contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
     </title>
     {%- if page_description -%}
       <meta name="description" content="{{ page_description | escape }}">
