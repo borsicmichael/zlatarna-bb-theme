@@ -1,3 +1,4 @@
+/* rev 2 */
 /* Zlatarna BB theme — behaviour */
 (function () {
   'use strict';
